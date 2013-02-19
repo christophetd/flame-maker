@@ -60,5 +60,6 @@ public class AffineTransformation implements Transformation {
 	public static AffineTransformation newShearY(double sy) {
 		return new AffineTransformation(1, 0, 0, 
 										sy, 1, 0);
+		
 	}
 }
