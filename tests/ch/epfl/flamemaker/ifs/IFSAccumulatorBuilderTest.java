@@ -10,13 +10,13 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
 public class IFSAccumulatorBuilderTest {
 	@Test
 	public void testBuild() {
-		IFSAccumulatorBuilder builder = new IFSAccumulatorBuilder(new Rectangle(new Point(5, 4), 6, 6), 3, 3);
+		IFSAccumulatorBuilder builder = new IFSAccumulatorBuilder(new Rectangle(new Point(63, 62), 100, 120), 20, 10);
 		
-		builder.hit(new Point(3,2));
+		builder.hit(new Point(24,12));
 		
 		IFSAccumulator accu = builder.build();
 		
-		assertTrue(accu.isHit(0, 0));
+		assertTrue(accu.isHit(2, 0));
 		assertFalse(accu.isHit(1, 1));
 		
 	}
