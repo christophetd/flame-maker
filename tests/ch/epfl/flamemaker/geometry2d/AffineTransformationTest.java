@@ -77,6 +77,17 @@ public class AffineTransformationTest {
 		assertEquals(-1, r2.y(), DELTA);			
 	}
 	
+	@Test
+	public void testRotationTranslationComposition() {
+		AffineTransformation rotation = AffineTransformation.newRotation(Math.PI);
+		AffineTransformation translation = AffineTransformation.newTranslation(-3, 2);
+		
+		Point r = translation.composeWith(rotation).transformPoint(p);
+		
+		assertEquals(-4, r.x(), DELTA);
+		assertEquals(1, r.y(), DELTA);
+	}
+	
 	
 	
 
