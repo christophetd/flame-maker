@@ -37,14 +37,14 @@ public class Rectangle {
 	}
 	
 	/**
-	 * retourne la plus grande coordonnée y du rectangle
+	 * retourne la plus petite coordonnée y du rectangle
 	 */
 	public double bottom() {
 		return m_center.y() - (m_height / 2.0);
 	}
 	
 	/**
-	 * retourne la plus petite coordonnée y du rectangle
+	 * retourne la plus grande coordonnée y du rectangle
 	 */
 	public double top() {
 		return m_center.y() + (m_height / 2.0);
