@@ -13,7 +13,7 @@ public class RenderTest {
 		/*
 		 * Settings for fougère de Barnsley. Comment next line to test.
 		 */
-		/*
+		//*
 
 		ArrayList<AffineTransformation> transformations = new ArrayList<AffineTransformation>();
 		transformations.add(new AffineTransformation(0, 0, 0, 0, 0.16, 0));
@@ -21,7 +21,7 @@ public class RenderTest {
 		transformations.add(new AffineTransformation(-0.15, 0.28, 0, 0.26, 0.24, 0.44));
 		transformations.add(new AffineTransformation(0.85, 0.04, 0, -0.04, 0.85, 1.6));
 		
-		Rectangle viewport = new Rectangle(new Point(0, 5), 1, 10);
+		Rectangle viewport = new Rectangle(new Point(0, 5), 5, 10);
 		int width = 120, height = 200, density = 150;
 		
 		//*/
@@ -29,7 +29,7 @@ public class RenderTest {
 		/*
 		 * Settings for triangle de Sierpinski. Comment next line to test.
 		 */
-		//*
+		/*
 		
 		ArrayList<AffineTransformation> transformations = new ArrayList<AffineTransformation>();
 		transformations.add(new AffineTransformation(0.5, 0, 0, 0, 0.5, 0));
