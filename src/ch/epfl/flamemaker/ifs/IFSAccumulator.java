@@ -22,6 +22,10 @@ public class IFSAccumulator {
 		return m_grid[0].length;
 	}
 	
+	/**
+	 * Vérifie si la case de coordonées (x;y) est touchée par un point de la fractale
+	 * @return true si la case contient un point de la fractale
+	 */
 	public boolean isHit(int x, int y){
 		if(x < 0 || x >= width() || y < 0 || y >= height()){
 			throw new IndexOutOfBoundsException();
