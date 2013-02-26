@@ -18,15 +18,17 @@ public class FlameAccumulator {
 		m_grid = new int[hitCount.length][];
 		for(int i = 0 ; i < hitCount.length ; i++){
 			m_grid[i] = new int[hitCount[i].length];
-			for(int j = 0 ; j < hitCount.length ; j++){
+			for(int j = 0 ; j < hitCount[i].length ; j++){
 				m_grid[i][j] = hitCount[i][j];
+				
 				if(maxHit < hitCount[i][j]){
 					maxHit = hitCount[i][j];
 				}
+				
 			}
 		}
 		
-		m_denominator = Math.log(maxHit+1);
+		m_denominator = Math.log10(maxHit+1);
 	}
 	
 	public int width(){
@@ -42,7 +44,7 @@ public class FlameAccumulator {
 			throw new IndexOutOfBoundsException();
 		}
 		
-		return Math.log(m_grid[x][y]+1)/m_denominator;
+		return Math.log10(m_grid[x][y]+1)/m_denominator;
 	}
 	
 	public static class Builder {
