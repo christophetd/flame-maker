@@ -3,7 +3,6 @@ package ch.epfl.flamemaker.flame;
 import java.util.List;
 import java.util.Random;
 
-import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 
 public class Flame {
@@ -13,25 +12,22 @@ public class Flame {
 		m_transforms = transforms;
 	}
 	
-	public FlameAccumulator compute(Rectangle frame, int width, int height, int density) {
+	public void compute(FlameAccumulator.Builder builder, int width, int height, long density) {
 		Point point = new Point(0, 0);
 		int k = 20;
 		int transformationNum = 0;
 		Random randomizer = new Random();
 		int size = m_transforms.size();
-		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame, width, height);
 		
 		for(int i = 0; i < k; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
 		}
-		int m = density * width * height;
-		for(int i = 0; i < m; i++) {
+		long m = density * width * height;
+		for(long i = 0; i < m; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
 			builder.hit(point);
 		}
-		
-		return builder.build();
 	}
 }

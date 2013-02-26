@@ -23,11 +23,12 @@ public class FlameTransformation implements Transformation{
 	public Point transformPoint(Point p) {
 		
 		Point tmp, ret = new Point(0,0);
+		Point aff = m_affineTransfo.transformPoint(p);
 		
 		for(int i = 0 ; i < Variation.ALL_VARIATIONS.size() ; i++){
 			if(m_weight[i] != 0){
-				tmp = Variation.ALL_VARIATIONS.get(i).transformPoint(m_affineTransfo.transformPoint(p));
-				ret =  new Point(ret.x()+m_weight[i]*tmp.x(), ret.y()+m_weight[i]*tmp.y());
+				tmp = Variation.ALL_VARIATIONS.get(i).transformPoint(aff);
+				ret = new Point(ret.x()+m_weight[i]*tmp.x(), ret.y()+m_weight[i]*tmp.y());
 			}
 		}
 		

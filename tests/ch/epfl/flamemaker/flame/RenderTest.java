@@ -52,14 +52,36 @@ public class RenderTest {
 				  new double[]{ 1, 0, 0, 0, 0, 0 }
 		  ));
 		  
-		  Rectangle viewport = new Rectangle(new Point(0.1, 0.1), 3, 3);
-			int width = 500, height = 500, density = 50;
+		  Rectangle viewport = new Rectangle(new Point(0.1, 0.1), 0, 0);
+			int width = 10000, height = 10000, density = 100;
 		 //*/
-		Flame fractal = new Flame(transformations);
-	
+			
 		double start = System.currentTimeMillis();
 		System.out.println("Generating fractal...");
-		FlameAccumulator result = fractal.compute(viewport, width, height, density);
+		
+		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(viewport, width, height);
+		Flame fractal = new Flame(transformations);
+		
+		//Flame fractal = new Flame(transformations);
+		//FlameAccumulator result = fractal.compute(viewport, width, height, density);
+		
+		Worker worker = new Worker(fractal, builder, width, height, density/4);
+		Worker worker2 = new Worker(fractal, builder, width, height, density/4);
+		Worker worker3 = new Worker(fractal, builder, width, height, density/4);
+		Worker worker4 = new Worker(fractal, builder, width, height, density/4);
+
+		worker.start();
+		worker2.start();
+		worker3.start();
+		worker4.start();
+		
+		worker.join();
+		worker2.join();
+		worker3.join();
+		worker4.join();
+		
+		FlameAccumulator result = builder.build();
+		
 		double time = System.currentTimeMillis()-start;
 		System.out.println("Generated in "+time/1000+"s");
 		System.out.println("Printing fractal...");
@@ -77,5 +99,6 @@ public class RenderTest {
 		}
 		file.close();
 		
+		System.out.println("Done.");
 	}
 }

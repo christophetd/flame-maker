@@ -71,7 +71,11 @@ public class FlameAccumulator {
 			int y = (int) Math.floor(coord.y());
 			
 			if(x >= 0 && x < m_grid.length && y >= 0 && y < m_grid[0].length){
-				m_grid[x][y]++;
+				
+				synchronized(m_grid[x]){
+					m_grid[x][y]++;
+				}
+				
 			}
 		}
 		
