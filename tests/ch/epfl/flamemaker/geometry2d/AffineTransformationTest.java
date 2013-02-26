@@ -2,8 +2,8 @@ package ch.epfl.flamemaker.geometry2d;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
+
 
 public class AffineTransformationTest {
 	private Point p = new Point(1, 1);
