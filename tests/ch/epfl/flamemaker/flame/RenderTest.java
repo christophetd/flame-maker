@@ -12,7 +12,7 @@ public class RenderTest {
 		/*
 		 * Settings for triangle de Sierpinski. Comment next line to test.
 		 */
-		//*
+		/*
 		
 		ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
 		
@@ -32,11 +32,36 @@ public class RenderTest {
 		int width = 500, height = 400, density = 50;
 		//*/
 		
+		/*
+		 * Settings for fractal turbulence
+		 * Comment next line to test */
+		 //*
+		  ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
+		  transformations.add(new FlameTransformation(
+				  new AffineTransformation(0.7124807, -0.4113509, -0.3, 0.4113513, 0.7124808, -0.7), 
+				  new double[]{ 0.5, 0, 0, 0.4, 0, 0 }
+		  ));
+		  
+		  transformations.add(new FlameTransformation(
+				  new AffineTransformation(0.3731078, -0.64624117, 0.4, 0.6462414, 0.3731076, 0.3), 
+				  new double[]{ 1, 0, 0.1, 0, 0, 0 }
+		  ));
+		  
+		  transformations.add(new FlameTransformation(
+				  new AffineTransformation(0.0842641, -0.314478, -0.1, 0.314478, 0.0842641, 0.3), 
+				  new double[]{ 1, 0, 0, 0, 0, 0 }
+		  ));
+		  
+		  Rectangle viewport = new Rectangle(new Point(0.1, 0.1), 3, 3);
+			int width = 500, height = 500, density = 50;
+		 //*/
 		Flame fractal = new Flame(transformations);
-		
+	
+		double start = System.currentTimeMillis();
 		System.out.println("Generating fractal...");
 		FlameAccumulator result = fractal.compute(viewport, width, height, density);
-		
+		double time = System.currentTimeMillis()-start;
+		System.out.println("Generated in "+time/1000+"s");
 		System.out.println("Printing fractal...");
 		PrintStream file = new PrintStream("./fractal.pgm");
 		
@@ -45,7 +70,6 @@ public class RenderTest {
 		file.println("100");
 		
 		for(int i = result.height()-1 ; i > 0 ; i--) {
-			System.out.println(100*(result.height()-i)/result.height());
 			for(int j = 0; j < result.width(); j++) {
 				file.print((int)(result.intensity(j, i)*100)+" ");
 			}
@@ -53,6 +77,5 @@ public class RenderTest {
 		}
 		file.close();
 		
-		System.out.println("Done");
 	}
 }
