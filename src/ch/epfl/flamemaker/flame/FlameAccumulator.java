@@ -28,7 +28,7 @@ public class FlameAccumulator {
 		
 		m_denominator = Math.log(maxHit+1);
 	}
-	
+
 	public int width(){
 		return m_grid.length;
 	}

@@ -19,7 +19,7 @@ public class Flame {
 		int transformationNum = 0;
 		Random randomizer = new Random();
 		int size = m_transforms.size();
-		FlameAccumulator builder = new FrameAccumulator.Builder(frame, width, height);
+		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame, width, height);
 		
 		for(int i = 0; i < k; k++) {
 			transformationNum = randomizer.nextInt(size);
@@ -31,5 +31,7 @@ public class Flame {
 			point = m_transforms.get(transformationNum).transformPoint(point);
 			builder.hit(point);
 		}
+		
+		return builder.build();
 	}
 }
