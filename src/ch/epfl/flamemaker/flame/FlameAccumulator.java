@@ -8,18 +8,15 @@ import ch.epfl.flamemaker.geometry2d.Transformation;
 
 public class FlameAccumulator {
 
-	private int[][] m_grid;
+	private byte[][] m_grid;
 	private double m_denominator;
 	
-	private FlameAccumulator(int[][] hitCount) {
+	private FlameAccumulator(byte[][] hitCount) {
 		
 		int maxHit = 0;
 		
-		m_grid = new int[hitCount.length][];
 		for(int i = 0 ; i < hitCount.length ; i++){
-			m_grid[i] = new int[hitCount[i].length];
 			for(int j = 0 ; j < hitCount[i].length ; j++){
-				m_grid[i][j] = hitCount[i][j];
 				
 				if(maxHit < hitCount[i][j]){
 					maxHit = hitCount[i][j];
@@ -28,7 +25,9 @@ public class FlameAccumulator {
 			}
 		}
 		
-		m_denominator = Math.log10(maxHit+1);
+		m_grid = hitCount;
+		
+		m_denominator = Math.log(maxHit+1);
 	}
 
 	public int width(){
@@ -44,12 +43,12 @@ public class FlameAccumulator {
 			throw new IndexOutOfBoundsException();
 		}
 		
-		return Math.log10(m_grid[x][y]+1)/m_denominator;
+		return Math.log(m_grid[x][y]+1)/m_denominator;
 	}
 	
 	public static class Builder {
 		
-		private int[][] m_grid;
+		private byte[][] m_grid;
 		private Transformation m_transform;
 		
 		Builder(Rectangle frame, int width, int height){
@@ -57,7 +56,7 @@ public class FlameAccumulator {
 				throw new IllegalArgumentException("width and height must be positive");
 			}
 		
-			m_grid = new int[width][height];
+			m_grid = new byte[width][height];
 		
 			//On crée la transformation qui passe d'un point du plan à un point de l'accumulateur
 			m_transform = AffineTransformation.newScaling((double)width/frame.width(), (double)height/frame.height())
@@ -73,7 +72,8 @@ public class FlameAccumulator {
 			if(x >= 0 && x < m_grid.length && y >= 0 && y < m_grid[0].length){
 				
 				synchronized(m_grid[x]){
-					m_grid[x][y]++;
+					if(m_grid[x][y] < 127)
+						m_grid[x][y]++;
 				}
 				
 			}

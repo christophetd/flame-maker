@@ -13,11 +13,11 @@ public class Flame {
 	}
 	
 	public void compute(FlameAccumulator.Builder builder, int width, int height, long density) {
-		Point point = new Point(0, 0);
 		int k = 20;
 		int transformationNum = 0;
 		Random randomizer = new Random();
 		int size = m_transforms.size();
+		Point point = new Point(randomizer.nextDouble(), randomizer.nextDouble());
 		
 		for(int i = 0; i < k; i++) {
 			transformationNum = randomizer.nextInt(size);
