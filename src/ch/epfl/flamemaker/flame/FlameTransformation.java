@@ -8,7 +8,7 @@ public class FlameTransformation implements Transformation{
 	private final double[] m_weight;
 	
 	
-	FlameTransformation(AffineTransformation affineTransformation, double[] variationWeight) {
+	public FlameTransformation(AffineTransformation affineTransformation, double[] variationWeight) {
 		if(variationWeight.length != 6){
 			throw new IllegalArgumentException("variationWeight must have length 6");
 		}
