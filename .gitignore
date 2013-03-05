@@ -8,3 +8,7 @@
 # Eclipse Files #
 .project
 .classpath
+
+# renders
+.ppm
+.pgm

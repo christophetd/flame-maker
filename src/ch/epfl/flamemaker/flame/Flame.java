@@ -31,9 +31,9 @@ public class Flame {
 		int m = density * width * height;
 		for(int i = 0; i < m; i++) {
 			transformationNum = randomizer.nextInt(size);
-			currentColor = getColorIndex(transformationNum);
 			point = m_transforms.get(transformationNum).transformPoint(point);
-			lastColor = (lastColor+currentColor)/2.0;
+			lastColor = (lastColor+getColorIndex(transformationNum))/2.0;
+			
 			builder.hit(point, lastColor);
 		}
 		
