@@ -50,7 +50,7 @@ public class FlameAccumulator {
 		return m_grid[0].length;
 	}
 	
-	double intensity(int x, int y){
+	public double intensity(int x, int y){
 		if(x < 0 || y < 0 || x > m_grid.length || y > m_grid[0].length){
 			throw new IndexOutOfBoundsException();
 		}
@@ -58,12 +58,12 @@ public class FlameAccumulator {
 		return Math.log10(m_grid[x][y]+1)/m_denominator;
 	}
 	
-	Color color(Palette palette, Color background, int x, int y){
+	public Color color(Palette palette, Color background, int x, int y){
 		if(x < 0 || y < 0 || x > m_colorIndexes.length || y > m_colorIndexes[0].length){
 			throw new IndexOutOfBoundsException();
 		}
 		
-		return palette.colorForIndex(m_colorIndexes[x][y]);
+		return palette.colorForIndex(m_colorIndexes[x][y]).mixWith(background, intensity(x, y));
 	}
 	
 	public static class Builder {
@@ -93,8 +93,8 @@ public class FlameAccumulator {
 			int y = (int) Math.floor(coord.y());
 			
 			if(x >= 0 && x < m_grid.length && y >= 0 && y < m_grid[0].length){
+				m_colors[x][y] = (colorIndex + m_colors[x][y]*m_grid[x][y])/(m_grid[x][y]+1);
 				m_grid[x][y]++;
-				m_colors[x][y] = colorIndex;
 			}
 		}
 		

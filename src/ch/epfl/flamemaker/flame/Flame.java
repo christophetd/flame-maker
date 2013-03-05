@@ -20,7 +20,7 @@ public class Flame {
 		Random randomizer = new Random();
 		int size = m_transforms.size();
 		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame, width, height);
-		double lastColor, currentColor;
+		double lastColor=0, currentColor;
 		
 		for(int i = 0; i < k; i++) {
 			transformationNum = randomizer.nextInt(size);
