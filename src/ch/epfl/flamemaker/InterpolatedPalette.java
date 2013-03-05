@@ -23,11 +23,11 @@ public class InterpolatedPalette implements Palette {
 		
 		int nbColors = m_colors.size()-1;
 		
-		int lowColor = (int) Math.floor(nbColors * index);
-		double highColorWeight = Math.abs(lowColor / nbColors - index);
-		int highColor = lowColor+1;
+		double lowColor = Math.floor(nbColors * index);
+		double highColorWeight = index * nbColors - lowColor;
+		double highColor = lowColor+1;
 		
-		return m_colors.get(highColor).mixWith(m_colors.get(lowColor), highColorWeight);
+		return m_colors.get((int) highColor).mixWith(m_colors.get((int) lowColor), highColorWeight);
 	}
 
 }

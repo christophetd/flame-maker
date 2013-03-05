@@ -39,7 +39,7 @@ public class FlameAccumulator {
 			}
 		}
 		
-		m_denominator = Math.log10(maxHit+1);
+		m_denominator = Math.log(maxHit+1);
 	}
 
 	public int width(){
@@ -55,7 +55,7 @@ public class FlameAccumulator {
 			throw new IndexOutOfBoundsException();
 		}
 		
-		return Math.log10(m_grid[x][y]+1)/m_denominator;
+		return Math.log(m_grid[x][y]+1)/m_denominator;
 	}
 	
 	public Color color(Palette palette, Color background, int x, int y){
