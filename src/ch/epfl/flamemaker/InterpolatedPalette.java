@@ -21,7 +21,7 @@ public class InterpolatedPalette implements Palette {
 			throw new IllegalArgumentException("index must be between 0 and 1");
 		}
 		
-		int nbColors = m_colors.size();
+		int nbColors = m_colors.size()-1;
 		
 		int lowColor = (int) Math.floor(nbColors * index);
 		double highColorWeight = Math.abs(lowColor / nbColors - index);

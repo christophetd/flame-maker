@@ -20,14 +20,12 @@ public class Flame {
 		Random randomizer = new Random();
 		int size = m_transforms.size();
 		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame, width, height);
-		double lastColor=0, currentColor;
+		double lastColor=0, currentColor = 0;
 		
 		for(int i = 0; i < k; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
-			if(i==k-1) {
-				lastColor = getColorIndex(transformationNum);
-			}
+			lastColor = (lastColor+getColorIndex(transformationNum))/2.0;
 		}
 		
 		int m = density * width * height;
@@ -43,9 +41,14 @@ public class Flame {
 	}
 	
 	private double getColorIndex(int index) {
-		double denominateur = Math.pow(2, Math.ceil(Math.log(index)/Math.log(2)));
 		
-		return ((2*index - 1) % denominateur) / denominateur;
+		if(index >= 2){
+			double denominateur = Math.pow(2, Math.ceil(Math.log(index)/Math.log(2)));
+			
+			return ((2*index - 1) % denominateur) / denominateur;
+		} else {
+			return index;
+		}
 	}
 	
 	public static class Builder{

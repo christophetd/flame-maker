@@ -55,7 +55,7 @@ public class RenderTest {
 		List<Color> c = new ArrayList<Color>();
 		c.add(Color.RED); c.add(Color.GREEN); c.add(Color.BLUE);
 		Palette palette = new InterpolatedPalette(c);
-		PrintStream file = new PrintStream("./fractal.pgm");
+		PrintStream file = new PrintStream("./fractal.ppm");
 		file.println("P3");
 		file.println(result.width()+" "+result.height());
 		file.println("100");
