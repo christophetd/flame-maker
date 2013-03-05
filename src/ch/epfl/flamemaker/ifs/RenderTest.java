@@ -13,7 +13,7 @@ public class RenderTest {
 		/*
 		 * Settings for fougère de Barnsley. Comment next line to test.
 		 */
-		//*
+		/*
 
 		ArrayList<AffineTransformation> transformations = new ArrayList<AffineTransformation>();
 		transformations.add(new AffineTransformation(0, 0, 0, 0, 0.16, 0));
@@ -29,7 +29,7 @@ public class RenderTest {
 		/*
 		 * Settings for triangle de Sierpinski. Comment next line to test.
 		 */
-		/*
+		//*
 		
 		ArrayList<AffineTransformation> transformations = new ArrayList<AffineTransformation>();
 		transformations.add(new AffineTransformation(0.5, 0, 0, 0, 0.5, 0));
@@ -40,9 +40,14 @@ public class RenderTest {
 		int width = 200, height = 200, density = 1;
 		//*/
 		
+		double time = System.currentTimeMillis();
+		
 		IFS fractal = new IFS(transformations);
 		IFSAccumulator result = fractal.compute(viewport, width, height, density);
 		
+		time = System.currentTimeMillis() - time;
+        System.out.println("Temps d'execution : "+time/1000+"s");
+        
 		PrintStream file = new PrintStream("./fractal.pbm");
 		
 		file.println("P1");

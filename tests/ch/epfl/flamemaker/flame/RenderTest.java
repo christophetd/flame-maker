@@ -33,9 +33,33 @@ public class RenderTest {
 		//*/
 		
 		/*
-		 * Settings for fractal turbulence
+		 * Settings for fractal shark fin
 		 * Comment next line to test */
 		 //*
+		  ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
+		  transformations.add(new FlameTransformation(
+				  new AffineTransformation(-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8), 
+				  new double[]{ 1, 0.1, 0, 0, 0, 0 }
+		  ));
+		  
+		  transformations.add(new FlameTransformation(
+				  new AffineTransformation(-0.3957339, 0, -1.6, 0, -0.3957337, 0.2), 
+				  new double[]{ 0, 0, 0, 0, 0.8, 1 }
+		  ));
+		  
+		  transformations.add(new FlameTransformation(
+				  new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169, 0.9), 
+				  new double[]{ 1, 0, 0, 0, 0, 0 }
+		  ));
+		  
+		  Rectangle viewport = new Rectangle(new Point(-0.5, 0), 5, 4);
+			int width = 20000, height = 16000, density = 12;
+		 //*/
+		
+		/*
+		 * Settings for fractal turbulence
+		 * Comment next line to test */
+		 /*
 		  ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
 		  transformations.add(new FlameTransformation(
 				  new AffineTransformation(0.7124807, -0.4113509, -0.3, 0.4113513, 0.7124808, -0.7), 
@@ -52,8 +76,8 @@ public class RenderTest {
 				  new double[]{ 1, 0, 0, 0, 0, 0 }
 		  ));
 		  
-		  Rectangle viewport = new Rectangle(new Point(0.1, 0.1), 0, 0);
-			int width = 10000, height = 10000, density = 100;
+		  Rectangle viewport = new Rectangle(new Point(0.1, 0.1), 2, 2);
+			int width = 10000, height = 10000, density = 50;
 		 //*/
 			
 		double start = System.currentTimeMillis();
@@ -65,17 +89,17 @@ public class RenderTest {
 		//Flame fractal = new Flame(transformations);
 		//FlameAccumulator result = fractal.compute(viewport, width, height, density);
 		
-		Worker worker = new Worker(fractal, builder, width, height, density/4);
+		Worker worker1 = new Worker(fractal, builder, width, height, density/4);
 		Worker worker2 = new Worker(fractal, builder, width, height, density/4);
 		Worker worker3 = new Worker(fractal, builder, width, height, density/4);
 		Worker worker4 = new Worker(fractal, builder, width, height, density/4);
 
-		worker.start();
+		worker1.start();
 		worker2.start();
 		worker3.start();
 		worker4.start();
 		
-		worker.join();
+		worker1.join();
 		worker2.join();
 		worker3.join();
 		worker4.join();
@@ -85,7 +109,7 @@ public class RenderTest {
 		double time = System.currentTimeMillis()-start;
 		System.out.println("Generated in "+time/1000+"s");
 		System.out.println("Printing fractal...");
-		PrintStream file = new PrintStream("./fractal.pgm");
+		PrintStream file = new PrintStream("C:\\Users\\Hadrien\\Desktop\\fractal.pgm");
 		
 		file.println("P2");
 		file.println(result.width()+" "+result.height());
