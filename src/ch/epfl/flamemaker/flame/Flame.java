@@ -3,6 +3,7 @@ package ch.epfl.flamemaker.flame;
 import java.util.List;
 import java.util.Random;
 
+import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 
@@ -51,11 +52,79 @@ public class Flame {
 		}
 	}
 	
+	
 	public static class Builder{
+		Flame m_flame;
+		
 		public Builder(Flame flame){
+			m_flame = flame;
+		}
+		
+		public int transformationsCount() {
+			return m_flame.m_transforms.size();
+		}
+		
+		public void addTransformation(FlameTransformation transformation) {
+			m_flame.m_transforms.add(transformation);
+		}
+		
+		public AffineTransformation affineTransformation(int index) {
+			checkIndex(index);
+			return m_flame.m_transforms.get(index).affineTransformation();
+		}
+		
+		public void setAffineTransformation(int index, AffineTransformation newTransformation) {
+			checkIndex(index);
+			FlameTransformation transformation = m_flame.m_transforms.get(index);
+			m_flame.m_transforms.set(index, new FlameTransformation(newTransformation, transformation.weights()));
+		}
+		
+		public double variationWeight(int index, Variation variation) {
+			checkIndex(index);
+			return m_flame.m_transforms.get(index).weight(variation);
+		}
+		
+		public void setVariationWeight(int index, Variation variation, double newWeight) {
+			checkIndex(index);
+			FlameTransformation transformation = m_flame.m_transforms.get(index);
+			double[] weights = transformation.weights();
+			int weightIndex = variation.index();
 			
+			if(weightIndex > 0 && weightIndex < weights.length) {
+				weights[weightIndex] = newWeight;
+			}
+			
+			m_flame.m_transforms.set(index, new FlameTransformation(transformation.affineTransformation(), weights));
+		}
+		
+		public void removeTransformation(int index) {
+			checkIndex(index);
+			m_flame.m_transforms.remove(index);
+		}
+		
+		public Flame build() {
+			return new Flame(m_flame.m_transforms);
+		}
+		
+		public void checkIndex(int index) {
+			if(index < 0 || index >= m_flame.m_transforms.size()) {
+				throw new IllegalArgumentException("invalid index given");
+			}
 		}
 	}
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
 
 

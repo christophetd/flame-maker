@@ -15,6 +15,15 @@ public class AffineTransformation implements Transformation {
 		m_f = f;
 	}
 	
+	public AffineTransformation(AffineTransformation from) {
+		m_a = from.m_a;
+		m_b = from.m_b;
+		m_c = from.m_c;
+		m_d = from.m_d;
+		m_e = from.m_e;
+		m_f = from.m_f;
+	}
+	
 	public Point transformPoint(Point p) {
 		return new Point(m_a * p.x() + m_b * p.y() + m_c, 
 						 m_d * p.x() + m_e * p.y() + m_f);

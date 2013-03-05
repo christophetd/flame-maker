@@ -33,4 +33,23 @@ public class FlameTransformation implements Transformation{
 		
 		return ret;
 	}
+
+
+	public AffineTransformation affineTransformation() {
+		return new AffineTransformation(m_affineTransfo);
+	}
+
+	
+	public double weight(Variation variation) {
+		int index = variation.index();
+		if(index > 0 || index < m_weight.length) {
+			throw new IllegalArgumentException("invalid index given");
+		}
+		return m_weight[index];
+	}
+
+
+	public double[] weights() {
+		return m_weight.clone();
+	}
 }
