@@ -47,6 +47,12 @@ public class Flame {
 		
 		return ((2*index - 1) % denominateur) / denominateur;
 	}
+	
+	public static class Builder{
+		public Builder(Flame flame){
+			
+		}
+	}
 }
 
 
