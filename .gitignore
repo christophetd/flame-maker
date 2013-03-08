@@ -10,5 +10,6 @@
 .classpath
 
 # renders
-.ppm
-.pgm
+*.ppm
+*.pgm
+*.png
