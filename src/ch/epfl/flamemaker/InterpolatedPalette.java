@@ -27,6 +27,10 @@ public class InterpolatedPalette implements Palette {
 		double highColorWeight = index * nbColors - lowColor;
 		double highColor = lowColor+1;
 		
+		//Cas particulier quand index = 1.0
+		if(highColor == m_colors.size() || lowColor == m_colors.size()){
+			return m_colors.get(m_colors.size()-1);
+		}
 		return m_colors.get((int) highColor).mixWith(m_colors.get((int) lowColor), highColorWeight);
 	}
 
