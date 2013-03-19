@@ -18,7 +18,7 @@ public class Flame {
 		Point point = new Point(0, 0);
 		int k = 20;
 		int transformationNum = 0;
-		Random randomizer = new Random();
+		Random randomizer = new Random(2013);
 		int size = m_transforms.size();
 		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame, width, height);
 		double lastColor=0, currentColor = 0;
