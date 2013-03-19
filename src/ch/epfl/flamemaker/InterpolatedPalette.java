@@ -4,10 +4,22 @@ import java.util.List;
 
 import ch.epfl.flamemaker.color.Color;
 
+/**
+ * Classe non mutable représentant une palette interpolée.
+ * Les couleurs fournies dans le constructeur sont réparties uniformément sur l'espace des valeurs entre 0 et 1.
+ * La méthode colorForIndex récupère alors la couleur correspondant à l'interpolation des deux couleurs adjacentes, 
+ * pondérée par la distance séparant l'index de chaque couleur.
+ *
+ */
 public class InterpolatedPalette implements Palette {
-
-	List<Color> m_colors;
 	
+	//Liste des couleurs réparties uniformément entre 0 et 1 dans l'ordre de cette liste.
+	private List<Color> m_colors;
+	
+	/**
+	 * Crée une palette interpolée avec la liste de couleurs passée en paramètre.
+	 * @param colors liste des couleurs à répartir entre 0 et 1
+	 */
 	public InterpolatedPalette(List<Color> colors) {
 		if(colors.size() < 2) {
 			throw new IllegalArgumentException("An interpolated palette must contain at least 2 colors");
@@ -15,6 +27,11 @@ public class InterpolatedPalette implements Palette {
 		m_colors = colors;
 	}
 	
+	/**
+	 * Calcule la couleur à l'index index par interpolation des couleurs de la liste
+	 * @param index : Index de la couleur à récupérer
+	 * @return La couleur correspondant à l'index.
+	 */
 	@Override
 	public Color colorForIndex(double index) {
 		if(index < 0 || index > 1) {

@@ -27,7 +27,7 @@ public class Point {
 	}
 	
 	/**
-	 * Retourne l'ordonn�e des coordonnées carthésiennes du point.
+	 * Retourne l'ordonnée des coordonnées carthésiennes du point.
 	 */
 	public double y(){
 		return m_y;
