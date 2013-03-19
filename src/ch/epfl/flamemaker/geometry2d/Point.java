@@ -2,17 +2,25 @@ package ch.epfl.flamemaker.geometry2d;
 
 /**
  * Classe non mutable représentant un point dans l'espace à deux dimentions.<br />
- * Ses coordonnées carthésiennes et polaires peuvent être obtenues en virgule 
+ * Ses coordonnées cartésiennes et polaires peuvent être obtenues en virgule 
  * flottante avec les getters x(), y(), r() et theta()
  */
 public class Point {
 	
+	/**
+	 * L'origine du repère, définie comme le point de coordonnées cartésiennes (0;0)
+	 */
 	public static final Point ORIGIN = new Point(0,0);
 	
+	/**
+	 * Les coordonnées cartésiennes du point
+	 */
 	private double m_x, m_y;
 	
 	/**
-	 * Construit un point de coordonnées carthésiennes (x, y)
+	 * Crée un point à partir de ses coordonnées cartésiennes
+	 * @param x Abscisse du point
+	 * @param y Ordonnée du point
 	 */
 	public Point(double x, double y){
 		m_x = x;
@@ -20,33 +28,34 @@ public class Point {
 	}
 	
 	/**
-	 * Retourne l'abscisse des coordonnées carthésiennes du point.
+	 * @return L'abscisse du point.
 	 */
 	public double x(){
 		return m_x;
 	}
 	
 	/**
-	 * Retourne l'ordonnée des coordonnées carthésiennes du point.
+	 * @return L'ordonnée du point.
 	 */
 	public double y(){
 		return m_y;
 	}
 	
 	/**
-	 * Retourne le rayon des coordonnées polaires du point.
+	 * @return La distance à l'origine du point (coordonnée polaire r)
 	 */
 	public double r(){
 		return Math.sqrt(m_x*m_x + m_y*m_y);
 	}
 	
 	/**
-	 * Retourne la composante &theta; des coordonnées polaires du point.
+	 * @return L'angle du point par rapport à l'axe des abscisses (coordonnée polaire &theta;)
 	 */
 	public double theta(){
 		return Math.atan2(m_y, m_x);
 	}
 	
+	@Override
 	public String toString(){
 		return "("+m_x+","+m_y+")";
 	}

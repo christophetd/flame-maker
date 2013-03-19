@@ -7,9 +7,9 @@ package ch.epfl.flamemaker.geometry2d;
 public interface Transformation {
 
 	/**
-	 * Retourne le point p transformé par cette application.
-	 * @param p point à transformer
-	 * @return transformation de p par cette application 
+	 * Retourne le point p transformé par cette transformation.
+	 * @param p Le point à transformer
+	 * @return Le résultat de l'application de la transformation au point
 	 */
 	Point transformPoint(Point p);
 }

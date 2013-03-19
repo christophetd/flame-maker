@@ -2,8 +2,14 @@ package ch.epfl.flamemaker.ifs;
 
 import ch.epfl.flamemaker.geometry2d.*;
 
+/**
+ * Classe construisant peu à peu un accumulateur pour une fractale de type IFS
+ */
 public class IFSAccumulatorBuilder {
 	
+	/**
+	 * 
+	 */
 	private boolean[][] m_grid;
 	
 	/** Transformation qui convertit un point du dessin vers une case de l'accumulateur */
@@ -11,9 +17,9 @@ public class IFSAccumulatorBuilder {
 	
 	/**
 	 * Initialise l'AccumulatorBuilder avec la hauteur et largeur spécifiée, pour la région du plan définie par frame.
-	 * @param frame région du plan visée
-	 * @param width largeur de l'accumulateur
-	 * @param height hauteur de l'accumulateur
+	 * @param frame La région du plan visée
+	 * @param width La largeur de l'accumulateur
+	 * @param height La hauteur de l'accumulateur
 	 */
 	public IFSAccumulatorBuilder(Rectangle frame, int width, int height){
 		if(width < 0 || height < 0)
@@ -21,14 +27,14 @@ public class IFSAccumulatorBuilder {
 		
 		m_grid = new boolean[width][height];
 		
-		//On crée la transformation qui passe d'un point du plan à un point de l'accumulateur
+		//Transformation permettant d'associer un point du plan à un point de l'accumulateur
 		m_transform = AffineTransformation.newScaling((double)width/frame.width(), (double)height/frame.height())
 			.composeWith(AffineTransformation.newTranslation(-frame.left(), -frame.bottom()));
 	}
 	
 	/**
 	 * Signale la présence d'un nouveau point à la position définie par p
-	 * @param p position du point dans le plan
+	 * @param p Point correspondant à position du nouveau point dans le plan
 	 */
 	public void hit(Point p){
 		Point coord = m_transform.transformPoint(p);
@@ -42,7 +48,7 @@ public class IFSAccumulatorBuilder {
 	}
 	
 	/**
-	 * Construit un accumulateur avec les données récoltées
+	 * @return Un accumulateur construit à partir des données récoltées
 	 */
 	public IFSAccumulator build(){
 		return new IFSAccumulator(m_grid);
