@@ -5,20 +5,22 @@ import java.util.List;
 import ch.epfl.flamemaker.color.Color;
 
 /**
- * Classe non mutable représentant une palette interpolée.
+ * Classe non mutable représentant une palette interpolante.
  * Les couleurs fournies dans le constructeur sont réparties uniformément sur l'espace des valeurs entre 0 et 1.
  * La méthode colorForIndex récupère alors la couleur correspondant à l'interpolation des deux couleurs adjacentes, 
  * pondérée par la distance séparant l'index de chaque couleur.
  *
  */
 public class InterpolatedPalette implements Palette {
-	
+
 	//Liste des couleurs réparties uniformément entre 0 et 1 dans l'ordre de cette liste.
 	private List<Color> m_colors;
-	
+
 	/**
-	 * Crée une palette interpolée avec la liste de couleurs passée en paramètre.
+	 * Crée une palette interpolante avec la liste de couleurs passée en paramètre. La liste doit
+	 * contenir au minimum 2 couleurs.
 	 * @param colors liste des couleurs à répartir entre 0 et 1
+	 * @throws IllegalArgumentException quand la liste contient moins de deux couleurs.
 	 */
 	public InterpolatedPalette(List<Color> colors) {
 		if(colors.size() < 2) {
@@ -26,26 +28,27 @@ public class InterpolatedPalette implements Palette {
 		}
 		m_colors = colors;
 	}
-	
+
 	/**
 	 * Calcule la couleur à l'index index par interpolation des couleurs de la liste
 	 * @param index : Index de la couleur à récupérer
 	 * @return La couleur correspondant à l'index.
+	 * @throws IllegalArgumentException lorsque l'index n'est pas dans l'intervalle [0, 1]
 	 */
 	@Override
 	public Color colorForIndex(double index) {
 		if(index < 0 || index > 1) {
 			throw new IllegalArgumentException("index must be between 0 and 1");
 		}
-		
+
 		int nbColors = m_colors.size()-1;
-		
+
 		double lowColor = Math.floor(nbColors * index);
 		double highColorWeight = index * nbColors - lowColor;
 		double highColor = lowColor+1;
-		
+
 		//Cas particulier quand index = 1.0
-		if(highColor == m_colors.size() || lowColor == m_colors.size()){
+		if(highColor == m_colors.size()){
 			return m_colors.get(m_colors.size()-1);
 		}
 		return m_colors.get((int) highColor).mixWith(m_colors.get((int) lowColor), highColorWeight);

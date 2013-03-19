@@ -3,7 +3,7 @@ package ch.epfl.flamemaker.geometry2d;
 /**
  * Classe non mutable représentant un point dans l'espace à deux dimentions.<br />
  * Ses coordonnées cartésiennes et polaires peuvent être obtenues en virgule 
- * flottante avec les getters x(), y(), r() et theta()
+ * flottante avec les getters {@link #x()}, {@link #y()}, {@link #r()} et {@link #theta()}
  */
 public class Point {
 	
