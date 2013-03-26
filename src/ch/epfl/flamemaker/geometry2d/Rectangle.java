@@ -5,16 +5,33 @@ package ch.epfl.flamemaker.geometry2d;
  * Le rectangle est caractérisé par son centre ({@link Point Point}), sa largeur et sa hauteur (double).
  */
 public class Rectangle {
+	/**
+	 * Le centre du rectangle
+	 */
 	private Point m_center;
+	
+	
+	/**
+	 * La largeur du rectangle
+	 */
 	private double m_width;
+	
+	
+	/**
+	 * La hauteur du rectangle
+	 */
 	private double m_height;
 	
 	/**
-	 * Construit un rectangle de centre center, de largeur width et de hauteur height.
+	 * Construit un rectangle de centre, largeur et hauteur passés en paramètres
+	 * @param center Le centre du rectangle
+	 * @param width La largeur du rectangle
+	 * @param height La hauteur du rectangle
+	 * @throws IllegalArgumentException Si la hauteur ou la largeur est nulle ou négative
 	 */
 	public Rectangle(Point center, double width, double height) {
 		if(width < 0 || height < 0) {
-			throw new IllegalArgumentException("Width and height must be greater than zero");
+			throw new IllegalArgumentException("La largeur et la hauteur du rectangle doivent etre strictement positives");
 		}
 		
 		m_center = center;
@@ -23,56 +40,65 @@ public class Rectangle {
 	}
 	
 	/**
-	 * retourne la plus petite coordonnée x du rectangle.
+	 * @return La plus petite coordonnée horizontale du rectangle.
 	 */
 	public double left() {
 		return m_center.x() - (m_width / 2.0);
 	}
 	
 	/**
-	 * retourne la plus grande coordonnée x du rectangle.
+	 * @return La plus grande coordonnée horizontale du rectangle.
 	 */
 	public double right() {
 		return m_center.x() + (m_width / 2.0);
 	}
 	
 	/**
-	 * retourne la plus petite coordonnée y du rectangle
+	 * @return La plus petite coordonnée verticale du rectangle
 	 */
 	public double bottom() {
 		return m_center.y() - (m_height / 2.0);
 	}
 	
 	/**
-	 * retourne la plus grande coordonnée y du rectangle
+	 * Retourne la plus grande coordonnée verticale du rectangle
 	 */
 	public double top() {
 		return m_center.y() + (m_height / 2.0);
 	}
 	
 	/**
-	 * retourne la largeur du rectangle
+	 * @return La largeur du rectangle
 	 */
 	public double width() {
 		return m_width;
 	}
 	
 	/**
-	 * Retourne la hauteur du rectangle
+	 * @return La hauteur du rectangle
 	 */
 	public double height() {
 		return m_height;
 	}
 
 	/**
-	 * Retourne le point au centre du rectangle
+	 * @return Le centre du rectangle
 	 */
 	public Point center() {
 		return m_center;
 	}
 	
 	/**
-	 * Teste si un point p appartient au rectangle. Le point appartient au rectangle ssi x >= left, x < right, y > top et y < bottom
+	 * Teste si un point p appartient au rectangle.
+	 * Un point est défini comme appartenant au rectangle : 
+	 * <ul>
+	 * <li>si sa coordonnée horizontale est supérieure ou égale à la plus petite coordonnée horizontale du rectangle ;</li>
+	 * <li>et si sa coordonnée horizontale est strictement inférieure à la plus grande coordonnée horizontale du rectangle ;</li>
+	 * <li>et si sa coordonnée verticale est supérieure ou égale à la plus petite coordonnée verticale du rectangle ;</li>
+	 * <li>et si sa coordonnée verticale est strictement inférieure à la plus grande coordonnée verticale du rectangle.</li>
+	 * </ul>
+	 * 
+	 * @param p Le point à tester
 	 * @return true si p appartient au rectangle.
 	 */
 	public boolean contains(Point p) {
@@ -81,7 +107,7 @@ public class Rectangle {
 	}
 	
 	/**
-	 * Retourne le rapport largeur/hauteur
+	 * @return Le rapport largeur/hauteur du rectangle
 	 */
 	public double aspectRatio() {
 		return (m_width / m_height);
@@ -94,9 +120,19 @@ public class Rectangle {
 	 * rectangle retourné). Lève l'exception IllegalArgumentException si le rapport 
 	 * passé est négatif ou nul.
 	 */
+	
+	
+	/**
+	 * Construit le plus petit rectangle ayant le même centre que le récepteur, 
+	 * le rapport largeur/hauteur <i>aspectRatio</i> et contenant totalement le récepteur 
+	 * (Tout point contenu dans le récepteur est également contenu dans le rectangle retourné)
+	 * @param aspectRatio Le nouveau rapport largeur / hauteur
+	 * @return Le rectangle résultant de la fonction
+	 * @throws IllegalArgumentException Si <i>aspectRation</i> est nul ou négatif
+	 */
 	public Rectangle expandToAspectRatio(double aspectRatio) {
 		if(aspectRatio <= 0) {
-			throw new IllegalArgumentException("Aspect ratio must be greater than zero");
+			throw new IllegalArgumentException("Le nouveau ratio du rectangle doit etre strictement positif");
 		}
 		
 		/*
@@ -106,8 +142,6 @@ public class Rectangle {
 		*/
 		double newWidth  = Math.max(m_width, m_height * aspectRatio);
 		double newHeight = Math.max(m_height, m_width / aspectRatio);
-		
-		// Test unitaire : newWidth / newHeight == aspectRatio
 		
 		return new Rectangle(m_center, newWidth, newHeight);
 	}
