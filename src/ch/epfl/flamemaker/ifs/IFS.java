@@ -28,7 +28,7 @@ public class IFS {
 	 * @param width La largeur de l'accumulateur à générer
 	 * @param height La hauteur de l'accumulateur à générer
 	 * @param density La densité utilisée pour générer les points de la fractale (influe sur le nombre de points calculés par l'algorithme)
-	 * @return IFSAccumulator l'accumulateur contenant les points de la fractale
+	 * @return L'accumulateur contenant les points de la fractale
 	 */
 	public IFSAccumulator compute(Rectangle frame, int width, int height, int density){
 		Point point = new Point(0, 0);

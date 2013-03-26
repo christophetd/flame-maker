@@ -6,10 +6,24 @@ import java.util.List;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
+/**
+ * Classe modélisant une variation
+ */
 public abstract class Variation implements Transformation {
-	private final int m_index;
+	
+	/*
+	 * L'index de la variation
+	 */
+	private final int m_index;	
+	
+	/**
+	 * Le nom de la variation 
+	 */
 	private final String m_name;
 	
+	/*
+	 * Une liste des 6 variations prédéfinies
+	 */
 	public final static List<Variation> ALL_VARIATIONS =
 			Arrays.asList(
 					new Variation(0, "Linear") {
@@ -47,17 +61,36 @@ public abstract class Variation implements Transformation {
 						}
 					}
 			);
+	
+	
+	/**
+	 * Construit une nouvelle variation à partir de son index dans la liste des variations prédéfinies et de son nom
+	 * @param index L'index de la variation
+	 * @param name Le nom de la variation
+	 */
 	public Variation(int index, String name) {
 		m_index = index;
 		m_name = name;
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see ch.epfl.flamemaker.geometry2d.Transformation#transformPoint(ch.epfl.flamemaker.geometry2d.Point)
+	 */
 	abstract public Point transformPoint(Point p);
 	
+	
+	/**
+	 * @return Le nom de la variation
+	 */
 	public String name() {
 		return m_name;
 	}
 	
+	
+	/**
+	 * @return L'index associé à la variation
+	 */
 	public int index() {
 		return m_index;
 	}

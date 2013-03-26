@@ -8,7 +8,7 @@ import ch.epfl.flamemaker.geometry2d.*;
 public class IFSAccumulatorBuilder {
 	
 	/**
-	 * 
+	 * La grille du futur accumulateur
 	 */
 	private boolean[][] m_grid;
 	
@@ -20,6 +20,7 @@ public class IFSAccumulatorBuilder {
 	 * @param frame La région du plan visée
 	 * @param width La largeur de l'accumulateur
 	 * @param height La hauteur de l'accumulateur
+	 * @throws IllegalArgumentException Si la largeur ou la hauteur est invalide
 	 */
 	public IFSAccumulatorBuilder(Rectangle frame, int width, int height){
 		if(width < 0 || height < 0)
