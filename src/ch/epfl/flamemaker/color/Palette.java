@@ -1,6 +1,5 @@
 package ch.epfl.flamemaker.color;
 
-
 /**
  * Interface décrivant le comportement d'une palette de couleur. Une palette
  * représente un ensemble de couleurs correspondant à un index compris entre 0

@@ -14,9 +14,11 @@ public class Color {
 	// Color components
 	private double m_r, m_g, m_b;
 
-	public static final Color BLACK = new Color(0, 0, 0), WHITE = new Color(1,
-			1, 1), RED = new Color(1, 0, 0), GREEN = new Color(0, 1, 0),
-			BLUE = new Color(0, 0, 1);
+	public static final Color 	BLACK = new Color(0, 0, 0), 
+								WHITE = new Color(1, 1, 1), 
+								RED = new Color(1, 0, 0), 
+								GREEN = new Color(0, 1, 0),
+								BLUE = new Color(0, 0, 1);
 
 	/**
 	 * Construit une couleur avec les quantité de rouge, vert et bleu passées en
@@ -35,7 +37,7 @@ public class Color {
 	public Color(double r, double g, double b) {
 		if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1) {
 			throw new IllegalArgumentException(
-					"Color components must be doubles within range [0 1]");
+					"Color components must be doubles within range [0, 1]");
 		}
 
 		m_r = r;
@@ -85,7 +87,7 @@ public class Color {
 	public Color mixWith(Color that, double proportion) {
 		if (proportion < 0 || proportion > 1) {
 			throw new IllegalArgumentException(
-					"La proportion doit être dans l'intervalle [0 1]");
+					"Proportion must be in range [0, 1]");
 		}
 		double p2 = 1 - proportion;
 

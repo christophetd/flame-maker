@@ -7,12 +7,13 @@ package ch.epfl.flamemaker.geometry2d;
  * {@link #theta()}
  */
 public class Point {
-	
+
 	/**
-	 * L'origine du repère, définie comme le point de coordonnées cartésiennes (0;0)
+	 * L'origine du repère, définie comme le point de coordonnées cartésiennes
+	 * (0;0)
 	 */
-	public static final Point ORIGIN = new Point(0,0);
-	
+	public static final Point ORIGIN = new Point(0, 0);
+
 	/**
 	 * Les coordonnées cartésiennes du point
 	 */
@@ -20,8 +21,11 @@ public class Point {
 
 	/**
 	 * Crée un point à partir de ses coordonnées cartésiennes
-	 * @param x Abscisse du point
-	 * @param y Ordonnée du point
+	 * 
+	 * @param x
+	 *            Abscisse du point
+	 * @param y
+	 *            Ordonnée du point
 	 */
 	public Point(double x, double y) {
 		m_x = x;
@@ -50,14 +54,15 @@ public class Point {
 	}
 
 	/**
-	 * @return L'angle du point par rapport à l'axe des abscisses (coordonnée polaire &theta;)
+	 * @return L'angle du point par rapport à l'axe des abscisses (coordonnée
+	 *         polaire &theta;)
 	 */
 	public double theta() {
 		return Math.atan2(m_y, m_x);
 	}
-	
+
 	@Override
-	public String toString(){
-		return "("+m_x+","+m_y+")";
+	public String toString() {
+		return "(" + m_x + "," + m_y + ")";
 	}
 }

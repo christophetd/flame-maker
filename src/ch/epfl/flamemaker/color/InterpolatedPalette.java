@@ -2,7 +2,6 @@ package ch.epfl.flamemaker.color;
 
 import java.util.List;
 
-
 /**
  * Classe non mutable représentant une palette interpolante. Les couleurs
  * fournies dans le constructeur sont réparties uniformément sur l'espace des
