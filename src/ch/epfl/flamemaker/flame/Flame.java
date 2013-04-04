@@ -1,11 +1,12 @@
 package ch.epfl.flamemaker.flame;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
-import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
+import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
  * Classe modélisant une fractale de type Flame
@@ -17,37 +18,57 @@ public class Flame {
 	final private List<FlameTransformation> m_transforms;
 
 	/**
-	 * Construit une nouvelle fractale à partir d'une liste de transformation la caractérisant
-	 * @param transforms La liste des transformation
+	 * Construit une nouvelle fractale à partir d'une liste de transformation la
+	 * caractérisant
+	 * 
+	 * @param transforms
+	 *            La liste des transformation
 	 */
 	public Flame(List<FlameTransformation> transforms) {
-		m_transforms = transforms;
+		m_transforms = new ArrayList<FlameTransformation>(transforms);
 	}
 
 	/**
-	 * @param frame La région du plan dans laquelle calculer la fractale
-	 * @param width La largeur de l'accumulateur à générer
-	 * @param height La hauteur de l'accumulateur à générer
-	 * @param density La densité utilisée pour générer les points de la fractale (influe sur le nombre de points calculés par l'algorithme)
+	 * @param frame
+	 *            La région du plan dans laquelle calculer la fractale
+	 * @param width
+	 *            La largeur de l'accumulateur à générer
+	 * @param height
+	 *            La hauteur de l'accumulateur à générer
+	 * @param density
+	 *            La densité utilisée pour générer les points de la fractale
+	 *            (influe sur le nombre de points calculés par l'algorithme)
 	 * @return L'accumulateur contenant les points de la fractale
 	 */
 	public FlameAccumulator compute(Rectangle frame, int width, int height,
 			int density) {
+		// On initialise un random déterminé par la graine 2013
+		Random randomizer = new Random(2013);
+
+		// Création des variables utilisées dans les boucles de calcul
 		Point point = new Point(0, 0);
 		int k = 20;
-		int transformationNum = 0;
-		Random randomizer = new Random(2013);
+		int transformationNum;
+
+		// On récupère une fois pour toutes la taille de la liste de
+		// transformations
 		int size = m_transforms.size();
+
+		// Création du builder
 		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame,
 				width, height);
+
+		// Garde en mémoire la couleur du dernier point accumulé
 		double lastColor = 0;
 
+		// Premières itérations dans le vide pour l'algorithme du cahos
 		for (int i = 0; i < k; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
 			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
 		}
 
+		// Iterations accumulées pour le rendu
 		int m = density * width * height;
 		for (int i = 0; i < m; i++) {
 			transformationNum = randomizer.nextInt(size);
@@ -57,11 +78,14 @@ public class Flame {
 			builder.hit(point, lastColor);
 		}
 
+		// On construit l'accumulateur
 		return builder.build();
 	}
 
 	/**
-	 * @param index L'index de la transformation de laquelle on désire avoir l'index de couleur
+	 * @param index
+	 *            L'index de la transformation de laquelle on désire avoir
+	 *            l'index de couleur
 	 * @return L'index de couleur associé à la transformation
 	 */
 	private double getColorIndex(int index) {
@@ -81,13 +105,15 @@ public class Flame {
 	 */
 	public static class Builder {
 		/**
-		 * La fractale 
+		 * La fractale
 		 */
 		Flame m_flame;
 
 		/**
 		 * Construit un bâtisseur à partir d'une fractale existante
-		 * @param flame La fractale flame
+		 * 
+		 * @param flame
+		 *            La fractale flame
 		 */
 		public Builder(Flame flame) {
 			m_flame = flame;
@@ -102,7 +128,9 @@ public class Flame {
 
 		/**
 		 * Ajoute une transformation de type flame à la fractale
-		 * @param transformation La transformation
+		 * 
+		 * @param transformation
+		 *            La transformation
 		 */
 		public void addTransformation(FlameTransformation transformation) {
 			m_flame.m_transforms.add(transformation);
@@ -111,6 +139,8 @@ public class Flame {
 		/**
 		 * @param index
 		 * @return La transformation de la fractale d'index <i>index</i>
+		 * @throws IllegalArgumentException
+		 *             Si l'index n'est pas valide
 		 */
 		public AffineTransformation affineTransformation(int index) {
 			checkIndex(index);
@@ -118,23 +148,35 @@ public class Flame {
 		}
 
 		/**
-		 * Remplace la transformation à l'index <i>index</i> par <i>newTransformation</i>
+		 * Remplace la transformation à l'index <i>index</i> par
+		 * <i>newTransformation</i>
+		 * 
 		 * @param index
 		 * @param newTransformation
+		 * @throws IllegalArgumentException
+		 *             Si l'index n'est pas valide
 		 */
 		public void setAffineTransformation(int index,
 				AffineTransformation newTransformation) {
+
 			checkIndex(index);
+
 			FlameTransformation transformation = m_flame.m_transforms
 					.get(index);
+
 			m_flame.m_transforms.set(index, new FlameTransformation(
 					newTransformation, transformation.weights()));
 		}
 
 		/**
-		 * @param index L'index de la transformation
-		 * @param variation La variation dont on veut récupérer le poids
-		 * @return Le poids de la variation <i>variation</i> pour la transformation d'index <i>index</i>
+		 * @param index
+		 *            L'index de la transformation
+		 * @param variation
+		 *            La variation dont on veut récupérer le poids
+		 * @return Le poids de la variation <i>variation</i> pour la
+		 *         transformation d'index <i>index</i>
+		 * @throws IllegalArgumentException
+		 *             Si l'index n'est pas valide
 		 */
 		public double variationWeight(int index, Variation variation) {
 			checkIndex(index);
@@ -142,16 +184,27 @@ public class Flame {
 		}
 
 		/**
-		 * Modifie le poids de la variation <i>variation</i> pour la transformation d'index <i>index</i>
-		 * @param index L'index de la transformation
-		 * @param variation  La variation dont on veut modifier le poids
-		 * @param newWeight Le nouveau poids à affecter à la variation, pour cette transformation
+		 * Modifie le poids de la variation <i>variation</i> pour la
+		 * transformation d'index <i>index</i>
+		 * 
+		 * @param index
+		 *            L'index de la transformation
+		 * @param variation
+		 *            La variation dont on veut modifier le poids
+		 * @param newWeight
+		 *            Le nouveau poids à affecter à la variation, pour cette
+		 *            transformation
+		 * @throws IllegalArgumentException
+		 *             Si l'index n'est pas valide
 		 */
 		public void setVariationWeight(int index, Variation variation,
 				double newWeight) {
+
 			checkIndex(index);
+
 			FlameTransformation transformation = m_flame.m_transforms
 					.get(index);
+
 			double[] weights = transformation.weights();
 			int weightIndex = variation.index();
 
@@ -165,7 +218,10 @@ public class Flame {
 
 		/**
 		 * Supprime la transformation à l'index <i>index</i>
+		 * 
 		 * @param index
+		 * @throws IllegalArgumentException
+		 *             Si l'index n'est pas valide
 		 */
 		public void removeTransformation(int index) {
 			checkIndex(index);
@@ -180,9 +236,13 @@ public class Flame {
 		}
 
 		/**
-		 * Vérifie si l'index passé en argument est valide pour la liste des transformations
-		 * @param index L'index à vérifier
-		 * @throws IllegalArgumentException Si l'index n'est pas valide
+		 * Vérifie si l'index passé en argument est valide pour la liste des
+		 * transformations
+		 * 
+		 * @param index
+		 *            L'index à vérifier
+		 * @throws IllegalArgumentException
+		 *             Si l'index n'est pas valide
 		 */
 		public void checkIndex(int index) {
 			if (index < 0 || index >= m_flame.m_transforms.size()) {
