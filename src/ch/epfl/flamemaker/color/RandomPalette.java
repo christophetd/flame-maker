@@ -3,9 +3,6 @@ package ch.epfl.flamemaker.color;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.epfl.flamemaker.InterpolatedPalette;
-import ch.epfl.flamemaker.Palette;
-
 /**
  * Palette contenant un nombre donné de couleurs aléatoires. Le nombre de
  * couleurs est passé au constructeur et la couleur récupérée avec

@@ -12,48 +12,48 @@ public class RenderTest {
 		/*
 		 * Settings for triangle de Sierpinski. Comment next line to test.
 		 */
-		/*
+		//*
 		
 		ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
 		
 		transformations.add(new FlameTransformation(
 				new AffineTransformation(-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
-				new double[]{1, 0.1, 0, 0, 0, 0}));
+				new double[]{1, 0.1, 0, 0, 0, 0.8}));
 		
 		transformations.add(new FlameTransformation(
 				new AffineTransformation(-0.3957339, 0, -1.6, 0, -0.3957337, 0.2),
-				new double[]{0, 0, 0, 0, 0.8, 1}));
+				new double[]{0, 0.2424, 0, 0, 0.8, 1}));
 		
 		transformations.add(new FlameTransformation(
 				new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169, 0.9),
-				new double[]{1, 0, 0, 0, 0, 0}));
+				new double[]{1, 0, 0, 0.4, 0, 0}));
 		
 		Rectangle viewport = new Rectangle(new Point(-0.25, 0), 5, 4);
-		int width = 500, height = 400, density = 50;
+		int width = 2250, height = 1800, density = 225;
 		//*/
 		
 		/*
 		 * Settings for fractal turbulence
 		 * Comment next line to test */
-		 //*
+		 /*
 		  ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
 		  transformations.add(new FlameTransformation(
 				  new AffineTransformation(0.7124807, -0.4113509, -0.3, 0.4113513, 0.7124808, -0.7), 
-				  new double[]{ 0.5, 0, 0, 0.4, 0, 0 }
+				  new double[]{ 0.1, 0.6, 0, 0.1, 0, 0 }
 		  ));
 		  
 		  transformations.add(new FlameTransformation(
 				  new AffineTransformation(0.3731078, -0.64624117, 0.4, 0.6462414, 0.3731076, 0.3), 
-				  new double[]{ 1, 0, 0.1, 0, 0, 0 }
-		  ));
+				  new double[]{ 0, 0, 0.2, 0, 0.1, 0.14567}
+		  ));		
 		  
 		  transformations.add(new FlameTransformation(
-				  new AffineTransformation(0.0842641, -0.314478, -0.1, 0.314478, 0.0842641, 0.3), 
-				  new double[]{ 1, 0, 0, 0, 0, 0 }
-		  ));
+				  new AffineTransformation(0.2, -0.1, 0.4, 0.696969, 0.4224, 0.3), 
+				  new double[]{ 0, 0, 0, 0.4, 0, 0}
+		  ));	
 		  
 		  Rectangle viewport = new Rectangle(new Point(0.1, 0.1), 3, 3);
-			int width = 500, height = 500, density = 50;
+			int width = 500, height = 500, density = 100;
 		 //*/
 		Flame fractal = new Flame(transformations);
 	

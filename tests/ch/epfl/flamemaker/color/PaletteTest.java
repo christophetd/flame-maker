@@ -11,8 +11,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import ch.epfl.flamemaker.InterpolatedPalette;
-import ch.epfl.flamemaker.Palette;
+import ch.epfl.flamemaker.color.InterpolatedPalette;
+import ch.epfl.flamemaker.color.Palette;
 
 public class PaletteTest {
 

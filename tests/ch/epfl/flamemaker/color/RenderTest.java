@@ -4,8 +4,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.epfl.flamemaker.InterpolatedPalette;
-import ch.epfl.flamemaker.Palette;
+import ch.epfl.flamemaker.color.InterpolatedPalette;
+import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameTransformation;
