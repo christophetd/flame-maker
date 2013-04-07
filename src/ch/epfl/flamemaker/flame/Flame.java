@@ -105,10 +105,12 @@ public class Flame {
 	 * Classe modélisant un bâtisseur pour une fractale Flame
 	 */
 	public static class Builder {
+				
 		/**
-		 * La fractale
+		 * La liste des bâtisseurs pour les transformations de la fractale Flame
+		 * qui sera construite
 		 */
-		Flame m_flame;
+		private List<FlameTransformation.Builder> m_transformationsBuilders;
 	
 		/**
 		 * Construit un bâtisseur à partir d'une fractale existante
@@ -117,14 +119,17 @@ public class Flame {
 		 *            La fractale flame
 		 */
 		public Builder(Flame flame) {
-			m_flame = flame;
+			m_transformationsBuilders = new ArrayList<FlameTransformation.Builder>();
+			for(FlameTransformation transformation : flame.m_transforms) {
+				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
+			}
 		}
 	
 		/**
-		 * @return Le nombre de transformations de la fractale
+		 * @return Le nombre actuel de transformations de la fractale
 		 */
 		public int transformationsCount() {
-			return m_flame.m_transforms.size();
+			return m_transformationsBuilders.size();
 		}
 	
 		/**
@@ -134,23 +139,25 @@ public class Flame {
 		 *            La transformation
 		 */
 		public void addTransformation(FlameTransformation transformation) {
-			m_flame.m_transforms.add(transformation);
+			m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
 		}
 	
 		/**
 		 * @param index
-		 * @return La transformation de la fractale d'index <i>index</i>
+		 * @return La composante affine de la transformation d'index
+		 *         <i>index</i> de la fractale
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
 		public AffineTransformation affineTransformation(int index) {
 			checkIndex(index);
-			return m_flame.m_transforms.get(index).affineTransformation();
+			
+			return m_transformationsBuilders.get(index).affineTransformation();
 		}
 	
 		/**
-		 * Remplace la transformation à l'index <i>index</i> par
-		 * <i>newTransformation</i>
+		 * Remplace la composante affine de la transformation d'index
+		 * <i>index</i> par <i>newTransformation</i>
 		 * 
 		 * @param index
 		 * @param newTransformation
@@ -160,28 +167,27 @@ public class Flame {
 		public void setAffineTransformation(int index,
 				AffineTransformation newTransformation) {
 	
-			checkIndex(index);
-	
-			FlameTransformation transformation = m_flame.m_transforms
-					.get(index);
-	
-			m_flame.m_transforms.set(index, new FlameTransformation(
-					newTransformation, transformation.weights()));
+			checkIndex(index);			
+			m_transformationsBuilders.get(index).setAffineTransformation(newTransformation);
 		}
 	
 		/**
+		 * Retourne le poids de la variation <i>variation</i> pour la
+		 * transformation d'index <i>index</i>
+		 * 
 		 * @param index
 		 *            L'index de la transformation
 		 * @param variation
 		 *            La variation dont on veut récupérer le poids
-		 * @return Le poids de la variation <i>variation</i> pour la
-		 *         transformation d'index <i>index</i>
+		 * @return Le poids demandé
+		 * 
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
 		public double variationWeight(int index, Variation variation) {
 			checkIndex(index);
-			return m_flame.m_transforms.get(index).weight(variation);
+			
+			return m_transformationsBuilders.get(index).weight(variation.index());
 		}
 	
 		/**
@@ -202,23 +208,13 @@ public class Flame {
 				double newWeight) {
 	
 			checkIndex(index);
-	
-			FlameTransformation transformation = m_flame.m_transforms
-					.get(index);
-	
-			double[] weights = transformation.weights();
-			int weightIndex = variation.index();
-	
-			if (weightIndex > 0 && weightIndex < weights.length) {
-				weights[weightIndex] = newWeight;
-			}
-	
-			m_flame.m_transforms.set(index, new FlameTransformation(
-					transformation.affineTransformation(), weights));
+			
+			m_transformationsBuilders.get(index)
+					.setWeight(variation.index(), newWeight);
 		}
 	
 		/**
-		 * Supprime la transformation à l'index <i>index</i>
+		 * Supprime le bâtisseur de transformation flame à l'index <i>index</i>
 		 * 
 		 * @param index
 		 * @throws IllegalArgumentException
@@ -226,19 +222,25 @@ public class Flame {
 		 */
 		public void removeTransformation(int index) {
 			checkIndex(index);
-			m_flame.m_transforms.remove(index);
+			m_transformationsBuilders.remove(index);
 		}
 	
 		/**
-		 * @return Une fractale Flame à partir des informations récoltées
+		 * Construit une fractale Flame à partir des informations récoltées
+		 * @return La fractale Flame construite
 		 */
 		public Flame build() {
-			return new Flame(m_flame.m_transforms);
+			List<FlameTransformation> builtTransformations = new ArrayList<FlameTransformation>();
+			for(FlameTransformation.Builder transfoBuilder : m_transformationsBuilders) {
+				builtTransformations.add(transfoBuilder.build());
+			}
+			
+			return new Flame(builtTransformations);
 		}
 	
 		/**
 		 * Vérifie si l'index passé en argument est valide pour la liste des
-		 * transformations
+		 * bâtisseurs de transformation flame
 		 * 
 		 * @param index
 		 *            L'index à vérifier
@@ -246,8 +248,8 @@ public class Flame {
 		 *             Si l'index n'est pas valide
 		 */
 		public void checkIndex(int index) {
-			if (index < 0 || index >= m_flame.m_transforms.size()) {
-				throw new IllegalArgumentException("invalid index given");
+			if (index < 0 || index >= m_transformationsBuilders.size()) {
+				throw new IllegalArgumentException();
 			}
 		}
 	}

@@ -14,6 +14,9 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Classe de tests pour le rendu intermédiaire. Génère une fractale "shark fin"
  * et une "turbulence" selon les modèles fournis dans l'énoncé. Affiche des
  * informations sur l'avancement du rendu dans la sortie standard.
+ * 
+ * @author Hadrien Milano				<hadrien.milano@epfl.ch>
+ * @author Christophe Tafani-Dereeper 	<christophe.tafani-dereeper@epfl.ch>
  */
 public class FlamePPMMaker {
 
@@ -116,7 +119,7 @@ public class FlamePPMMaker {
 	}
 
 	/**
-	 * Ecris une fractale sur le disque dur en format ppm. Le fichier de sortie
+	 * Ecrit une fractale sur le disque dur en format ppm. Le fichier de sortie
 	 * se nomme name.ppm où name est donnée en argument.
 	 * 
 	 * @param name
@@ -143,7 +146,7 @@ public class FlamePPMMaker {
 
 		// Ecriture du corps de l'image
 		/*
-		 * On parcours l'accumulateur dans le sens inverse en hauteur pour gérer
+		 * On parcourt l'accumulateur dans le sens inverse en hauteur pour gérer
 		 * la différence de repère entre la fractale (bas-en-haut) et le format
 		 * ppm (haut-en-bas)
 		 */
