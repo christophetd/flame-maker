@@ -72,13 +72,17 @@ public class FlameMakerGUI {
 		upperPanel.add(transformationsPanel);
 		upperPanel.add(fractalPanel);
 		
+		transformationsPanel.setLayout(new BorderLayout());
 		transformationsPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
+		
+		fractalPanel.setLayout(new BorderLayout());
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
+	
 		
-		transformationsPanel.add(new JLabel("You lost"));
-		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density));
+		transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
+		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
 		
-		
+
 		
 		
 		window.pack();
