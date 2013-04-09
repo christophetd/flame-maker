@@ -32,16 +32,16 @@ public class FlameMakerGUI {
 
 		// Définition des transformations
 		transformations.add(new FlameTransformation(new AffineTransformation(
-				0.7124807, -0.4113509, -0.3, 0.4113513, 0.7124808, -0.7),
-				new double[] { 0.5, 0, 0, 0.4, 0, 0 }));
+				-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
+				new double[] { 1, 0.1, 0, 0, 0, 0 }));
 
 		transformations.add(new FlameTransformation(new AffineTransformation(
-				0.3731078, -0.64624117, 0.4, 0.6462414, 0.3731076, 0.3),
-				new double[] { 1, 0, 0.1, 0, 0, 0 }));
+				-0.3957339, 0, -1.6, 0, -0.3957337, 0.2), new double[] { 0, 0,
+				0, 0, 0.8, 1 }));
 
 		transformations.add(new FlameTransformation(new AffineTransformation(
-				0.0842641, -0.314478, -0.1, 0.314478, 0.0842641, 0.3),
-				new double[] { 1, 0, 0, 0, 0, 0 }));
+				0.4810169, 0, 1, 0, 0.4810169, 0.9), new double[] { 1, 0, 0, 0,
+				0, 0 }));
 		flameBuilder = new Flame.Builder(new Flame(transformations));
 		backgroundColor = Color.BLACK;
 		
@@ -79,7 +79,7 @@ public class FlameMakerGUI {
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
 	
 		
-		transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
+		//transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
 		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
 		
 
