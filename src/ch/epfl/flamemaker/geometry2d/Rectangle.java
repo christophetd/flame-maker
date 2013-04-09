@@ -138,7 +138,7 @@ public class Rectangle {
 	public Rectangle expandToAspectRatio(double aspectRatio) {
 		if (aspectRatio <= 0) {
 			throw new IllegalArgumentException(
-					"Le nouveau ratio du rectangle doit etre strictement positif");
+					"Le nouveau ratio du rectangle doit etre strictement positif (donné : "+aspectRatio+")");
 		}
 
 		/*

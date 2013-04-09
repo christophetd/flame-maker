@@ -66,7 +66,7 @@ public abstract class Variation implements Transformation {
 	 * @param name
 	 *            Le nom de la variation
 	 */
-	public Variation(int index, String name) {
+	private Variation(int index, String name) {
 		m_index = index;
 		m_name = name;
 	}

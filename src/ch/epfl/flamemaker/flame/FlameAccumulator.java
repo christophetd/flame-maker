@@ -43,7 +43,7 @@ public class FlameAccumulator {
 		int width = hitCount.length;
 		int height = hitCount[0].length;
 
-		m_grid = new int[width][];
+		m_grid = new int[width][];	
 		m_colorIndexes = new double[width][];
 
 		for (int i = 0; i < width; i++) {

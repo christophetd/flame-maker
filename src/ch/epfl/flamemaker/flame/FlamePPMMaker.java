@@ -30,7 +30,7 @@ public class FlamePPMMaker {
 	 * deux fractales.
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
-
+		System.out.println((new Color(0.9, 0.9, 0.9)).asPackedRGB());
 		colors.add(Color.RED);
 		colors.add(Color.GREEN);
 		colors.add(Color.BLUE);

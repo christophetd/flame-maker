@@ -72,6 +72,7 @@ public class FlameMakerGUI {
 		upperPanel.add(transformationsPanel);
 		upperPanel.add(fractalPanel);
 		
+		transformationsPanel.setBackground(new java.awt.Color(9, 9, 9, 10));
 		transformationsPanel.setLayout(new BorderLayout());
 		transformationsPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
 		
@@ -79,7 +80,7 @@ public class FlameMakerGUI {
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
 	
 		
-		//transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
+		transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
 		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
 		
 
