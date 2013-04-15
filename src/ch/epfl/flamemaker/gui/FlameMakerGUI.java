@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import ch.epfl.flamemaker.color.Color;
@@ -82,8 +81,6 @@ public class FlameMakerGUI {
 		
 		transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
 		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
-		
-
 		
 		
 		window.pack();

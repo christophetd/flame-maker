@@ -11,18 +11,26 @@ import javax.swing.JComponent;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
-import ch.epfl.flamemaker.flame.Variation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
+@SuppressWarnings("serial")
 public class AffineTransformationsComponent extends JComponent {
 	
 	private Flame.Builder m_builder;
 	
 	private Rectangle m_frame;
 
-	private int m_highlightedTransformationIndex = -1;
-		
+	private int m_highlightedTransformationIndex = 2;
+	
+	private double m_dimension;
+	
+	private double m_mainLineX;
+	private double m_mainLineY;
+	
+	final private static int UNITIES_PER_MIN_DIMENSION = 6;
+	
+	private double m_unity;
 	public AffineTransformationsComponent(Flame.Builder builder, Rectangle frame) {
 		m_builder = builder;
 		m_frame = frame;
@@ -41,63 +49,102 @@ public class AffineTransformationsComponent extends JComponent {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		/* Works with or without, dafuq?
+		/* Works with or without, dafuq? */
 		double ratio = getWidth()/getHeight();
 		if(ratio > 0) {
 			m_frame = m_frame.expandToAspectRatio(ratio);
-		} */
+		} 
+		/**/
+		
 		Graphics2D g0 = ((Graphics2D) g);
-		g0.setColor(new Color(9, 9, 9, 10));
+		m_dimension = Math.min(getHeight(), getWidth());
 		
-		double yunity = getHeight()/10;
-		for(double y = 0; y < getHeight(); y+= yunity) {
-			g0.draw(new Line2D.Double(0, y, getWidth(), y));
-		}
+		m_unity = m_dimension / UNITIES_PER_MIN_DIMENSION;
 		
-		double xunity = getWidth()/10;
-		for(double x = 0; x < getWidth(); x += xunity) {
-			g0.draw(new Line2D.Double(x, 0, x, getHeight()));
-		}
+		// On affiche la grille
+		printGrid(g0);
 		
-		g0.setColor(Color.white);
-		double mainLineX = getWidth()/2;
-		g0.draw(new Line2D.Double(mainLineX, 0, mainLineX, getHeight()));
-		g0.draw(new Line2D.Double(mainLineX+1, 0, mainLineX+1, getHeight()));
-		
-		double mainLineY = getHeight()/2;
-		g0.draw(new Line2D.Double(0, mainLineY, getWidth(), mainLineY));
-		g0.draw(new Line2D.Double(0, mainLineY+1, getWidth(), mainLineY+1));
-		
-		g0.setColor(Color.black);
-		
-		Point from = new Point(1, 1), to = new Point(3,3);
-
-		Transformation t = AffineTransformation.newTranslation(getWidth()/2, getHeight()/2)
-				.composeWith(AffineTransformation.newScaling(xunity, yunity))
-				.composeWith(AffineTransformation.newRotation(-Math.PI/2));
-		
-		Point from2 = t.transformPoint(from);
-		Point to2 = t.transformPoint(to);
-		g0.draw(new Line2D.Double(from2.x(), from2.y(), to2.x(), to2.y()));
-		// Add transformations
-//		AffineTransformation transfo;
-//		for(int i = 0; i < m_builder.transformationsCount(); i++) {
-//			transfo = m_builder.affineTransformation(i);
-//			Point r = transfo.transformPoint(new Point(1, 1));
-//			g0.draw(new Line2D.Double(xunity, yunity, xunity*r.x(), yunity*r.y()));
-//			break;
-		//}
-		
+		// Puis les transformations
+		printTransformations(g0);
 	}
+	
+	private void printGrid(Graphics2D g) {
+		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
+		Color oldColor = g.getColor();
+		
+		g.setColor(new Color(9, 9, 9, 10));
+		
+		// On dessine le quadrillage
+		for(double x = 0; x < getWidth(); x+=m_unity) {
+			g.draw(new Line2D.Double(x, 0, x, getHeight()));
+		}
+		for(double y = 0; y < getHeight(); y+=m_unity) {
+			g.draw(new Line2D.Double(0, y, getWidth(), y));
+		}
+		
+		// Puis les axes principaux
+		g.setColor(Color.white);
+		
+		m_mainLineX = Math.floor((getWidth()/m_unity)/2)*m_unity;
+		g.draw(new Line2D.Double(m_mainLineX, 0, m_mainLineX, getHeight()));
+		g.draw(new Line2D.Double(m_mainLineX+1, 0, m_mainLineX+1, getHeight()));
+		
+		m_mainLineY = Math.ceil((getHeight()/m_unity)/2)*m_unity;
+		g.draw(new Line2D.Double(0, m_mainLineY, getWidth(), m_mainLineY));
+		g.draw(new Line2D.Double(0, m_mainLineY+1, getWidth(), m_mainLineY+1));
+		
+		g.setColor(oldColor);
+	}
+	
+	public void printTransformations(Graphics2D g) {
+		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
+		Color oldColor = g.getColor();
+		
+		g.setColor(Color.black);
+		
+		Transformation gridMapper =	AffineTransformation.newTranslation(m_mainLineX, m_mainLineY)
+				.composeWith(AffineTransformation.newScaling(m_unity, m_unity))
+				.composeWith(new AffineTransformation(1, 0, 0, 0, -1, 0));
+		
+		Transformation transfo;
+		Arrow horizontalArrow, verticalArrow;
+		Point horizontalArrowFrom = new Point(-1, 0), horizontalArrowTo = new Point(1, 0);
+		Point verticalArrowFrom = new Point(0, -1), verticalArrowTo = new Point(0, 1);
+		
+		// On commence par dessiner toutes les transformations, sauf celle qui est surlignée
+		for(int numTransfo = 0; numTransfo < m_builder.transformationsCount(); numTransfo++) {
+			if(numTransfo == m_highlightedTransformationIndex) continue;
+			
+			transfo = m_builder.affineTransformation(numTransfo);
+
+			horizontalArrow = new Arrow(horizontalArrowFrom, horizontalArrowTo);
+			verticalArrow = new Arrow(verticalArrowFrom, verticalArrowTo);
+			
+			horizontalArrow.applyTransformation(transfo);
+			verticalArrow.applyTransformation(transfo);
+			
+			verticalArrow.draw(g, gridMapper);
+			horizontalArrow.draw(g, gridMapper);
+		}
+		
+		/* On dessine la transformation surlignée (en dernier pour qu'elle 
+		 * s'affiche au dessus des autres s'il y a un chevauchement) */
+		g.setColor(Color.red);
+		transfo = m_builder.affineTransformation(m_highlightedTransformationIndex);
+		horizontalArrow = new Arrow(horizontalArrowFrom, horizontalArrowTo);
+		verticalArrow = new Arrow(verticalArrowFrom, verticalArrowTo);
+		horizontalArrow.applyTransformation(transfo);
+		verticalArrow.applyTransformation(transfo);
+		horizontalArrow.draw(g, gridMapper);
+		verticalArrow.draw(g, gridMapper);
+
+		g.setColor(oldColor);
+	}
+	
 	
 	@Override
 	public Dimension getPreferredSize(){
-		
-//		return new Dimension((int) m_frame.width(), (int) m_frame.height());
-		return new Dimension(50, 50);
+		return new Dimension((int) m_frame.width(), (int) m_frame.height());
 	}
+	
 }
-
-
-
-
