@@ -7,6 +7,7 @@ import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
 public class Arrow {
+	private static final double H = 0.1414;
 	private Point m_from = new Point(-1, 0);
 	private Point m_to = new Point(1, 0);
 	private Point m_leftComponent;
@@ -18,8 +19,23 @@ public class Arrow {
 	}
 	
 	private void buildComponents() {
-		m_leftComponent = new Point(1, 1);
-		m_rightComponent = new Point(-1, -1);
+		double dx = m_to.x() - m_from.x();
+		double dy = m_to.y() - m_from.y();
+
+		double l = Math.sqrt(dx*dx + dy*dy);
+		double alpha = Math.atan2(dx, dy);
+
+		double beta = alpha - Math.PI/4;
+		
+		
+		double x0 = l*H*Math.sin(beta);
+		double y0 = l*H*Math.cos(beta);
+		
+		double x1 = l*H*(Math.sin(beta + Math.PI/2));
+		double y1 = l*H*(Math.cos(beta + Math.PI/2));
+		
+		m_leftComponent = new Point(m_to.x() - x0, m_to.y() - y0);
+		m_rightComponent = new Point(m_to.x() - x1, m_to.y() - y1);
 	}
 	
 	public void draw(Graphics2D g, Transformation mapper) {

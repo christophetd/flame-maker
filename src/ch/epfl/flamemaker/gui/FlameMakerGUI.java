@@ -122,7 +122,7 @@ public class FlameMakerGUI {
 		lowerPanel.add(transformationsEditButtons);
 		transformationsEditPanel.setLayout(new BorderLayout());
 		
-		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(1, 0, 1, 0, 0.6, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
+		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(2, 1, 0, 1, 2, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
 		
 		final TransformationsListModel listModel = new TransformationsListModel(flameBuilder);
 		final JList transformationsList = new JList(listModel);
