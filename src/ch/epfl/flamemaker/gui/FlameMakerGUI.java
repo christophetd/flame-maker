@@ -2,11 +2,13 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -21,7 +23,6 @@ import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
-import ch.epfl.flamemaker.geometry2d.Transformation;
 
 public class FlameMakerGUI {
 
@@ -72,6 +73,7 @@ public class FlameMakerGUI {
 				lowerPanel = new JPanel(),
 				transformationsEditPanel = new JPanel(),
 				transformationsPreviewPanel = new JPanel(), 
+				transformationsEditButtons = new JPanel(),
 				fractalPanel = new JPanel();
 		
 		/* Upper panel */
@@ -97,6 +99,7 @@ public class FlameMakerGUI {
 		
 		// Panneau d'édition des transformations
 		lowerPanel.add(transformationsEditPanel);
+		lowerPanel.add(transformationsEditButtons);
 		transformationsEditPanel.setLayout(new BorderLayout());
 		
 		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(1, 0, 1, 0, 0.6, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
@@ -108,11 +111,37 @@ public class FlameMakerGUI {
 		
 		JScrollPane transformationsPane = new JScrollPane(transformationsList);
 		
-		Object transformationsEditButtons = null; // todo
-		
 		transformationsEditPanel.add(transformationsPane, BorderLayout.CENTER);
-		//transformationsEditPanel.add(transformationsEditButtons, BorderLayout.PAGE_END);
 		
+		transformationsEditButtons.setLayout(new GridLayout(1, 2));
+		JButton addTransformationButton = new JButton("Ajouter");
+		transformationsEditButtons.add(addTransformationButton);
+		
+		final FlameMakerGUI self = this;
+		
+		addTransformationButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				self.flameBuilder.addTransformation(new FlameTransformation(
+						AffineTransformation.IDENTITY, 
+						new double[]{1, 0, 0, 0, 0, 0}						
+				));
+				self.setSelectedTransformationId(self.flameBuilder.transformationsCount()-1);
+			}
+		});
+		
+		JButton deleteTransformationButton = new JButton("Supprimer");
+		transformationsEditButtons.add(deleteTransformationButton));
+		deleteTransformationButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int selectedIndex = self.getSelectedTransformationId();
+				if(selectedIndex != -1) {
+					self.flameBuilder.removeTransformation(selectedIndex);
+				}
+				// Todo : handle when only 1 transformation left, disable button
+			}
+		});
 		
 		window.pack();
 		window.setVisible(true);
