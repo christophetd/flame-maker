@@ -5,7 +5,9 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
 
 import ch.epfl.flamemaker.color.Color;
@@ -16,6 +18,7 @@ import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
+import ch.epfl.flamemaker.geometry2d.Transformation;
 
 public class FlameMakerGUI {
 
@@ -63,24 +66,41 @@ public class FlameMakerGUI {
 		window.getContentPane().setLayout(new BorderLayout());
 		
 		JPanel	upperPanel = new JPanel(), 
-				transformationsPanel = new JPanel(), 
+				lowerPanel = new JPanel(),
+				transformationsEditPanel = new JPanel(),
+				transformationsPreviewPanel = new JPanel(), 
 				fractalPanel = new JPanel();
 		
+		/* Upper panel */
 		window.getContentPane().add(upperPanel, BorderLayout.CENTER);
 		upperPanel.setLayout(new GridLayout(1, 2));
-		upperPanel.add(transformationsPanel);
+		upperPanel.add(transformationsPreviewPanel);
 		upperPanel.add(fractalPanel);
 		
-		transformationsPanel.setBackground(new java.awt.Color(9, 9, 9, 10));
-		transformationsPanel.setLayout(new BorderLayout());
-		transformationsPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
+		transformationsPreviewPanel.setBackground(new java.awt.Color(9, 9, 9, 10));
+		transformationsPreviewPanel.setLayout(new BorderLayout());
+		transformationsPreviewPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
 		
 		fractalPanel.setLayout(new BorderLayout());
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
 	
 		
-		transformationsPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
+		transformationsPreviewPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
 		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
+		
+		/* Lower panel */
+		window.getContentPane().add(lowerPanel, BorderLayout.PAGE_END);
+		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
+		
+		// Panneau d'édition des transformations
+		lowerPanel.add(transformationsEditPanel);
+		transformationsEditPanel.setLayout(new BorderLayout());
+		
+		JList transformationsList = new JList(); // Should be generic... ?
+		Object transformationsEditButtons = null; // todo
+		
+		transformationsEditPanel.add(transformationsList, BorderLayout.CENTER);
+		transformationsEditPanel.add(transformationsEditButtons, BorderLayout.PAGE_END);
 		
 		
 		window.pack();
