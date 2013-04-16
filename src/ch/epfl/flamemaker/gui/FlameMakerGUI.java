@@ -102,6 +102,7 @@ public class FlameMakerGUI {
 
 			@Override
 			public void onSelectedTransformationIdChange(int id) {
+				System.out.println("Selected : "+id);
 				affineTransformationComponent.highlightedTransformationIndex(id);
 			}
 			
@@ -140,9 +141,26 @@ public class FlameMakerGUI {
 		transformationsEditPanel.add(transformationsPane, BorderLayout.CENTER);
 		
 		transformationsEditButtons.setLayout(new GridLayout(1, 2));
+
+		final 
+		JButton deleteTransformationButton = new JButton("Supprimer");
+		deleteTransformationButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int selectedIndex = self.getSelectedTransformationId();
+				if(selectedIndex != -1) {
+					System.out.println("Removing "+selectedIndex);
+					listModel.removeTransformation(selectedIndex);
+				}
+				if(self.flameBuilder.transformationsCount() == 1) {
+					deleteTransformationButton.setEnabled(false);
+				}
+			}
+		});
+		
 		JButton addTransformationButton = new JButton("Ajouter");
 		transformationsEditButtons.add(addTransformationButton);
-		
+		transformationsEditButtons.add(deleteTransformationButton);
 		
 		
 		addTransformationButton.addActionListener(new ActionListener() {
@@ -153,20 +171,8 @@ public class FlameMakerGUI {
 						new double[]{1, 0, 0, 0, 0, 0}						
 				));
 				self.setSelectedTransformationId(self.flameBuilder.transformationsCount()-1);
-			}
-		});
-		final 
-		JButton deleteTransformationButton = new JButton("Supprimer");
-		transformationsEditButtons.add(deleteTransformationButton);
-		deleteTransformationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int selectedIndex = self.getSelectedTransformationId();
-				if(selectedIndex != -1) {
-					listModel.removeTransformation(selectedIndex);
-				}
-				if(self.flameBuilder.transformationsCount() == 1) {
-					deleteTransformationButton.setEnabled(false);
+				if(!deleteTransformationButton.isEnabled() && self.flameBuilder.transformationsCount() > 1) {
+					deleteTransformationButton.setEnabled(true);
 				}
 			}
 		});
