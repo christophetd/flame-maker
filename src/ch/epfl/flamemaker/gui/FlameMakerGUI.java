@@ -5,9 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -38,7 +38,7 @@ public class FlameMakerGUI {
 	private int density;
 	
 	private int m_selectedTransformationId;
-	private Set<Listener> m_listeners = new TreeSet<Listener>();
+	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
 	public FlameMakerGUI() {
 		// Tableau des transformations
@@ -102,7 +102,6 @@ public class FlameMakerGUI {
 
 			@Override
 			public void onSelectedTransformationIdChange(int id) {
-				System.out.println("Selected : "+id);
 				affineTransformationComponent.highlightedTransformationIndex(id);
 			}
 			

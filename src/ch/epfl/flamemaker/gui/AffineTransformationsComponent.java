@@ -9,10 +9,12 @@ import java.awt.geom.Line2D;
 import javax.swing.JComponent;
 
 import ch.epfl.flamemaker.flame.Flame;
+import ch.epfl.flamemaker.flame.Variation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
+import ch.epfl.flamemaker.gui.Arrow;
 
 @SuppressWarnings("serial")
 public class AffineTransformationsComponent extends JComponent {
@@ -37,7 +39,6 @@ public class AffineTransformationsComponent extends JComponent {
 	}
 	
 	public void highlightedTransformationIndex(int index) {
-		System.out.println("Setting highlighted = "+index);
 		if(index != -1){// TO DECIDE && index != m_highlightedTransformationIndex) {
 			m_highlightedTransformationIndex = index;
 			repaint();
@@ -98,7 +99,6 @@ public class AffineTransformationsComponent extends JComponent {
 	}
 	
 	public void printTransformations(Graphics2D g) {
-		System.out.println("OKOKOK");
 		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
 		Color oldColor = g.getColor();
 		
@@ -109,9 +109,10 @@ public class AffineTransformationsComponent extends JComponent {
 				.composeWith(new AffineTransformation(1, 0, 0, 0, -1, 0));
 		
 		Transformation transfo;
+		
 		Arrow horizontalArrow, verticalArrow;
-		Point horizontalArrowFrom = new Point(-1, 0), horizontalArrowTo = new Point(1, 0);
-		Point verticalArrowFrom = new Point(0, -1), verticalArrowTo = new Point(0, 1);
+		Point[] horizontalArrowCoordinates = new Point[]{ new Point(-1, 0), new Point(1, 0) };
+		Point[] verticalArrowCoordinates = new Point[]{ new Point(0, -1), new Point(0, 1) };
 		
 		// On commence par dessiner toutes les transformations, sauf celle qui est surlignée
 		for(int numTransfo = 0; numTransfo < m_builder.transformationsCount(); numTransfo++) {
@@ -119,27 +120,23 @@ public class AffineTransformationsComponent extends JComponent {
 			
 			transfo = m_builder.affineTransformation(numTransfo);
 
-			horizontalArrow = new Arrow(horizontalArrowFrom, horizontalArrowTo);
-			verticalArrow = new Arrow(verticalArrowFrom, verticalArrowTo);
+			horizontalArrow = new Arrow(horizontalArrowCoordinates[0], horizontalArrowCoordinates[1]);
+			verticalArrow = new Arrow(verticalArrowCoordinates[0], verticalArrowCoordinates[1]);
 			
-			horizontalArrow.applyTransformation(transfo);
-			verticalArrow.applyTransformation(transfo);
-			
-			verticalArrow.draw(g, gridMapper);
-			horizontalArrow.draw(g, gridMapper);
+			horizontalArrow.applyTransformation(transfo).draw(g, gridMapper);
+			verticalArrow.applyTransformation(transfo).draw(g, gridMapper);
 		}
 		if(m_highlightedTransformationIndex != -1) {
 			/* On dessine la transformation surlignée (en dernier pour qu'elle 
 			 * s'affiche au dessus des autres s'il y a un chevauchement) */
 			g.setColor(Color.red);
-			System.out.println("Drawing highlighted transfo with index = "+m_highlightedTransformationIndex);
+
 			transfo = m_builder.affineTransformation(m_highlightedTransformationIndex);
-			horizontalArrow = new Arrow(horizontalArrowFrom, horizontalArrowTo);
-			verticalArrow = new Arrow(verticalArrowFrom, verticalArrowTo);
-			horizontalArrow.applyTransformation(transfo);
-			verticalArrow.applyTransformation(transfo);
-			horizontalArrow.draw(g, gridMapper);
-			verticalArrow.draw(g, gridMapper);
+			horizontalArrow = new Arrow(horizontalArrowCoordinates[0], horizontalArrowCoordinates[1]);
+			verticalArrow = new Arrow(verticalArrowCoordinates[0], verticalArrowCoordinates[1]);
+			
+			horizontalArrow.applyTransformation(transfo).draw(g, gridMapper);
+			verticalArrow.applyTransformation(transfo).draw(g, gridMapper);
 		}
 
 		g.setColor(oldColor);
