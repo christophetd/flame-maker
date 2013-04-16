@@ -17,6 +17,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
@@ -70,6 +72,8 @@ public class FlameMakerGUI {
 	}
 	
 	public void start() {
+		final FlameMakerGUI self = this;
+		
 		JFrame window = new JFrame("FlameMaker");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -82,6 +86,8 @@ public class FlameMakerGUI {
 				transformationsEditButtons = new JPanel(),
 				fractalPanel = new JPanel();
 		
+		final AffineTransformationsComponent affineTransformationComponent = new AffineTransformationsComponent(flameBuilder, frame);
+		
 		/* Upper panel */
 		window.getContentPane().add(upperPanel, BorderLayout.CENTER);
 		upperPanel.setLayout(new GridLayout(1, 2));
@@ -92,16 +98,24 @@ public class FlameMakerGUI {
 		transformationsPreviewPanel.setLayout(new BorderLayout());
 		transformationsPreviewPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
 		
+		this.addListener(new Listener(){
+
+			@Override
+			public void onSelectedTransformationIdChange(int id) {
+				affineTransformationComponent.highlightedTransformationIndex(id);
+			}
+			
+		});
 		fractalPanel.setLayout(new BorderLayout());
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
 	
 		
-		transformationsPreviewPanel.add(new AffineTransformationsComponent(flameBuilder, frame), BorderLayout.CENTER);
+		transformationsPreviewPanel.add(affineTransformationComponent, BorderLayout.CENTER);
 		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
 		
 		/* Lower panel */
 		window.getContentPane().add(lowerPanel, BorderLayout.PAGE_END);
-		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
+		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.PAGE_AXIS));
 		
 		// Panneau d'édition des transformations
 		lowerPanel.add(transformationsEditPanel);
@@ -115,7 +129,12 @@ public class FlameMakerGUI {
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		transformationsList.setVisibleRowCount(3);
 		transformationsList.setSelectedIndex(0);
-		
+		transformationsList.addListSelectionListener(new ListSelectionListener(){
+			@Override
+			public void valueChanged(ListSelectionEvent evt) {
+				self.setSelectedTransformationId(evt.getFirstIndex());
+			}
+		});
 		JScrollPane transformationsPane = new JScrollPane(transformationsList);
 		
 		transformationsEditPanel.add(transformationsPane, BorderLayout.CENTER);
@@ -124,7 +143,7 @@ public class FlameMakerGUI {
 		JButton addTransformationButton = new JButton("Ajouter");
 		transformationsEditButtons.add(addTransformationButton);
 		
-		final FlameMakerGUI self = this;
+		
 		
 		addTransformationButton.addActionListener(new ActionListener() {
 			@Override
