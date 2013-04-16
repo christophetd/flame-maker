@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
@@ -96,11 +99,19 @@ public class FlameMakerGUI {
 		lowerPanel.add(transformationsEditPanel);
 		transformationsEditPanel.setLayout(new BorderLayout());
 		
-		JList transformationsList = new JList(); // Should be generic... ?
+		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(1, 0, 1, 0, 0.6, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
+		// TODO : replace with actual model
+		JList transformationsList = new JList(new TransformationsListModel(flameBuilder));
+		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		transformationsList.setVisibleRowCount(3);
+		transformationsList.setSelectedIndex(0);
+		
+		JScrollPane transformationsPane = new JScrollPane(transformationsList);
+		
 		Object transformationsEditButtons = null; // todo
 		
-		transformationsEditPanel.add(transformationsList, BorderLayout.CENTER);
-		transformationsEditPanel.add(transformationsEditButtons, BorderLayout.PAGE_END);
+		transformationsEditPanel.add(transformationsPane, BorderLayout.CENTER);
+		//transformationsEditPanel.add(transformationsEditButtons, BorderLayout.PAGE_END);
 		
 		
 		window.pack();
