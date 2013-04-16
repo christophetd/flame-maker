@@ -94,7 +94,7 @@ public class FlameMakerGUI {
 		upperPanel.add(transformationsPreviewPanel);
 		upperPanel.add(fractalPanel);
 		
-		transformationsPreviewPanel.setBackground(new java.awt.Color(9, 9, 9, 10));
+		transformationsPreviewPanel.setBackground(new java.awt.Color(229, 229, 229, 255));
 		transformationsPreviewPanel.setLayout(new BorderLayout());
 		transformationsPreviewPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
 		
@@ -126,14 +126,14 @@ public class FlameMakerGUI {
 		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(1, 0, 1, 0, 0.6, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
 		
 		final TransformationsListModel listModel = new TransformationsListModel(flameBuilder);
-		JList transformationsList = new JList(listModel);
+		final JList transformationsList = new JList(listModel);
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		transformationsList.setVisibleRowCount(3);
 		transformationsList.setSelectedIndex(0);
 		transformationsList.addListSelectionListener(new ListSelectionListener(){
 			@Override
 			public void valueChanged(ListSelectionEvent evt) {
-				self.setSelectedTransformationId(evt.getFirstIndex());
+				self.setSelectedTransformationId(transformationsList.getSelectedIndex());
 			}
 		});
 		JScrollPane transformationsPane = new JScrollPane(transformationsList);

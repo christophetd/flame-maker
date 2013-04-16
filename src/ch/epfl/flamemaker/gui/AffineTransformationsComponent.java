@@ -49,6 +49,10 @@ public class AffineTransformationsComponent extends JComponent {
 	
 	@Override
 	public void paintComponent(Graphics g) {
+		//g.clearRect(0, 0, this.getWidth(), this.getHeight());
+		//g.setColor(new Color(9, 9, 9, 10));
+		//g.drawRect(0, 0, this.getWidth(), this.getHeight());
+		
 		/* Works with or without, dafuq? */
 		double ratio = getWidth()/getHeight();
 		if(ratio > 0) {
@@ -72,7 +76,7 @@ public class AffineTransformationsComponent extends JComponent {
 		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
 		Color oldColor = g.getColor();
 		
-		g.setColor(new Color(9, 9, 9, 10));
+		g.setColor(new Color(200, 200, 200, 255));
 		
 		// On dessine le quadrillage
 		for(double x = 0; x < getWidth(); x+=m_unity) {
