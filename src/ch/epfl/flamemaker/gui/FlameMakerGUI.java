@@ -128,7 +128,7 @@ public class FlameMakerGUI {
 		final TransformationsListModel listModel = new TransformationsListModel(flameBuilder);
 		final JList transformationsList = new JList(listModel);
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		transformationsList.setVisibleRowCount(3);
+		transformationsList.setVisibleRowCount(5);
 		transformationsList.setSelectedIndex(0);
 		transformationsList.addListSelectionListener(new ListSelectionListener(){
 			@Override
@@ -142,19 +142,22 @@ public class FlameMakerGUI {
 		
 		transformationsEditButtons.setLayout(new GridLayout(1, 2));
 
+		// Bouton 'supprimer'
 		final 
 		JButton deleteTransformationButton = new JButton("Supprimer");
 		deleteTransformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selectedIndex = self.getSelectedTransformationId();
+
 				if(selectedIndex != -1) {
-					System.out.println("Removing "+selectedIndex);
 					listModel.removeTransformation(selectedIndex);
+					transformationsList.setSelectedIndex(Math.max(0, --selectedIndex));
 				}
 				if(self.flameBuilder.transformationsCount() == 1) {
 					deleteTransformationButton.setEnabled(false);
 				}
+				affineTransformationComponent.repaint();
 			}
 		});
 		
@@ -170,10 +173,13 @@ public class FlameMakerGUI {
 						AffineTransformation.IDENTITY, 
 						new double[]{1, 0, 0, 0, 0, 0}						
 				));
-				self.setSelectedTransformationId(self.flameBuilder.transformationsCount()-1);
+				int newHighlightedIndex = self.flameBuilder.transformationsCount()-1;
+				self.setSelectedTransformationId(newHighlightedIndex);
+				transformationsList.setSelectedIndex(newHighlightedIndex);
 				if(!deleteTransformationButton.isEnabled() && self.flameBuilder.transformationsCount() > 1) {
 					deleteTransformationButton.setEnabled(true);
 				}
+				affineTransformationComponent.repaint();
 			}
 		});
 		

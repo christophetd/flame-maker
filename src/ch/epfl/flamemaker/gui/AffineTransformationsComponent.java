@@ -37,7 +37,8 @@ public class AffineTransformationsComponent extends JComponent {
 	}
 	
 	public void highlightedTransformationIndex(int index) {
-		if(m_highlightedTransformationIndex != -1 && index != m_highlightedTransformationIndex) {
+		System.out.println("Setting highlighted = "+index);
+		if(index != -1){// TO DECIDE && index != m_highlightedTransformationIndex) {
 			m_highlightedTransformationIndex = index;
 			repaint();
 		}
@@ -49,10 +50,6 @@ public class AffineTransformationsComponent extends JComponent {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		//g.clearRect(0, 0, this.getWidth(), this.getHeight());
-		//g.setColor(new Color(9, 9, 9, 10));
-		//g.drawRect(0, 0, this.getWidth(), this.getHeight());
-		
 		/* Works with or without, dafuq? */
 		double ratio = getWidth()/getHeight();
 		if(ratio > 0) {
@@ -101,6 +98,7 @@ public class AffineTransformationsComponent extends JComponent {
 	}
 	
 	public void printTransformations(Graphics2D g) {
+		System.out.println("OKOKOK");
 		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
 		Color oldColor = g.getColor();
 		
@@ -130,17 +128,19 @@ public class AffineTransformationsComponent extends JComponent {
 			verticalArrow.draw(g, gridMapper);
 			horizontalArrow.draw(g, gridMapper);
 		}
-		
-		/* On dessine la transformation surlignée (en dernier pour qu'elle 
-		 * s'affiche au dessus des autres s'il y a un chevauchement) */
-		g.setColor(Color.red);
-		transfo = m_builder.affineTransformation(m_highlightedTransformationIndex);
-		horizontalArrow = new Arrow(horizontalArrowFrom, horizontalArrowTo);
-		verticalArrow = new Arrow(verticalArrowFrom, verticalArrowTo);
-		horizontalArrow.applyTransformation(transfo);
-		verticalArrow.applyTransformation(transfo);
-		horizontalArrow.draw(g, gridMapper);
-		verticalArrow.draw(g, gridMapper);
+		if(m_highlightedTransformationIndex != -1) {
+			/* On dessine la transformation surlignée (en dernier pour qu'elle 
+			 * s'affiche au dessus des autres s'il y a un chevauchement) */
+			g.setColor(Color.red);
+			System.out.println("Drawing highlighted transfo with index = "+m_highlightedTransformationIndex);
+			transfo = m_builder.affineTransformation(m_highlightedTransformationIndex);
+			horizontalArrow = new Arrow(horizontalArrowFrom, horizontalArrowTo);
+			verticalArrow = new Arrow(verticalArrowFrom, verticalArrowTo);
+			horizontalArrow.applyTransformation(transfo);
+			verticalArrow.applyTransformation(transfo);
+			horizontalArrow.draw(g, gridMapper);
+			verticalArrow.draw(g, gridMapper);
+		}
 
 		g.setColor(oldColor);
 	}
