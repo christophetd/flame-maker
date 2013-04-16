@@ -3,6 +3,8 @@ package ch.epfl.flamemaker.gui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -30,6 +32,9 @@ public class FlameMakerGUI {
 	private Palette palette;
 	private Rectangle frame;
 	private int density;
+	
+	private int m_selectedTransformationId;
+	private TreeSet<Listener> m_listeners;
 	
 	public FlameMakerGUI() {
 		// Tableau des transformations
@@ -100,7 +105,7 @@ public class FlameMakerGUI {
 		transformationsEditPanel.setLayout(new BorderLayout());
 		
 		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(1, 0, 1, 0, 0.6, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
-		// TODO : replace with actual model
+		
 		JList transformationsList = new JList(new TransformationsListModel(flameBuilder));
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		transformationsList.setVisibleRowCount(3);
@@ -116,5 +121,50 @@ public class FlameMakerGUI {
 		
 		window.pack();
 		window.setVisible(true);
+	}
+	
+	/**
+	 * Gets the currently selected transformation id
+	 */
+	public int getSelectedTransformationId(){
+		return m_selectedTransformationId;
+	}
+	
+	/**
+	 * Sets the currently selected transformation id
+	 * @param id of the transformation
+	 */
+	public void setSelectedTransformationId(int id){
+		m_selectedTransformationId = id;
+
+		Iterator<Listener> it = m_listeners.iterator();
+		while(it.hasNext()){
+			it.next().onSelectedTransformationIdChange(id);
+		}
+	}
+	
+	/**
+	 * Adds a listener notified when a global GUI value change (ie. selectedTransformationId)
+	 * @param l listener to add
+	 * @see #removeListener
+	 */
+	public void addListener(Listener l){
+		m_listeners.add(l);
+	}
+	
+	/**
+	 * Removes a listener.
+	 * @param l listener to remove
+	 * @see #addListener
+	 */
+	public void removeListener(Listener l){
+		m_listeners.remove(l);
+	}
+	
+	/**
+	 *	Interface for GUI listeners.
+	 */
+	public interface Listener{
+		public void onSelectedTransformationIdChange(int id);
 	}
 }
