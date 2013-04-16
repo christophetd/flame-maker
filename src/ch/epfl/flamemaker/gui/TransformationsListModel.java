@@ -20,7 +20,7 @@ public class TransformationsListModel extends AbstractListModel {
 
 	@Override
 	public Object getElementAt(int index) {
-		return "Transformation n°"+index;
+		return "Transformation n°"+(index+1);
 	}
 	
 	public void addTransformation(FlameTransformation transfo) {

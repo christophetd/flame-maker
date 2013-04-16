@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
@@ -35,7 +36,7 @@ public class FlameMakerGUI {
 	private int density;
 	
 	private int m_selectedTransformationId;
-	private TreeSet<Listener> m_listeners;
+	private Set<Listener> m_listeners = new TreeSet<Listener>();
 	
 	public FlameMakerGUI() {
 		// Tableau des transformations
@@ -109,7 +110,8 @@ public class FlameMakerGUI {
 		
 		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(1, 0, 1, 0, 0.6, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
 		
-		JList transformationsList = new JList(new TransformationsListModel(flameBuilder));
+		final TransformationsListModel listModel = new TransformationsListModel(flameBuilder);
+		JList transformationsList = new JList(listModel);
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		transformationsList.setVisibleRowCount(3);
 		transformationsList.setSelectedIndex(0);
@@ -127,24 +129,26 @@ public class FlameMakerGUI {
 		addTransformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				self.flameBuilder.addTransformation(new FlameTransformation(
+				listModel.addTransformation(new FlameTransformation(
 						AffineTransformation.IDENTITY, 
 						new double[]{1, 0, 0, 0, 0, 0}						
 				));
 				self.setSelectedTransformationId(self.flameBuilder.transformationsCount()-1);
 			}
 		});
-		
+		final 
 		JButton deleteTransformationButton = new JButton("Supprimer");
-		transformationsEditButtons.add(deleteTransformationButton));
+		transformationsEditButtons.add(deleteTransformationButton);
 		deleteTransformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selectedIndex = self.getSelectedTransformationId();
 				if(selectedIndex != -1) {
-					self.flameBuilder.removeTransformation(selectedIndex);
+					listModel.removeTransformation(selectedIndex);
 				}
-				// Todo : handle when only 1 transformation left, disable button
+				if(self.flameBuilder.transformationsCount() == 1) {
+					deleteTransformationButton.setEnabled(false);
+				}
 			}
 		});
 		
