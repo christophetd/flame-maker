@@ -2,14 +2,15 @@ package ch.epfl.flamemaker.gui;
 
 import javax.swing.AbstractListModel;
 
-import ch.epfl.flamemaker.flame.Flame.Builder;
 import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
+@SuppressWarnings("serial")
 public class TransformationsListModel extends AbstractListModel {
 	
-	private Builder m_builder;
+	private ObservableFlameBuilder m_builder;
 	
-	public TransformationsListModel(Builder flameBuilder) {
+	public TransformationsListModel(ObservableFlameBuilder flameBuilder) {
 		m_builder = flameBuilder;
 	}
 

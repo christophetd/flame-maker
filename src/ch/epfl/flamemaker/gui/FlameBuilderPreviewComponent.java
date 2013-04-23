@@ -8,16 +8,16 @@ import javax.swing.JComponent;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.geometry2d.Point;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
  * Ce component dessine la fractale définie par les paramètres du GUI
  */
 @SuppressWarnings("serial")
-public class FlameBuilderPreviewComponent extends JComponent{
+public class FlameBuilderPreviewComponent extends JComponent implements Listener{
 	
 	// Palette de couleur avec laquelle dessiner la fractale
 	private Palette m_palette;
@@ -26,7 +26,7 @@ public class FlameBuilderPreviewComponent extends JComponent{
 	private Color m_bgColor;
 	
 	// Constructeur de la fractale à dessiner
-	private Flame.Builder m_builder;
+	private ObservableFlameBuilder m_builder;
 	
 	// Cadre de la fractale à dessiner
 	private Rectangle m_frame;
@@ -43,7 +43,7 @@ public class FlameBuilderPreviewComponent extends JComponent{
 	 * @param density Densité du dessin
 	 */
 	public FlameBuilderPreviewComponent(
-			Flame.Builder builder,
+			ObservableFlameBuilder builder,
 			Color backgroundColor,
 			Palette palette,
 			Rectangle frame,
@@ -55,6 +55,7 @@ public class FlameBuilderPreviewComponent extends JComponent{
 		m_frame = frame;
 		m_density = density;
 		
+		m_builder.addListener(this);
 	}
 
 	
@@ -89,5 +90,11 @@ public class FlameBuilderPreviewComponent extends JComponent{
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension(200, 100);
+	}
+
+
+	@Override
+	public void onFlameBuilderChange(ObservableFlameBuilder b) {
+		repaint();
 	}
 }

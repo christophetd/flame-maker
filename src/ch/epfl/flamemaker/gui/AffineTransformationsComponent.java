@@ -8,18 +8,17 @@ import java.awt.geom.Line2D;
 
 import javax.swing.JComponent;
 
-import ch.epfl.flamemaker.flame.Flame;
-import ch.epfl.flamemaker.flame.Variation;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
-import ch.epfl.flamemaker.gui.Arrow;
 
 @SuppressWarnings("serial")
-public class AffineTransformationsComponent extends JComponent {
+public class AffineTransformationsComponent extends JComponent implements Listener {
 	
-	private Flame.Builder m_builder;
+	private ObservableFlameBuilder m_builder;
 	
 	private Rectangle m_frame;
 
@@ -33,13 +32,15 @@ public class AffineTransformationsComponent extends JComponent {
 	final private static int UNITIES_PER_MIN_DIMENSION = 6;
 	
 	private double m_unity;
-	public AffineTransformationsComponent(Flame.Builder builder, Rectangle frame) {
+	public AffineTransformationsComponent(ObservableFlameBuilder builder, Rectangle frame) {
 		m_builder = builder;
 		m_frame = frame;
+		
+		m_builder.addListener(this);
 	}
 	
 	public void highlightedTransformationIndex(int index) {
-		if(index != -1){// TO DECIDE && index != m_highlightedTransformationIndex) {
+		if(index != -1 && index != m_highlightedTransformationIndex) {
 			m_highlightedTransformationIndex = index;
 			repaint();
 		}
@@ -146,6 +147,11 @@ public class AffineTransformationsComponent extends JComponent {
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension((int) m_frame.width(), (int) m_frame.height());
+	}
+
+	@Override
+	public void onFlameBuilderChange(ObservableFlameBuilder b) {
+		repaint();
 	}
 	
 }

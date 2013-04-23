@@ -7,7 +7,7 @@ import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
 public class Arrow {
-	private static final double H = 0.1414;
+	private static final double H = 0.0707;
 	private Point m_from = new Point(-1, 0);
 	private Point m_to = new Point(1, 0);
 	private Point m_leftComponent;

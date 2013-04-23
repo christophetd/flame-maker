@@ -25,13 +25,14 @@ import ch.epfl.flamemaker.color.InterpolatedPalette;
 import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 public class FlameMakerGUI {
 
-	private Flame.Builder flameBuilder;
+	private ObservableFlameBuilder flameBuilder;
 	private Color backgroundColor;
 	private Palette palette;
 	private Rectangle frame;
@@ -56,7 +57,7 @@ public class FlameMakerGUI {
 		transformations.add(new FlameTransformation(new AffineTransformation(
 				0.4810169, 0, 1, 0, 0.4810169, 0.9), new double[] { 1, 0, 0, 0,
 				0, 0 }));
-		flameBuilder = new Flame.Builder(new Flame(transformations));
+		flameBuilder = new ObservableFlameBuilder(new Flame(transformations));
 		backgroundColor = Color.BLACK;
 		
 		ArrayList<Color> paletteColors = new ArrayList<Color>();

@@ -247,7 +247,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public void checkIndex(int index) {
+		private void checkIndex(int index) {
 			if (index < 0 || index >= m_transformationsBuilders.size()) {
 				throw new IllegalArgumentException();
 			}
