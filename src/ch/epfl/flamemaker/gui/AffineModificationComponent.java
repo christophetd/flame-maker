@@ -10,6 +10,7 @@ import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
@@ -176,8 +177,21 @@ public class AffineModificationComponent extends JComponent{
 			try {
 				String text = tf.getText();
 				
+				AbstractFormatter formatter = tf.getFormatter();
+				
 				// Récupère la valeur dans un double dans tous les cas
-				double value = ((Number) tf.getFormatter().stringToValue(text)).doubleValue();
+				
+				Number value = (Number) formatter.stringToValue(text);
+				
+				/* 
+				 * On n'utilise pas setText, mais setValue à la place car setText pose des problèmes
+				 * puisque swing a la riche idée de traduire les nombres (remplacer les "." par des ",")...
+				 */
+				if(value.doubleValue() == 0){
+					tf.setValue(tf.getValue());
+				} else {
+					tf.setValue(value);
+				}
 				
 			} catch (ParseException e) {
 				/* 
