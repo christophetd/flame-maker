@@ -30,6 +30,7 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 	private double m_mainLineY;
 	
 	final private static int UNITIES_PER_MIN_DIMENSION = 6;
+	final private static Color BACKGROUND_COLOR = new Color(214, 217, 223, 255);
 	
 	private double m_unity;
 	public AffineTransformationsComponent(ObservableFlameBuilder builder, Rectangle frame) {
