@@ -106,14 +106,6 @@ public class FlameMakerGUI {
 		transformationsPreviewPanel.setLayout(new BorderLayout());
 		transformationsPreviewPanel.setBorder(BorderFactory.createTitledBorder("Transformations affines"));
 		
-		this.addListener(new Listener(){
-
-			@Override
-			public void onSelectedTransformationIdChange(int id) {
-				affineTransformationComponent.highlightedTransformationIndex(id);
-			}
-			
-		});
 		fractalPanel.setLayout(new BorderLayout());
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
 	
@@ -136,13 +128,14 @@ public class FlameMakerGUI {
 		final JList transformationsList = new JList(listModel);
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		transformationsList.setVisibleRowCount(5);
-		transformationsList.setSelectedIndex(0);
 		transformationsList.addListSelectionListener(new ListSelectionListener(){
 			@Override
 			public void valueChanged(ListSelectionEvent evt) {
 				self.setSelectedTransformationId(transformationsList.getSelectedIndex());
 			}
 		});
+		transformationsList.setSelectedIndex(0);
+		
 		JScrollPane transformationsPane = new JScrollPane(transformationsList);
 		
 		transformationsEditPanel.add(transformationsPane, BorderLayout.CENTER);
@@ -197,7 +190,20 @@ public class FlameMakerGUI {
 		selectedTransformationEditPanel.setLayout(new BoxLayout(selectedTransformationEditPanel, BoxLayout.PAGE_AXIS));
 		selectedTransformationEditPanel.setBorder(BorderFactory.createTitledBorder("Transformation courante"));
 		
-		selectedTransformationEditPanel.add(new AffineModificationComponent());
+		final AffineModificationComponent affineModificationComponent = new AffineModificationComponent(flameBuilder);
+		affineModificationComponent.setSelectedTransformationIndex(0);
+		affineTransformationComponent.highlightedTransformationIndex(0);
+		selectedTransformationEditPanel.add(affineModificationComponent);
+		
+		this.addListener(new Listener(){
+
+			@Override
+			public void onSelectedTransformationIdChange(int id) {
+				affineTransformationComponent.highlightedTransformationIndex(id);
+				affineModificationComponent.setSelectedTransformationIndex(id);
+			}
+			
+		});
 		
 		/* -------- */
 		

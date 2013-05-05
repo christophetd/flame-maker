@@ -1,5 +1,7 @@
 package ch.epfl.flamemaker.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
@@ -10,13 +12,21 @@ import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
+
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.Variation;
+import ch.epfl.flamemaker.geometry2d.AffineTransformation;
+import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
 public class AffineModificationComponent extends JComponent{
 
-	public AffineModificationComponent(){
+	final private ObservableFlameBuilder flameBuilder;
+	private int selectedTransformationIndex;
+	
+	public AffineModificationComponent(final ObservableFlameBuilder flameBuilder){
+		this.flameBuilder = flameBuilder;
 		
 		GroupLayout affineGroup = new GroupLayout(this);
 		
@@ -56,23 +66,67 @@ public class AffineModificationComponent extends JComponent{
 		H1.addComponent(translationLabel);
 		V1.addComponent(translationLabel);
 		
-		JFormattedTextField translationFactor = buildFormattedTextField();
+		final JFormattedTextField translationFactor = buildFormattedTextField();
 		H2.addComponent(translationFactor);
 		V1.addComponent(translationFactor);
 		
 		JButton translationLeftButton = new JButton("←");
+		translationLeftButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation.newTranslation(-1*((Number) translationFactor.getValue()).doubleValue(), 0)
+						.composeWith(t)
+				);
+			}	
+		});
 		H3.addComponent(translationLeftButton);
 		V1.addComponent(translationLeftButton);
 		
 		JButton translationRightButton = new JButton("→");
+		translationRightButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation.newTranslation(((Number) translationFactor.getValue()).doubleValue(), 0)
+						.composeWith(t)
+				);
+			}	
+		});
 		H4.addComponent(translationRightButton);
 		V1.addComponent(translationRightButton);
 		
 		JButton translationUpButton = new JButton("↑");
+		translationUpButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation.newTranslation(0, ((Number) translationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+			}	
+		});
 		H5.addComponent(translationUpButton);
 		V1.addComponent(translationUpButton);
 		
 		JButton translationDownButton = new JButton("↓");
+		translationDownButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation.newTranslation(0, -1 * ((Number) translationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+			}	
+		});
 		H6.addComponent(translationDownButton);
 		V1.addComponent(translationDownButton);
 		
@@ -82,15 +136,39 @@ public class AffineModificationComponent extends JComponent{
 		H1.addComponent(rotationLabel);
 		V2.addComponent(rotationLabel);
 		
-		JFormattedTextField rotationFactor = buildFormattedTextField();
+		final JFormattedTextField rotationFactor = buildFormattedTextField();
 		H2.addComponent(rotationFactor);
 		V2.addComponent(rotationFactor);
 		
 		JButton rotationPositiveButton = new JButton("↺");
+		rotationPositiveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newRotation((Math.PI/180) * ((Number) rotationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+			}	
+		});
 		H3.addComponent(rotationPositiveButton);
 		V2.addComponent(rotationPositiveButton);
 		
 		JButton rotationNegativeButton = new JButton("↻");
+		rotationNegativeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newRotation(-(Math.PI/180) * ((Number) rotationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+			}	
+		});
 		H4.addComponent(rotationNegativeButton);
 		V2.addComponent(rotationNegativeButton);
 		
@@ -100,25 +178,75 @@ public class AffineModificationComponent extends JComponent{
 		H1.addComponent(dilatationLabel);
 		V3.addComponent(dilatationLabel);
 		
-		JFormattedTextField dilatationFactor = buildFormattedTextField();
+		final JFormattedTextField dilatationFactor = buildFormattedTextField();
 		dilatationFactor.setInputVerifier(new DilatationInputVerifier());
 		
 		H2.addComponent(dilatationFactor);
 		V3.addComponent(dilatationFactor);
 		
-		JButton dilatationHPlusButton = new JButton("+ ↔");
+		final JButton dilatationHPlusButton = new JButton("+ ↔");
+		dilatationHPlusButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newScaling(((Number) dilatationFactor.getValue()).doubleValue(), 1)
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H3.addComponent(dilatationHPlusButton);
 		V3.addComponent(dilatationHPlusButton);
 		
 		JButton dilatationHMinusButton = new JButton("- ↔");
+		dilatationHMinusButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Translation d'abord
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newScaling(1/((Number) dilatationFactor.getValue()).doubleValue(), 1)
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H4.addComponent(dilatationHMinusButton);
 		V3.addComponent(dilatationHMinusButton);
 		
 		JButton dilatationVPlusButton = new JButton("+ ↕");
+		dilatationVPlusButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newScaling(1, ((Number) dilatationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H5.addComponent(dilatationVPlusButton);
 		V3.addComponent(dilatationVPlusButton);
 		
 		JButton dilatationVMinusButton = new JButton("- ↕");
+		dilatationVMinusButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newScaling(1, 1/((Number) dilatationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H6.addComponent(dilatationVMinusButton);
 		V3.addComponent(dilatationVMinusButton);
 		
@@ -128,23 +256,73 @@ public class AffineModificationComponent extends JComponent{
 		H1.addComponent(transvectionLabel);
 		V4.addComponent(transvectionLabel);
 		
-		JFormattedTextField transvectionFactor = buildFormattedTextField();
+		final JFormattedTextField transvectionFactor = buildFormattedTextField();
 		H2.addComponent(transvectionFactor);
 		V4.addComponent(transvectionFactor);
 		
 		JButton transvectionLeftButton = new JButton("←");
+		transvectionLeftButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(transvectionFactor.getValue());
+				System.out.println(transvectionFactor.getValue().getClass());
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newShearX(((Number)dilatationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H3.addComponent(transvectionLeftButton);
 		V4.addComponent(transvectionLeftButton);
 		
 		JButton transvectionRightButton = new JButton("→");
+		transvectionRightButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newShearX(-((Number) dilatationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H4.addComponent(transvectionRightButton);
 		V4.addComponent(transvectionRightButton);
 		
 		JButton transvectionUpButton = new JButton("↑");
+		transvectionUpButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newShearY(((Number) dilatationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H5.addComponent(transvectionUpButton);
 		V4.addComponent(transvectionUpButton);
 		
 		JButton transvectionDownButton = new JButton("↓");
+		transvectionDownButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
+					AffineTransformation
+						.newShearY(-((Number) dilatationFactor.getValue()).doubleValue())
+						.composeWith(t)
+				);
+				
+			}	
+		});
 		H6.addComponent(transvectionDownButton);
 		V4.addComponent(transvectionDownButton);
 		
@@ -177,21 +355,8 @@ public class AffineModificationComponent extends JComponent{
 			try {
 				String text = tf.getText();
 				
-				AbstractFormatter formatter = tf.getFormatter();
-				
 				// Récupère la valeur dans un double dans tous les cas
-				
-				Number value = (Number) formatter.stringToValue(text);
-				
-				/* 
-				 * On n'utilise pas setText, mais setValue à la place car setText pose des problèmes
-				 * puisque swing a la riche idée de traduire les nombres (remplacer les "." par des ",")...
-				 */
-				if(value.doubleValue() == 0){
-					tf.setValue(tf.getValue());
-				} else {
-					tf.setValue(value);
-				}
+				double value = ((Number) tf.getFormatter().stringToValue(text)).doubleValue();
 				
 			} catch (ParseException e) {
 				/* 
@@ -202,5 +367,10 @@ public class AffineModificationComponent extends JComponent{
 			return true;
 		}
 		
+	}
+
+	public void setSelectedTransformationIndex(int id) {
+		System.out.println("New index : "+id);
+		this.selectedTransformationIndex = id;		
 	}
 }
