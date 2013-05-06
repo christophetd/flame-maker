@@ -224,6 +224,7 @@ public class FlameMakerGUI {
 		MenuBar.build(window, flameBuilder, listModel);
 		
 		window.pack();
+		window.setLocationRelativeTo(null);
 		window.setVisible(true);
 	}
 	

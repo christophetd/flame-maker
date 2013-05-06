@@ -1,5 +1,6 @@
 package ch.epfl.flamemaker.gui;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -36,12 +38,23 @@ public class MenuBar {
 		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("Fichier");
 		JMenuItem openMenuItem = new JMenuItem("Ouvrir");
+		JMenuItem newMenuItem = new JMenuItem("Nouveau [todo]");
+		JMenu newFromMenuItem = new JMenu("Nouveau à partir d'un modèle [todo]");
 		JMenuItem saveMenuItem = new JMenuItem("Enregistrer");
 		final JMenuItem saveAsMenuItem = new JMenuItem("Enregistrer sous");
-		JMenuItem exportMenuItem =  new JMenuItem("Exporter");
+		JMenuItem exportMenuItem =  new JMenuItem("Exporter [todo]");
 		JMenuItem closeMenuItem = new JMenuItem("Quitter");
 		
+		JMenuItem sharkFinItem = new JMenuItem("Shark fin");
+		JMenuItem turbulenceItem = new JMenuItem("Turbulence");
+		JMenuItem fougereItem = new JMenuItem("Fougère");
+		newFromMenuItem.add(sharkFinItem);
+		newFromMenuItem.add(turbulenceItem);
+		newFromMenuItem.add(fougereItem);
+		
 		fileMenu.add(openMenuItem);
+		fileMenu.add(newMenuItem);
+		fileMenu.add(newFromMenuItem);
 		fileMenu.addSeparator();
 		fileMenu.add(saveMenuItem);
 		fileMenu.add(saveAsMenuItem);
@@ -49,12 +62,25 @@ public class MenuBar {
 		fileMenu.addSeparator();
 		fileMenu.add(closeMenuItem);
 		
+		JMenu helpMenu = new JMenu("Aide");
+		JMenuItem documentationMenuItem = new JMenuItem("Documentation [todo]");
+		JMenuItem aboutMenuItem = new JMenuItem("À propos");
+		
+		helpMenu.add(documentationMenuItem);
+		helpMenu.add(aboutMenuItem);
+		
 		menuBar.add(fileMenu);
+		menuBar.add(helpMenu);
+		
 		window.setJMenuBar(menuBar);
 		
 		/* Raccourcis clavier */
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_O,
+				KeyEvent.CTRL_DOWN_MASK 
+		));
+		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_N,
 				KeyEvent.CTRL_DOWN_MASK 
 		));
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(
@@ -71,9 +97,28 @@ public class MenuBar {
 		));
 		
 		/* Comportements */
+		documentationMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					  Desktop desktop = java.awt.Desktop.getDesktop();
+					  URI oURL = new URI("http://github.com/christophetd/flame-maker/wiki/Documentation");
+					  desktop.browse(oURL);
+				} 
+				catch (Exception ex) {
+					  ex.printStackTrace();
+				}
+			}
+		});
+		
+		aboutMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(window, "Ce programme a été développé par Hadrien Milano <hadrien.milano@epfl.ch> et Christophe Tafani-Dereeper <christophe.tafani-dereeper@epfl.ch> dans le cadre d'un projet de semestre");				
+			}
+		});;
 		openMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser(new File("."));	
+				
+				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty( "user.home" )));	
 				fileChooser.addChoosableFileFilter(new FlameFileFilter());
 				
 				// Lorsque l'utilisateur a choisi un fichier à ouvrir
@@ -90,6 +135,7 @@ public class MenuBar {
 							transformationsListModel.addTransformation(newTransformations.get(i));
 						}
 						currentFilePath = filePath;
+						window.setTitle("FlameMaker - "+filePath);
 					} 
 					catch (FileNotFoundException e1) {
 						JOptionPane.showMessageDialog(window, "Le fichier est introuvable", "Erreur lors de l'ouverture", JOptionPane.ERROR_MESSAGE);
@@ -139,7 +185,7 @@ public class MenuBar {
 			}
 		
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser(new File("."));	
+				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty( "user.home" )));	
 				fileChooser.addChoosableFileFilter(new FlameFileFilter());
 				
 				// Lorsque l'utilisateur a choisi le fichier dans lequel enregistrer sa fractale
@@ -158,7 +204,8 @@ public class MenuBar {
 							return;
 						}
 					}
-					
+					currentFilePath = filePath;
+					window.setTitle("FlameMaker - "+filePath);
 					FlameFile.saveToFile(flameBuilder, filePath);
 				}
 			}
