@@ -9,7 +9,7 @@ import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 public class ObservableFlameBuilder {
 	
 	private Flame.Builder m_builder;
-	
+
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
 	/**
@@ -20,6 +20,15 @@ public class ObservableFlameBuilder {
 	 */
 	public ObservableFlameBuilder(Flame flame) {
 		m_builder = new Flame.Builder(flame);
+	}
+	
+	/**
+	 * Renvoie la transformation flame à l'index donné
+	 * @param index L'index de la transformation
+	 * @return La transformation flame correspondante
+	 */
+	public FlameTransformation getTransformation(int index) {
+		return m_builder.getTransformation(index);
 	}
 	
 	/**

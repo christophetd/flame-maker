@@ -1,5 +1,6 @@
 package ch.epfl.flamemaker.geometry2d;
 
+
 /**
  * Classe non mutable représentant un point dans l'espace à deux dimentions.<br />
  * Ses coordonnées cartésiennes et polaires peuvent être obtenues en virgule

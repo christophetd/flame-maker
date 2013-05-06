@@ -1,11 +1,13 @@
 package ch.epfl.flamemaker.flame;
 
+import java.io.Serializable;
+
 import ch.epfl.flamemaker.geometry2d.*;
 
 /**
  * Classe modélisant une transformation de type Flame
  */
-public class FlameTransformation implements Transformation {
+public class FlameTransformation implements Transformation, Serializable {
 
 	/**
 	 * La composante affine de la transformation
@@ -95,7 +97,7 @@ public class FlameTransformation implements Transformation {
 	/**
 	 * Classe modélisant un bâtisseur pour une transformation flame
 	 */
-	public static class Builder {
+	public static class Builder implements Serializable {
 		
 		/**
 		 * La composante affine de la transformation flame qui sera construite

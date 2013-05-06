@@ -124,7 +124,7 @@ public class Flame {
 				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
 			}
 		}
-	
+
 		/**
 		 * @return Le nombre actuel de transformations de la fractale
 		 */
@@ -251,6 +251,10 @@ public class Flame {
 			if (index < 0 || index >= m_transformationsBuilders.size()) {
 				throw new IllegalArgumentException();
 			}
+		}
+
+		public FlameTransformation getTransformation(int index) {
+			return m_transformationsBuilders.get(index).build();
 		}
 	}
 

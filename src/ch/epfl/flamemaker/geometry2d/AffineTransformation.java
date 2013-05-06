@@ -1,9 +1,11 @@
 package ch.epfl.flamemaker.geometry2d;
 
+import java.io.Serializable;
+
 /**
  * Classe modélisant une transformation affine
  */
-public class AffineTransformation implements Transformation {
+public class AffineTransformation implements Transformation, Serializable {
 
 	/**
 	 * La transformation identité

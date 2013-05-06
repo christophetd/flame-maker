@@ -4,27 +4,40 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
@@ -82,7 +95,7 @@ public class FlameMakerGUI {
 	public void start() {
 		final FlameMakerGUI self = this;
 		
-		JFrame window = new JFrame("FlameMaker");
+		final JFrame window = new JFrame("FlameMaker");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		window.getContentPane().setLayout(new BorderLayout());
@@ -119,6 +132,7 @@ public class FlameMakerGUI {
 		
 		// Panneau d'édition des transformations
 		lowerPanel.add(transformationsEditPanel);
+
 		transformationsEditPanel.setLayout(new BorderLayout());
 		transformationsEditPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
 		
@@ -126,6 +140,7 @@ public class FlameMakerGUI {
 		
 		final TransformationsListModel listModel = new TransformationsListModel(flameBuilder);
 		final JList transformationsList = new JList(listModel);
+		
 		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		transformationsList.setVisibleRowCount(5);
 		transformationsList.addListSelectionListener(new ListSelectionListener(){
@@ -206,6 +221,7 @@ public class FlameMakerGUI {
 		});
 		
 		/* -------- */
+		MenuBar.build(window, flameBuilder, listModel);
 		
 		window.pack();
 		window.setVisible(true);
