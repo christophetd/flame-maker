@@ -98,6 +98,11 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	}
 	
 	private void recompute(){
+		
+		// Protege contre des calculs inutiles
+		if(this.getWidth() == 0 || this.getHeight() == 0)
+			return;
+		
 		if(m_flame != null){
 			m_flame.destroy();
 			m_flame = null;
@@ -109,12 +114,11 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			
 			@Override
 			public void onComputeProgress(int percent) {
-				System.out.println("progress");
+				//System.out.println("progress : "+percent+"%");
 			}
 			
 			@Override
 			public void onComputeDone(FlameAccumulator accumulator) {
-				System.out.println("Rendering");
 				m_accu = accumulator;
 				repaint();
 			}

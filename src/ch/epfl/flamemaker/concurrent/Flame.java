@@ -41,21 +41,20 @@ public class Flame {
 		Thread worker = new Thread(){
 			@Override
 			public void run(){
-				System.out.println("running");
 				FlameAccumulator acc = doCompute(frame, width, height, density);
 				// Quand on a fini de calculer :
 				triggerComputeDone(acc);
 			}
 		};
-		
-		System.out.println("starting");
 		m_aborted = false;
 		worker.start();
 		
 	}
 	
 	public void destroy(){
-		m_listeners.clear();
+		synchronized(m_listeners) {
+			m_listeners.clear();
+		}
 		abort();
 	}
 	
@@ -73,27 +72,53 @@ public class Flame {
 	}
 	
 	public void addListener(Listener l){
-		m_listeners.add(l);
+		synchronized(m_listeners) {
+			m_listeners.add(l);
+		}
 	}
 	
 	public void removeListener(Listener l){
-		m_listeners.remove(l);
+		synchronized(m_listeners) {
+			m_listeners.remove(l);
+		}
 	}
 	
 	protected void triggerComputeDone(FlameAccumulator acc){
-		for(Listener l : m_listeners){
-			l.onComputeDone(acc);
+		synchronized(m_listeners) {
+			for(Listener l : m_listeners){
+				l.onComputeDone(acc);
+			}
 		}
 	}
 	
 	protected void triggerComputeProgress(int percent){
-		for(Listener l : m_listeners){
-			l.onComputeProgress(percent);
+		synchronized(m_listeners) {
+			for(Listener l : m_listeners){
+				l.onComputeProgress(percent);
+			}
 		}
 	}
 	
 	protected List<FlameTransformation> getTransforms(){
-		return m_transforms;
+	return new ArrayList<FlameTransformation>(m_transforms);
+	}
+	
+	/**
+	 * @param index
+	 *            L'index de la transformation de laquelle on désire avoir
+	 *            l'index de couleur
+	 * @return L'index de couleur associé à la transformation
+	 */
+	protected double getColorIndex(int index) {
+
+		if (index >= 2) {
+			double denominateur = Math.pow(2,
+					Math.ceil(Math.log(index) / Math.log(2)));
+
+			return ((2 * index - 1) % denominateur) / denominateur;
+		} else {
+			return index;
+		}
 	}
 	
 	public interface Listener {

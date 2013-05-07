@@ -3,9 +3,9 @@ package ch.epfl.flamemaker.concurrent;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.epfl.flamemaker.flame.FlameAccumulator;
+import com.nativelibs4java.opencl.JavaCL;
+
 import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 public abstract class FlameStrategy{
 	
@@ -35,29 +35,15 @@ public abstract class FlameStrategy{
 			return "OpenCL";
 		}
 
+		// TODO : tester ce bout de code !
 		@Override
 		public boolean isSupported() {
-			return false;
+			return JavaCL.listPlatforms().length > 0;
 		}
 		
 		@Override
 		public Flame createStrategy(List<FlameTransformation> transformations){
-			return new CLFlame(transformations);
-		}
-		
-		private static class CLFlame extends Flame {
-
-			public CLFlame(List<FlameTransformation> transforms) {
-				super(transforms);
-				// TODO Auto-generated constructor stub
-			}
-
-			@Override
-			protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
-					final int density) {
-				System.out.println("Computing !");
-				return null;
-			}
+			return new OpenCLFlame(transformations);
 		}
 	}
 	
@@ -67,15 +53,16 @@ public abstract class FlameStrategy{
 		public String name() {
 			return "default";
 		}
+		
+		@Override
+		public boolean isSupported() {
+			return true;
+		}
 
 		@Override
 		public Flame createStrategy(List<FlameTransformation> transformations){
 			return new DefaultFlame(transformations);
 		}
 		
-		@Override
-		public boolean isSupported() {
-			return true;
-		}
 	}
 }

@@ -12,7 +12,6 @@ public class DefaultFlame extends Flame {
 
 	public DefaultFlame(List<FlameTransformation> transforms) {
 		super(transforms);
-		System.out.println("Constructed");
 	}
 
 	@Override
@@ -48,33 +47,22 @@ public class DefaultFlame extends Flame {
 
 		// Iterations accumulées pour le rendu
 		int m = density * width * height;
+		int progressStep = m/100;
+		int progress = 0;
+		
 		for (int i = 0; i < m && !isAborted() ; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = transformations.get(transformationNum).transformPoint(point);
 			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
-
+			
+			if(i >= progress + progressStep){
+				progress += progressStep;
+				triggerComputeProgress(progress/progressStep);
+			}
 			builder.hit(point, lastColor);
 		}
-
+		
 		// On construit l'accumulateur
 		return builder.build();
-	}
-	
-	/**
-	 * @param index
-	 *            L'index de la transformation de laquelle on désire avoir
-	 *            l'index de couleur
-	 * @return L'index de couleur associé à la transformation
-	 */
-	private double getColorIndex(int index) {
-
-		if (index >= 2) {
-			double denominateur = Math.pow(2,
-					Math.ceil(Math.log(index) / Math.log(2)));
-
-			return ((2 * index - 1) % denominateur) / denominateur;
-		} else {
-			return index;
-		}
 	}
 }
