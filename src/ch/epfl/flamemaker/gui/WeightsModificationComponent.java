@@ -99,17 +99,19 @@ public class WeightsModificationComponent extends JComponent {
 	}
 	
 	public void setSelectedTransformationIndex(int id) {
-		this.selectedTransformationIndex = id;
+		if(id != -1) {
+			this.selectedTransformationIndex = id;
 
-		/* 
-		 * On récupère le tableau des poids de la nouvelle transformation, 
-		 * et on remplit nos 6 champs avec 
-		 */
-		double[] newWeights = flameBuilder.getTransformation(id).weights();
-		int i = 0;
-		for(double weight: newWeights) {
-			fields.get(i).setValue(weight);
-			i++;
+			/* 
+			 * On récupère le tableau des poids de la nouvelle transformation, 
+			 * et on remplit nos 6 champs avec 
+			 */
+			double[] newWeights = flameBuilder.getTransformation(id).weights();
+			int i = 0;
+			for(double weight: newWeights) {
+				fields.get(i).setValue(weight);
+				i++;
+			}
 		}
 	}
 	

@@ -119,7 +119,7 @@ public class MenuBar {
 			public void actionPerformed(ActionEvent e) {
 				
 				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty( "user.home" )));	
-				fileChooser.addChoosableFileFilter(new FlameFileFilter());
+				fileChooser.addChoosableFileFilter(new FlameFileFilter(".flame", "Fichier de fractale Flame (.flame)"));
 				
 				// Lorsque l'utilisateur a choisi un fichier à ouvrir
 				if(fileChooser.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
@@ -163,6 +163,13 @@ public class MenuBar {
 		
 		saveAsMenuItem.addActionListener(new MenuBar.SaveAsActionListener(window, flameBuilder));
 		
+		exportMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame exportWindow = new ExportWindow();
+			}
+		});
+		
 		closeMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				int confirmValue = JOptionPane.showConfirmDialog(window, "Voulez-vous vraiment quitter ?", "Quitter", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -186,7 +193,7 @@ public class MenuBar {
 		
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty( "user.home" )));	
-				fileChooser.addChoosableFileFilter(new FlameFileFilter());
+				fileChooser.addChoosableFileFilter(new FlameFileFilter(".flame", "Fichier de fractale Flame (.flame)"));
 				
 				// Lorsque l'utilisateur a choisi le fichier dans lequel enregistrer sa fractale
 				if(fileChooser.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
