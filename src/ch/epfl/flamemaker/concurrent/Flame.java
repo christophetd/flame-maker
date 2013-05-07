@@ -9,13 +9,15 @@ import ch.epfl.flamemaker.flame.Variation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
-public abstract class Flame {
+public class Flame {
 	/**
 	 * Contient la liste des transformations caractérisant la fractale
 	 */
 	final private List<FlameTransformation> m_transforms;
 	
 	private List<Listener> m_listeners = new ArrayList<Listener>();
+	
+	private boolean m_aborted = false;
 
 	/**
 	 * Construit une nouvelle fractale à partir d'une liste de transformation la
@@ -31,7 +33,7 @@ public abstract class Flame {
 	}
 	
 	public final void compute(final Rectangle frame, final int width, final int height,
-			final int density, final List<FlameTransformation> transformations){
+			final int density){
 		
 		/* On démarre le travail dans un nouveau thread. On utilise une classe anonyme pour encapsuler le thread
 		 * puisqu'on veut uniquement exposer l'API compute() et abort() .
@@ -39,17 +41,36 @@ public abstract class Flame {
 		Thread worker = new Thread(){
 			@Override
 			public void run(){
-				doCompute(frame, width, height, density, transformations);
+				System.out.println("running");
+				FlameAccumulator acc = doCompute(frame, width, height, density);
+				// Quand on a fini de calculer :
+				triggerComputeDone(acc);
 			}
 		};
 		
+		System.out.println("starting");
+		m_aborted = false;
 		worker.start();
+		
 	}
 	
-	public abstract void abort();
+	public void destroy(){
+		m_listeners.clear();
+		abort();
+	}
 	
-	protected abstract void doCompute(final Rectangle frame, final int width, final int height,
-			final int density, final List<FlameTransformation> transformations);
+	public final void abort(){
+		m_aborted = true;
+	}
+	
+	protected boolean isAborted(){
+		return m_aborted;
+	}
+	
+	protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
+			final int density){
+		throw new UnsupportedOperationException("L'implémentation par défaut de flame ne permet pas le rendu !");
+	}
 	
 	public void addListener(Listener l){
 		m_listeners.add(l);
@@ -59,9 +80,9 @@ public abstract class Flame {
 		m_listeners.remove(l);
 	}
 	
-	protected void triggerComputeDone(){
+	protected void triggerComputeDone(FlameAccumulator acc){
 		for(Listener l : m_listeners){
-			l.onComputeDone();
+			l.onComputeDone(acc);
 		}
 	}
 	
@@ -77,7 +98,7 @@ public abstract class Flame {
 	
 	public interface Listener {
 		
-		public void onComputeDone();
+		public void onComputeDone(FlameAccumulator acc);
 		
 		public void onComputeProgress(int percent);
 	}

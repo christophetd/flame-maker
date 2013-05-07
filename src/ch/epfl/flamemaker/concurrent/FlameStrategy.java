@@ -3,6 +3,7 @@ package ch.epfl.flamemaker.concurrent;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
@@ -50,16 +51,12 @@ public abstract class FlameStrategy{
 				super(transforms);
 				// TODO Auto-generated constructor stub
 			}
-			
-			@Override
-			public void abort() {
-				System.out.println("Aborting !");
-			}
 
 			@Override
-			protected void doCompute(final Rectangle frame, final int width, final int height,
-					final int density, final List<FlameTransformation> transformations) {
+			protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
+					final int density) {
 				System.out.println("Computing !");
+				return null;
 			}
 		}
 	}
@@ -79,25 +76,6 @@ public abstract class FlameStrategy{
 		@Override
 		public boolean isSupported() {
 			return true;
-		}
-		
-		private static class DefaultFlame extends Flame {
-
-			public DefaultFlame(List<FlameTransformation> transforms) {
-				super(transforms);
-				// TODO Auto-generated constructor stub
-			}
-			
-			@Override
-			public void abort() {
-				System.out.println("Aborting !");
-			}
-
-			@Override
-			protected void doCompute(final Rectangle frame, final int width, final int height,
-					final int density, final List<FlameTransformation> transformations) {
-				System.out.println("Computing !");
-			}
 		}
 	}
 }
