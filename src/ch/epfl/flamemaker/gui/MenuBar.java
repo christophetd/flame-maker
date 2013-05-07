@@ -26,7 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 
 public class MenuBar {
 

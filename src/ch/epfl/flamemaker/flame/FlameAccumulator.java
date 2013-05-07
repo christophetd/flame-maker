@@ -153,7 +153,7 @@ public class FlameAccumulator {
 		 * @throws IllegalArgumentException
 		 *             Si la largeur ou la hauteur est invalide
 		 */
-		Builder(Rectangle frame, int width, int height) {
+		public Builder(Rectangle frame, int width, int height) {
 			if (width <= 0 || height <= 0) {
 				throw new IllegalArgumentException(
 						"width and height must be positive");
