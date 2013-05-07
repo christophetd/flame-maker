@@ -32,6 +32,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -181,7 +182,7 @@ public class FlameMakerGUI {
 		transformationsEditButtons.add(addTransformationButton);
 		transformationsEditButtons.add(deleteTransformationButton);
 		
-		
+		/*/!\ Self ? */
 		addTransformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -210,12 +211,19 @@ public class FlameMakerGUI {
 		affineTransformationComponent.highlightedTransformationIndex(0);
 		selectedTransformationEditPanel.add(affineModificationComponent);
 		
+		selectedTransformationEditPanel.add(new JSeparator());
+		
+		final WeightsModificationComponent weightsModificationComponent = new WeightsModificationComponent(flameBuilder);
+		weightsModificationComponent.setSelectedTransformationIndex(0);
+		selectedTransformationEditPanel.add(weightsModificationComponent);
+		
 		this.addListener(new Listener(){
 
 			@Override
 			public void onSelectedTransformationIdChange(int id) {
 				affineTransformationComponent.highlightedTransformationIndex(id);
 				affineModificationComponent.setSelectedTransformationIndex(id);
+				weightsModificationComponent.setSelectedTransformationIndex(id);
 			}
 			
 		});
