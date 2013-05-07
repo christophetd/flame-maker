@@ -2,6 +2,7 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
@@ -12,6 +13,7 @@ import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 
@@ -21,7 +23,7 @@ import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
-public class AffineModificationComponent extends JComponent{
+public class AffineModificationComponent extends JComponent {
 
 	final private ObservableFlameBuilder flameBuilder;
 	private int selectedTransformationIndex;
@@ -336,10 +338,27 @@ public class AffineModificationComponent extends JComponent{
 	 * ( Evite la duplication de code sur cette tache répétitive)
 	 * @return
 	 */
+	/* TODO : faire une classe utils ? (méthode dupliquée) */
 	private JFormattedTextField buildFormattedTextField(){
-		JFormattedTextField field = new JFormattedTextField(new DecimalFormat("#0.##"));
+		final JFormattedTextField field = new JFormattedTextField(new DecimalFormat("#0.##"));
 		field.setValue(1);
 		field.setColumns(3);
+		
+		/* 
+		 * On fait en sorte que les valeurs des champs se sélectionnent au focus 
+		 * Note : On doit emballer le selectAll() dans un invokeLater, sinon le formattage 
+		 * du champ enlève la sélection
+		 */
+		field.addFocusListener(new FocusAdapter() {
+		    public void focusGained(java.awt.event.FocusEvent evt) {
+	   	    	SwingUtilities.invokeLater( new Runnable() {
+    				@Override
+    				public void run() {
+    					field.selectAll();		
+    				}
+    			});
+		    }
+		});
 		
 		return field;
 	}
