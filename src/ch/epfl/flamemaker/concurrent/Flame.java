@@ -18,6 +18,8 @@ public class Flame {
 	private List<Listener> m_listeners = new ArrayList<Listener>();
 	
 	private boolean m_aborted = false;
+	
+	private Thread m_worker;
 
 	/**
 	 * Construit une nouvelle fractale à partir d'une liste de transformation la
@@ -35,10 +37,13 @@ public class Flame {
 	public final void compute(final Rectangle frame, final int width, final int height,
 			final int density){
 		
+		if(m_worker != null){
+			abort();
+		}
 		/* On démarre le travail dans un nouveau thread. On utilise une classe anonyme pour encapsuler le thread
 		 * puisqu'on veut uniquement exposer l'API compute() et abort() .
 		 */
-		Thread worker = new Thread(){
+		m_worker = new Thread(){
 			@Override
 			public void run(){
 				FlameAccumulator acc = doCompute(frame, width, height, density);
@@ -47,7 +52,7 @@ public class Flame {
 			}
 		};
 		m_aborted = false;
-		worker.start();
+		m_worker.start();
 		
 	}
 	
@@ -60,6 +65,13 @@ public class Flame {
 	
 	public final void abort(){
 		m_aborted = true;
+		/*try {
+			m_worker.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		m_worker = null;
 	}
 	
 	protected boolean isAborted(){
@@ -138,9 +150,11 @@ public class Flame {
 		 * qui sera construite
 		 */
 		private List<FlameTransformation.Builder> m_transformationsBuilders;
+		
+		private FlameStrategy m_strategy;
 	
 		/**
-		 * Construit un bâtisseur à partir d'une fractale existante
+		 * Construit un bâtisseur à partir d'une fractale existante et choisis la meilleure stratégie de calcul.
 		 * 
 		 * @param flame
 		 *            La fractale flame
@@ -150,6 +164,30 @@ public class Flame {
 			for(FlameTransformation transformation : flame.m_transforms) {
 				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
 			}
+			
+			for(FlameStrategy f : FlameStrategy.ALL_STARTEGIES){
+				if(f.isSupported()){
+					m_strategy = f;
+					break;
+				}
+			}
+		}
+		
+		/**
+		 * Construit un bâtisseur à partir d'une fractale donnée et de la stratégie donnée
+		 * 
+		 * @param flame
+		 * 			La fractale flame
+		 * @param strategy
+		 * 			La stratégie à utiliser
+		 */
+		public Builder(Flame flame, FlameStrategy strategy){
+			m_transformationsBuilders = new ArrayList<FlameTransformation.Builder>();
+			for(FlameTransformation transformation : flame.m_transforms) {
+				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
+			}
+			
+			m_strategy = strategy;
 		}
 
 		/**
@@ -251,6 +289,15 @@ public class Flame {
 			checkIndex(index);
 			m_transformationsBuilders.remove(index);
 		}
+		
+		/**
+		 * Change la stratégie de calcul de la fractale
+		 * @param strategy
+		 * 		Nouvelle stratégie à utiliser.
+		 */
+		public void setComputeStrategy(FlameStrategy strategy){
+			m_strategy = strategy;
+		}
 	
 		/**
 		 * Construit une fractale Flame à partir des informations récoltées
@@ -262,13 +309,7 @@ public class Flame {
 				builtTransformations.add(transfoBuilder.build());
 			}
 			
-			
-			for(FlameStrategy f : FlameStrategy.ALL_STARTEGIES){
-				if(f.isSupported())
-					return f.createStrategy(builtTransformations);
-			}
-			
-			return null;
+			return m_strategy.createFlame(builtTransformations);
 		}
 	
 		/**

@@ -74,16 +74,6 @@ __kernel void compute(
 	points[id*3+2] = color;
 }
 
-__kernel void logarithmize(__global unsigned int intensities[], float divider, int n){
-	
-	int id = get_global_id(0);
-	
-	if(id > n)
-		return;
-		
-	intensities[id] = (2147483647*native_divide(native_log((float)intensities[id]+1), divider));
-}
-
 void transformPoint(const float *transform, float *px, float *py){
 	float tx = transform[0]*(*px)+transform[1]*(*py)+transform[2];
 	float ty = transform[3]*(*px)+transform[4]*(*py)+transform[5];

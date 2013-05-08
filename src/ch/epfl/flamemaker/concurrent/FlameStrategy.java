@@ -22,7 +22,7 @@ public abstract class FlameStrategy{
 	
 	public abstract boolean isSupported();
 	
-	public abstract Flame createStrategy(List<FlameTransformation> transformations);
+	public abstract Flame createFlame(List<FlameTransformation> transformations);
 	
 	
 	
@@ -42,7 +42,7 @@ public abstract class FlameStrategy{
 		}
 		
 		@Override
-		public Flame createStrategy(List<FlameTransformation> transformations){
+		public Flame createFlame(List<FlameTransformation> transformations){
 			return new OpenCLFlame(transformations);
 		}
 	}
@@ -60,7 +60,7 @@ public abstract class FlameStrategy{
 		}
 
 		@Override
-		public Flame createStrategy(List<FlameTransformation> transformations){
+		public Flame createFlame(List<FlameTransformation> transformations){
 			return new DefaultFlame(transformations);
 		}
 		

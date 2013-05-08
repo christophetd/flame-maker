@@ -1,5 +1,6 @@
 package ch.epfl.flamemaker.concurrent;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,18 @@ public class ObservableFlameBuilder {
 	 */
 	public ObservableFlameBuilder(Flame flame) {
 		m_builder = new Flame.Builder(flame);
+	}
+	
+	/**
+	 * Construit un bâtisseur à partir d'une fractale donnée et de la stratégie donnée
+	 * 
+	 * @param flame
+	 * 			La fractale flame
+	 * @param strategy
+	 * 			La stratégie à utiliser
+	 */
+	public ObservableFlameBuilder(Flame flame, FlameStrategy strategy){
+		m_builder = new Flame.Builder(flame, strategy);
 	}
 	
 	/**
@@ -156,6 +169,17 @@ public class ObservableFlameBuilder {
 	 */
 	public void removeTransformation(int index) {
 		m_builder.removeTransformation(index);
+		
+		notifyObservers();
+	}
+	
+	/**
+	 * Change la stratégie de calcul de la fractale
+	 * @param strategy
+	 * 		Nouvelle stratégie à utiliser.
+	 */
+	public void setComputeStrategy(FlameStrategy s){
+		m_builder.setComputeStrategy(s);
 		
 		notifyObservers();
 	}

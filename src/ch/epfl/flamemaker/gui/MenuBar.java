@@ -5,28 +5,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.concurrent.FlameStrategy;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.FlameTransformation;
 
 public class MenuBar {
 
@@ -69,7 +65,31 @@ public class MenuBar {
 		helpMenu.add(documentationMenuItem);
 		helpMenu.add(aboutMenuItem);
 		
+		JMenu computeMenu = new JMenu("Calcul");
+		ButtonGroup computeBG = new ButtonGroup();
+		for(FlameStrategy fs : FlameStrategy.ALL_STARTEGIES){
+			JRadioButtonMenuItem item = new JRadioButtonMenuItem(fs.name());
+			if(!fs.isSupported())
+				item.setEnabled(false);
+			else
+				item.setSelected(true);
+			
+			computeBG.add(item);
+			computeMenu.add(item);
+			
+			final FlameStrategy strategy = fs;
+			item.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					flameBuilder.setComputeStrategy(strategy);
+				}
+				
+			});
+		}
+		
 		menuBar.add(fileMenu);
+		menuBar.add(computeMenu);
 		menuBar.add(helpMenu);
 		
 		window.setJMenuBar(menuBar);
@@ -114,7 +134,7 @@ public class MenuBar {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(window, "Ce programme a été développé par Hadrien Milano <hadrien.milano@epfl.ch> et Christophe Tafani-Dereeper <christophe.tafani-dereeper@epfl.ch> dans le cadre d'un projet de semestre");				
 			}
-		});;
+		});
 		openMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				
