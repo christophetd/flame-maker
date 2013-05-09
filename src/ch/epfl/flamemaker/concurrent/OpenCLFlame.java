@@ -46,7 +46,7 @@ public class OpenCLFlame extends Flame {
         CLQueue queue = context.createDefaultQueue();
         ByteOrder byteOrder = context.getByteOrder();
         
-		Pointer<Byte> mapPtr = allocateBytes(width*height).order(byteOrder);
+		Pointer<Float> mapPtr = allocateFloats(width*height).order(byteOrder);
 		Pointer<Integer> intensitiesPtr = allocateInts(width*height).order(byteOrder);
 		Pointer<Float> trnsPtr = allocateFloats((getTransforms().size() + 1) * INLINE_TRANSFO_LENGTH).order(byteOrder);
 		Pointer<Float> ptsPtr = allocateFloats(KERNELS_COUNT*3).order(byteOrder);
@@ -59,7 +59,7 @@ public class OpenCLFlame extends Flame {
 		
 		trnsPtr.setFloats(transforms);
 		
-		CLBuffer<Byte> map = context.createByteBuffer(Usage.InputOutput, mapPtr);
+		CLBuffer<Float> map = context.createFloatBuffer(Usage.InputOutput, mapPtr);
 		CLBuffer<Integer> intensities = context.createIntBuffer(Usage.InputOutput, intensitiesPtr);
 		CLBuffer<Float> transformsBuffer = context.createFloatBuffer(Usage.Input, trnsPtr);
 		CLBuffer<Float> pointsBuffer = context.createFloatBuffer(Usage.InputOutput, ptsPtr);
@@ -80,6 +80,7 @@ public class OpenCLFlame extends Flame {
         
 		//Calcul de la durée de vie du random
 		int random_life = computeRandomLife(getTransforms().size());
+		
 		Pointer<Long> seedsPtr = allocateLongs(KERNELS_COUNT).order(byteOrder);
 		
 		generateRandom(seedsPtr, KERNELS_COUNT);
@@ -141,7 +142,7 @@ public class OpenCLFlame extends Flame {
 			
 			for(int j = 0 ; j < height ; j++){
 	        	hitCountArray[i][height - j - 1] = intensitiesPtr.get(i+j*width);
-	        	colorArray[i][height - j - 1] = mapPtr.get(i+j*width)/127.0;
+	        	colorArray[i][height - j - 1] = mapPtr.get(i+j*width);
 			}
         }
 		
@@ -186,15 +187,7 @@ public class OpenCLFlame extends Flame {
 	}
 	
 	private int computeRandomLife(long divider){
-    	long random = 0X7FFFFFFFFFFFFFFFL; // Largest long
-    	
-    	int i = 0;
-    	while(random > divider){
-    		i++;
-        	random /= divider;
-        }
-    	
-    	return i;
+    	return (int)(Math.log(Long.MAX_VALUE)/Math.log(divider));
     }
     
 	private void generateRandom(Pointer<Long> seedsPtr, int n){

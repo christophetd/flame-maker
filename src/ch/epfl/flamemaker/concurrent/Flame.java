@@ -65,12 +65,12 @@ public class Flame {
 	
 	public final void abort(){
 		m_aborted = true;
-		/*try {
+		try {
 			m_worker.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		m_worker = null;
 	}
 	

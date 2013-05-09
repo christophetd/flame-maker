@@ -18,7 +18,7 @@ unsigned int consumeRandom(unsigned long *rand, unsigned int modulo);
 **/
 __kernel void compute(
 	__global const unsigned long* randoms, 
-	__global unsigned char out[],
+	__global float out[],
 	__global unsigned int intensities[],
 	int outWidth, 
 	int outHeight, 
@@ -42,7 +42,10 @@ __kernel void compute(
 	
 	if(x == 0 && y == 0){
 		for(int i = 0 ; i < 20 && random_life > 0; i++, random_life--){
-			transformPoint(&transforms[consumeRandom(&random, transf_n)*SIZEOF_TRANSFORM], &x, &y);
+            int transformID = consumeRandom(&random, transf_n);
+			transformPoint(&transforms[transformID*SIZEOF_TRANSFORM], &x, &y);
+            
+            color = (color + transforms[transformID*SIZEOF_TRANSFORM+COLOR_INDEX_POS])/2;
 		}
 	}
 	
@@ -63,7 +66,7 @@ __kernel void compute(
 			
 			if(intensities[pos] < 2147483647){
 				int intensity = intensities[pos];
-				out[pos] = native_divide(out[pos]*intensity + color*127, intensity +1);
+				out[pos] = native_divide(out[pos]*intensity + color, intensity +1);
 				intensities[pos] ++;
 			}
 		}
