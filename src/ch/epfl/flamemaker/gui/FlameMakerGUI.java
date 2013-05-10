@@ -28,15 +28,15 @@ import ch.epfl.flamemaker.concurrent.Flame;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
+import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
-import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 public class FlameMakerGUI {
 
 	private ObservableFlameBuilder flameBuilder;
 	private Color backgroundColor;
 	private Palette palette;
-	private Rectangle frame;
+	private ObservableRectangle frame;
 	private int density;
 	
 	private int m_selectedTransformationId;
@@ -68,7 +68,7 @@ public class FlameMakerGUI {
 		paletteColors.add(Color.BLUE);
 		palette = new InterpolatedPalette(paletteColors);
 		
-		frame = new Rectangle(new Point(-0.25, 0), 5, 4);
+		frame = new ObservableRectangle(new Point(-0.25, 0), 5, 4);
 		
 		density = 50;
 		

@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * Classe modélisant une transformation affine
  */
+@SuppressWarnings("serial")
 public class AffineTransformation implements Transformation, Serializable {
 
 	/**

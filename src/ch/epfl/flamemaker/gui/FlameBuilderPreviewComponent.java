@@ -2,12 +2,11 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
-
-import sun.awt.image.ToolkitImage;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
@@ -15,13 +14,15 @@ import ch.epfl.flamemaker.concurrent.Flame;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
+import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
+import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
  * Ce component dessine la fractale définie par les paramètres du GUI
  */
 @SuppressWarnings("serial")
-public class FlameBuilderPreviewComponent extends JComponent implements Listener{
+public class FlameBuilderPreviewComponent extends JComponent implements Listener, MouseListener, ObservableRectangle.Listener{
 	
 	// Palette de couleur avec laquelle dessiner la fractale
 	private Palette m_palette;
@@ -33,7 +34,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	private ObservableFlameBuilder m_builder;
 	
 	// Cadre de la fractale à dessiner
-	private Rectangle m_frame;
+	private ObservableRectangle m_frame;
 	
 	// Densité du dessin
 	private int m_density;
@@ -46,6 +47,10 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	
 	private int m_lastHeight = 0,
 				m_lastWidth = 0;
+	
+	// Coordonnées du mousePressed
+	private int m_mouseX;
+	private int m_mouseY;
 
 	/**
 	 * Constructeur, initialise les arguments.
@@ -59,7 +64,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			ObservableFlameBuilder builder,
 			Color backgroundColor,
 			Palette palette,
-			Rectangle frame,
+			ObservableRectangle frame,
 			int density){
 		
 		m_bgColor = backgroundColor;
@@ -69,11 +74,15 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		m_density = density;
 		
 		m_builder.addListener(this);
+		
+		addMouseListener(this);
+		m_frame.addListener(this);
 	}
 
 	
 	/**
-	 * Méthode appellée pour rafraichir le dessin
+	 * Méthode appellée pour rafraichir le dessin. Si le dessin stocké n'est pas à jour, elle demande un nouveau 
+	 * calcul avec recompute() et redimentionne l'image pour un affichage temporaire.
 	 */
 	@Override
 	protected void paintComponent(final Graphics g){
@@ -97,6 +106,10 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		}
 	}
 	
+	/**
+	 * Demande un nouveau calcul de la fractale. 
+	 * Cette méthode demande à son tour un nouveau dessin du composant quand le calcul est terminé.
+	 */
 	private void recompute(){
 		
 		// Protege contre des calculs inutiles
@@ -143,6 +156,39 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {
+		recompute();
+	}
+
+
+	/* Interaction avec la souris */
+	
+	// Les trois méthodes suivantes ne nous intéressent pas
+	@Override
+	public void mouseClicked(MouseEvent arg0) {}
+	@Override
+	public void mouseEntered(MouseEvent arg0) {}
+	@Override
+	public void mouseExited(MouseEvent arg0) {}
+
+
+	@Override
+	public void mousePressed(MouseEvent evt) {
+		m_mouseX = evt.getX();
+		m_mouseY = evt.getY();
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent evt) {
+		m_frame.setCenter(new Point(
+				m_frame.center().x() + (m_mouseX - evt.getX())*m_frame.width()/this.getWidth(),
+				m_frame.center().y() - (m_mouseY - evt.getY())*m_frame.height()/this.getHeight()
+		));
+	}
+
+
+	@Override
+	public void onRectangleChange(ObservableRectangle rect) {
 		recompute();
 	}
 }

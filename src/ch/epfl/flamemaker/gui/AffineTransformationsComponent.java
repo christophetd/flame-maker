@@ -12,7 +12,7 @@ import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
-import ch.epfl.flamemaker.geometry2d.Rectangle;
+import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
@@ -20,7 +20,7 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 	
 	private ObservableFlameBuilder m_builder;
 	
-	private Rectangle m_frame;
+	private ObservableRectangle m_frame;
 
 	private int m_highlightedTransformationIndex = 2;
 	
@@ -33,7 +33,7 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 	final private static Color BACKGROUND_COLOR = new Color(214, 217, 223, 255);
 	
 	private double m_unity;
-	public AffineTransformationsComponent(ObservableFlameBuilder builder, Rectangle frame) {
+	public AffineTransformationsComponent(ObservableFlameBuilder builder, ObservableRectangle frame) {
 		m_builder = builder;
 		m_frame = frame;
 		
@@ -53,12 +53,11 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		/* Works with or without, dafuq? */
+		
 		double ratio = getWidth()/getHeight();
 		if(ratio > 0) {
-			m_frame = m_frame.expandToAspectRatio(ratio);
-		} 
-		/**/
+			m_frame.set(m_frame.expandToAspectRatio(ratio));
+		}
 		
 		Graphics2D g0 = ((Graphics2D) g);
 		m_dimension = Math.min(getHeight(), getWidth());
