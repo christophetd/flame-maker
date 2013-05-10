@@ -168,6 +168,7 @@ public class Flame {
 			for(FlameStrategy f : FlameStrategy.ALL_STARTEGIES){
 				if(f.isSupported()){
 					m_strategy = f;
+					m_strategy.activate();
 					break;
 				}
 			}
@@ -329,6 +330,10 @@ public class Flame {
 
 		public FlameTransformation getTransformation(int index) {
 			return m_transformationsBuilders.get(index).build();
+		}
+		
+		public FlameStrategy getComputeStrategy(){
+			return m_strategy;
 		}
 	}
 }

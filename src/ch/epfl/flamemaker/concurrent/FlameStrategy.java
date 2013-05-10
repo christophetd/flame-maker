@@ -1,11 +1,19 @@
 package ch.epfl.flamemaker.concurrent;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.nativelibs4java.opencl.JavaCL;
-
 import ch.epfl.flamemaker.flame.FlameTransformation;
+
+import com.nativelibs4java.opencl.CLContext;
+import com.nativelibs4java.opencl.CLKernel;
+import com.nativelibs4java.opencl.CLProgram;
+import com.nativelibs4java.opencl.CLQueue;
+import com.nativelibs4java.opencl.JavaCL;
+import com.nativelibs4java.util.IOUtils;
+
+// TODO : déplacer les stratégies dans les fichiers appropriés
 
 public abstract class FlameStrategy{
 	
@@ -22,11 +30,19 @@ public abstract class FlameStrategy{
 	
 	public abstract boolean isSupported();
 	
+	public void activate() {}
+	public void deactivate() {}
+	
 	public abstract Flame createFlame(List<FlameTransformation> transformations);
 	
 	
 	
 	private static class OpenCLStrategy extends FlameStrategy {
+		
+		private CLContext context;
+		private CLProgram program;
+		private CLKernel computeKernel;
+		private CLQueue queue;
 		
 		@Override
 		public String name() {
@@ -43,7 +59,41 @@ public abstract class FlameStrategy{
 		
 		@Override
 		public Flame createFlame(List<FlameTransformation> transformations){
-			return new OpenCLFlame(transformations);
+			return new OpenCLFlame(transformations, context, computeKernel, queue);
+		}
+
+		@Override
+		public void activate() {
+			if(context != null)
+				return;
+			context = JavaCL.createBestContext();
+			
+			// Lis et compile le code du kernel
+	        String src = "";
+			try {
+				src = IOUtils.readText(FlameStrategy.class.getClassLoader().getResource("renderer.cl"));
+			} catch (IOException e) {
+				System.err.println("Impossible de charger le fichier du kernel de rendu OpenCL");
+				return;
+			}
+			program = context.createProgram(src);
+			queue = context.createDefaultQueue();
+	        // Récupération des kernels
+	        computeKernel = program.createKernel("compute");
+		}
+
+		@Override
+		public void deactivate() {
+			System.out.println("deactivate");
+			context.release();
+			program.release();
+			queue.release();
+			computeKernel.release();
+			
+			queue = null;
+			program = null;
+			computeKernel = null;
+			context = null;
 		}
 	}
 	

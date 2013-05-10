@@ -1,55 +1,61 @@
 package ch.epfl.flamemaker.concurrent;
 
-import static org.bridj.Pointer.allocateBytes;
 import static org.bridj.Pointer.allocateFloats;
 import static org.bridj.Pointer.allocateInts;
 import static org.bridj.Pointer.allocateLongs;
 
-import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
+import java.util.Random;
 
 import org.bridj.Pointer;
-
-import com.nativelibs4java.opencl.CLBuffer;
-import com.nativelibs4java.opencl.CLContext;
-import com.nativelibs4java.opencl.CLEvent;
-import com.nativelibs4java.opencl.CLKernel;
-import com.nativelibs4java.opencl.CLProgram;
-import com.nativelibs4java.opencl.CLQueue;
-import com.nativelibs4java.opencl.JavaCL;
-import com.nativelibs4java.opencl.CLMem.Usage;
-import com.nativelibs4java.util.IOUtils;
 
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
+import com.nativelibs4java.opencl.CLBuffer;
+import com.nativelibs4java.opencl.CLContext;
+import com.nativelibs4java.opencl.CLEvent;
+import com.nativelibs4java.opencl.CLKernel;
+import com.nativelibs4java.opencl.CLMem.Usage;
+import com.nativelibs4java.opencl.CLQueue;
+
+
+/**
+ * Implémente une flame avec un rendu par OpenCL.
+ * @author Hadrien
+ *
+ */
 public class OpenCLFlame extends Flame {
 	
-	private static final int KERNELS_COUNT = 1024;
+	private static final int kernel_count = 49152;
 	
 	private static final int INLINE_TRANSFO_LENGTH = 13;
 	
-	public OpenCLFlame(List<FlameTransformation> transforms) {
+	private CLContext m_context;
+	private CLKernel m_kernel;
+	private CLQueue m_queue;
+	
+	public OpenCLFlame(List<FlameTransformation> transforms, CLContext context, CLKernel computeKernel, CLQueue queue) {
 		super(transforms);
 
-		
+		m_context = context;
+		m_kernel = computeKernel;
+		m_queue = queue;
 	}
 	
 	@Override
 	protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
 			final int density) {
 		
-		CLContext context = JavaCL.createBestContext();
-        CLQueue queue = context.createDefaultQueue();
-        ByteOrder byteOrder = context.getByteOrder();
+        ByteOrder byteOrder = m_context.getByteOrder();
         
 		Pointer<Float> mapPtr = allocateFloats(width*height).order(byteOrder);
 		Pointer<Integer> intensitiesPtr = allocateInts(width*height).order(byteOrder);
 		Pointer<Float> trnsPtr = allocateFloats((getTransforms().size() + 1) * INLINE_TRANSFO_LENGTH).order(byteOrder);
-		Pointer<Float> ptsPtr = allocateFloats(KERNELS_COUNT*3).order(byteOrder);
+		Pointer<Float> ptsPtr = allocateFloats(kernel_count*3).order(byteOrder);
 		
 		float[] transforms = inlineTransforms(AffineTransformation.newScaling(
 				(double) width / frame.width(),
@@ -59,42 +65,25 @@ public class OpenCLFlame extends Flame {
 		
 		trnsPtr.setFloats(transforms);
 		
-		CLBuffer<Float> map = context.createFloatBuffer(Usage.InputOutput, mapPtr);
-		CLBuffer<Integer> intensities = context.createIntBuffer(Usage.InputOutput, intensitiesPtr);
-		CLBuffer<Float> transformsBuffer = context.createFloatBuffer(Usage.Input, trnsPtr);
-		CLBuffer<Float> pointsBuffer = context.createFloatBuffer(Usage.InputOutput, ptsPtr);
+		CLBuffer<Float> map = m_context.createFloatBuffer(Usage.InputOutput, mapPtr);
+		CLBuffer<Integer> intensities = m_context.createIntBuffer(Usage.InputOutput, intensitiesPtr);
+		CLBuffer<Float> transformsBuffer = m_context.createFloatBuffer(Usage.Input, trnsPtr);
+		CLBuffer<Float> pointsBuffer = m_context.createFloatBuffer(Usage.InputOutput, ptsPtr);
 		
-		// Lis et compile le code du kernel
-        String src = "";
-		try {
-			src = IOUtils.readText(OpenCLFlame.class.getClassLoader().getResource("renderer.cl"));
-		} catch (IOException e) {
-			System.err.println("Impossible de charger le fichier du kernel de rendu OpenCL");
-			return null;
-		}
+		Pointer<Long> seedsPtr = allocateLongs(kernel_count).order(byteOrder);
 		
-        CLProgram program = context.createProgram(src);
-        
-        //Récupération des kernels
-        CLKernel computeKernel = program.createKernel("compute");
-        
-		//Calcul de la durée de vie du random
-		int random_life = computeRandomLife(getTransforms().size());
+		generateSeeds(seedsPtr, kernel_count);
+		CLBuffer<Long> seeds = m_context.createBuffer(Usage.InputOutput, seedsPtr);
+  
+		int iterations = 10;
+		int kernel_iterations = density*width*height/kernel_count/iterations;
 		
-		Pointer<Long> seedsPtr = allocateLongs(KERNELS_COUNT).order(byteOrder);
-		
-		generateRandom(seedsPtr, KERNELS_COUNT);
-		CLBuffer<Long> seeds = context.createBuffer(Usage.Input, seedsPtr);
-
 		int percent = 0;
 		
 		CLEvent computeEvt = null;
-  
-		int iterations = density*width*height/KERNELS_COUNT/random_life;
-		
 		//Calcul de la fractale avec l'algorithme du chaos
 		for(int i = 0 ; i < iterations && !isAborted() ; i++){
-			computeKernel.setArgs(
+			m_kernel.setArgs(
 	      		seeds, 
 	      		map, 
 	      		intensities, 
@@ -102,31 +91,25 @@ public class OpenCLFlame extends Flame {
 	      		height, 
 	      		transformsBuffer, 
 	      		getTransforms().size(), 
-	      		random_life, 
+	      		kernel_iterations, 
 	      		pointsBuffer );
 			
-			computeEvt = computeKernel.enqueueNDRange(queue, new int[] { KERNELS_COUNT });
-   
-			if(i < iterations-1){
-				generateRandom(seedsPtr, KERNELS_COUNT);
-				seeds.write(queue, seedsPtr, true, computeEvt);
-			}
-    
+			computeEvt = m_kernel.enqueueNDRange(m_queue, new int[] { kernel_count });
+			
 			if(100*i/iterations > percent+4){
 				percent = 100*i/iterations;
 				triggerComputeProgress(percent);
 			}
 		}
 		
-		intensitiesPtr = intensities.read(queue, computeEvt);
-		mapPtr = map.read(queue);
+		intensitiesPtr = intensities.read(m_queue, computeEvt);
+		
+		mapPtr = map.read(m_queue);
 		
 		//On libère les ressources inutiles
 		seeds.release();
 		seedsPtr.release();
 		transformsBuffer.release();
-		context.release();
-		program.release();
 		
 		if(isAborted()){
 			intensitiesPtr.release();
@@ -150,9 +133,13 @@ public class OpenCLFlame extends Flame {
 		intensitiesPtr.release();
 		mapPtr.release();
 		
+		
 		triggerComputeProgress(100);
 		
-		return new FlameAccumulator(hitCountArray, colorArray);
+		
+		FlameAccumulator ret = new FlameAccumulator(hitCountArray, colorArray);		
+		
+		return ret;
 	}
 	
 	/**
@@ -185,14 +172,11 @@ public class OpenCLFlame extends Flame {
 		
 		return ret;
 	}
-	
-	private int computeRandomLife(long divider){
-    	return (int)(Math.log(Long.MAX_VALUE)/Math.log(divider));
-    }
     
-	private void generateRandom(Pointer<Long> seedsPtr, int n){
+	private void generateSeeds(Pointer<Long> seedsPtr, int n){
+		Random rand = new Random(2013);
     	for (int j = 0; j < n; j++) {
-            seedsPtr.set(j, (long) (Math.random()*0X7FFFFFFFFFFFFFFFL)+1);
+            seedsPtr.set(j,rand.nextLong());
         }
     }
 }

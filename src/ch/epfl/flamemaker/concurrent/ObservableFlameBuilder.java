@@ -1,6 +1,5 @@
 package ch.epfl.flamemaker.concurrent;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -182,6 +181,10 @@ public class ObservableFlameBuilder {
 		m_builder.setComputeStrategy(s);
 		
 		notifyObservers();
+	}
+	
+	public FlameStrategy getComputeStrategy(){
+		return m_builder.getComputeStrategy();
 	}
 	
 	/**

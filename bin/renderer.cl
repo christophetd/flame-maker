@@ -5,9 +5,9 @@
 
 void transformPoint(const float *transform, float *px, float *py);
 
-//Consumes the random number providing uniform [0-modulo] number repartition
-unsigned int consumeRandom(unsigned long *rand, unsigned int modulo);
-
+unsigned int next(unsigned long *seed, int bits);
+unsigned long nextLong(unsigned long *seed);
+unsigned int nextInt(unsigned long *seed, int n);
 
 /**
  * Computes a serie of points_n points using chaos game on the given transforms
@@ -17,14 +17,14 @@ unsigned int consumeRandom(unsigned long *rand, unsigned int modulo);
  *
 **/
 __kernel void compute(
-	__global const unsigned long* randoms, 
+	__global unsigned long* seeds, 
 	__global float out[],
 	__global unsigned int intensities[],
 	int outWidth, 
 	int outHeight, 
 	__global const float g_transforms[], 
 	int transf_n, 
-	int random_life, 		//Defines the number of times the random number can be consumed before expiring
+	int iterations,
 	__global float points[]){
 
 	float transforms[TRANSFORMS_ARRAY_SIZE];
@@ -34,23 +34,23 @@ __kernel void compute(
 	}
 	
 	int id = get_global_id(0);
-	unsigned long random = randoms[id];
+	unsigned long seed = seeds[id];
 	float x = points[id*3];
 	float y = points[id*3+1];
 	float color = points[id*3+2];
 	float cx, cy;
 	
 	if(x == 0 && y == 0){
-		for(int i = 0 ; i < 20 && random_life > 0; i++, random_life--){
-            int transformID = consumeRandom(&random, transf_n);
+		for(int i = 0 ; i < 20 ; i++){
+            int transformID = nextInt(&seed, transf_n);
 			transformPoint(&transforms[transformID*SIZEOF_TRANSFORM], &x, &y);
             
             color = (color + transforms[transformID*SIZEOF_TRANSFORM+COLOR_INDEX_POS])/2;
 		}
 	}
 	
-	for(; random_life > 0 ; random_life--){
-		int transformID = consumeRandom(&random, transf_n);
+	for(; iterations > 0 ; iterations--){
+		int transformID = nextInt(&seed, transf_n);
 		transformPoint(&transforms[transformID*SIZEOF_TRANSFORM], &x, &y);
 		
 		//Compute hit against camera's transform
@@ -71,10 +71,16 @@ __kernel void compute(
 			}
 		}
 	}
+    
+    for(int i = 0 ; i < 2147483647 ; i++){
+        int b = ((i/5)%101 > 100)? i - 3 : 2+points[id*3]/i;
+    }
 	
 	points[id*3] = x;
 	points[id*3+1] = y;
 	points[id*3+2] = color;
+    
+    seeds[id] = seed;
 }
 
 void transformPoint(const float *transform, float *px, float *py){
@@ -115,8 +121,35 @@ void transformPoint(const float *transform, float *px, float *py){
 	*py = y;
 }
 
-unsigned int consumeRandom(unsigned long *rand, unsigned int modulo){
+/*unsigned int consumeRandom(unsigned long *rand, unsigned int modulo){
 	int ret = *rand % modulo;
 	*rand /= modulo;
 	return ret;
+}*/
+
+//TODO : inplémenter ça :
+
+unsigned int nextInt(unsigned long *seed, int n) {
+
+    if ((n & -n) == n)  // i.e., n is a power of 2
+        return (int)((n * (long)next(seed, 31)) >> 31);
+
+    int bits, val;
+    do {
+        bits = next(seed, 31);
+        val = bits % n;
+    } while (bits - val + (n-1) < 0);
+    
+    return val;
 }
+
+unsigned int next(unsigned long *seed, int bits){
+    *seed = (*seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
+    return (int)(*seed >> (48 - bits));
+}
+
+unsigned long nextLong(unsigned long *seed) {
+    return ((long)next(seed, 32) << 32) + next(seed, 32);
+}
+
+// This comment magically prevents compilation errors

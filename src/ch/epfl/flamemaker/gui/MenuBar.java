@@ -67,12 +67,15 @@ public class MenuBar {
 		
 		JMenu computeMenu = new JMenu("Calcul");
 		ButtonGroup computeBG = new ButtonGroup();
+		
+		boolean hasSelectedStrategy = false;
 		for(FlameStrategy fs : FlameStrategy.ALL_STARTEGIES){
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(fs.name());
 			if(!fs.isSupported())
 				item.setEnabled(false);
-			else
+			else if(!hasSelectedStrategy){
 				item.setSelected(true);
+			}
 			
 			computeBG.add(item);
 			computeMenu.add(item);
@@ -82,6 +85,8 @@ public class MenuBar {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					flameBuilder.getComputeStrategy().deactivate();
+					strategy.activate();
 					flameBuilder.setComputeStrategy(strategy);
 				}
 				
