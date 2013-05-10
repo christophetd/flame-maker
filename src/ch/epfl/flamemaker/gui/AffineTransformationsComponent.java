@@ -11,12 +11,13 @@ import javax.swing.JComponent;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
-import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
+import ch.epfl.flamemaker.geometry2d.Point;
+import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
-public class AffineTransformationsComponent extends JComponent implements Listener {
+public class AffineTransformationsComponent extends JComponent implements Listener, ObservableRectangle.Listener {
 	
 	private ObservableFlameBuilder m_builder;
 	
@@ -24,18 +25,13 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 
 	private int m_highlightedTransformationIndex = 2;
 	
-	private double m_dimension;
-	
-	private double m_mainLineX;
-	private double m_mainLineY;
-	
-	final private static int UNITIES_PER_MIN_DIMENSION = 6;
 	final private static Color BACKGROUND_COLOR = new Color(214, 217, 223, 255);
 	
-	private double m_unity;
 	public AffineTransformationsComponent(ObservableFlameBuilder builder, ObservableRectangle frame) {
 		m_builder = builder;
 		m_frame = frame;
+		
+		m_frame.addListener(this);
 		
 		m_builder.addListener(this);
 	}
@@ -53,61 +49,73 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 	
 	@Override
 	public void paintComponent(Graphics g) {
+		double width = getWidth(), height = getHeight();
 		
-		double ratio = getWidth()/getHeight();
-		if(ratio > 0) {
-			m_frame.set(m_frame.expandToAspectRatio(ratio));
-		}
+		if(width == 0 || height == 0)
+			return;
 		
-		Graphics2D g0 = ((Graphics2D) g);
-		m_dimension = Math.min(getHeight(), getWidth());
+		Rectangle realFrame = m_frame.expandToAspectRatio((double)width/height);
 		
-		m_unity = m_dimension / UNITIES_PER_MIN_DIMENSION;
+		Graphics2D g0 = (Graphics2D) g;
 		
 		// On affiche la grille
-		printGrid(g0);
+		printGrid(g0, realFrame);
 		
 		// Puis les transformations
-		printTransformations(g0);
+		printTransformations(g0, realFrame);
 	}
 	
-	private void printGrid(Graphics2D g) {
+	private void printGrid(Graphics2D g, Rectangle frame) {
+		
+		// Ratio pour convertir les coordonnées de la frame vers celles de la vue
+		double scaleRatio = getWidth()/frame.width();
+		
 		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
 		Color oldColor = g.getColor();
 		
 		g.setColor(new Color(200, 200, 200, 255));
 		
 		// On dessine le quadrillage
-		for(double x = 0; x < getWidth(); x+=m_unity) {
-			g.draw(new Line2D.Double(x, 0, x, getHeight()));
+		double fX = Math.floor(frame.left());
+		for(double x = fX ; x < frame.right(); x++) {
+			double xPos = (x - frame.left())*scaleRatio;
+			g.draw(new Line2D.Double(xPos, 0, xPos, getHeight()));
 		}
-		for(double y = 0; y < getHeight(); y+=m_unity) {
-			g.draw(new Line2D.Double(0, y, getWidth(), y));
+		
+		double fY = Math.floor(frame.bottom());
+		for(double y = fY ; y < frame.top(); y++) {
+			double yPos = (y - frame.bottom())*scaleRatio;
+			g.draw(new Line2D.Double(0, getHeight() - yPos, getWidth(), getHeight() - yPos));
 		}
 		
 		// Puis les axes principaux
 		g.setColor(Color.white);
 		
-		m_mainLineX = Math.floor((getWidth()/m_unity)/2)*m_unity;
-		g.draw(new Line2D.Double(m_mainLineX, 0, m_mainLineX, getHeight()));
-		g.draw(new Line2D.Double(m_mainLineX+1, 0, m_mainLineX+1, getHeight()));
-		
-		m_mainLineY = Math.ceil((getHeight()/m_unity)/2)*m_unity;
-		g.draw(new Line2D.Double(0, m_mainLineY, getWidth(), m_mainLineY));
-		g.draw(new Line2D.Double(0, m_mainLineY+1, getWidth(), m_mainLineY+1));
+		int zeroX = (int)((-frame.left())*scaleRatio);
+		if(zeroX > 0 && zeroX < getWidth()){
+			g.draw(new Line2D.Double(zeroX, 0, zeroX, getHeight()));
+			g.draw(new Line2D.Double(zeroX+1, 0, zeroX+1, getHeight()));
+		}
+		int zeroY = (int)((-frame.bottom())*scaleRatio);
+		if(zeroY > 0 && zeroY < getHeight()){
+			g.draw(new Line2D.Double(0, getHeight() - zeroY, getWidth(), getHeight() - zeroY));
+			g.draw(new Line2D.Double(0, getHeight() - zeroY-1, getWidth(), getHeight() - zeroY-1));
+		}
 		
 		g.setColor(oldColor);
 	}
 	
-	public void printTransformations(Graphics2D g) {
+	public void printTransformations(Graphics2D g, Rectangle frame) {
+		double scaleRatio = getWidth()/frame.width();
+		
 		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
 		Color oldColor = g.getColor();
 		
 		g.setColor(Color.black);
 		
-		Transformation gridMapper =	AffineTransformation.newTranslation(m_mainLineX, m_mainLineY)
-				.composeWith(AffineTransformation.newScaling(m_unity, m_unity))
-				.composeWith(new AffineTransformation(1, 0, 0, 0, -1, 0));
+		Transformation gridMapper =	AffineTransformation.newScaling(scaleRatio, scaleRatio)
+				.composeWith(new AffineTransformation(1, 0, 0, 0, -1, 0))
+				.composeWith(AffineTransformation.newTranslation(-frame.left(), -frame.top()));
 		
 		Transformation transfo;
 		
@@ -151,6 +159,11 @@ public class AffineTransformationsComponent extends JComponent implements Listen
 
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {
+		repaint();
+	}
+
+	@Override
+	public void onRectangleChange(ObservableRectangle rect) {
 		repaint();
 	}
 	

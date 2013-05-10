@@ -35,6 +35,8 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	
 	// Cadre de la fractale à dessiner
 	private ObservableRectangle m_frame;
+	// Cadre redimentionné pour atteindre le ratio du composant
+	private Rectangle m_realFrame;
 	
 	// Densité du dessin
 	private int m_density;
@@ -137,12 +139,12 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			}
 		});
 	
-		Rectangle realFrame = m_frame.expandToAspectRatio((double)this.getWidth()/this.getHeight());
+		m_realFrame = m_frame.expandToAspectRatio((double)this.getWidth()/this.getHeight());
 		
 		m_lastHeight = this.getHeight();
 		m_lastWidth = this.getWidth();
 		
-		m_flame.compute(realFrame, this.getWidth(), this.getHeight(), m_density);
+		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_density);
 	}
 	
 	/**
@@ -181,8 +183,8 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	@Override
 	public void mouseReleased(MouseEvent evt) {
 		m_frame.setCenter(new Point(
-				m_frame.center().x() + (m_mouseX - evt.getX())*m_frame.width()/this.getWidth(),
-				m_frame.center().y() - (m_mouseY - evt.getY())*m_frame.height()/this.getHeight()
+				m_frame.center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
+				m_frame.center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
 		));
 	}
 
