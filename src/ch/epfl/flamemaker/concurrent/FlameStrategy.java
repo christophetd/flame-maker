@@ -50,11 +50,14 @@ public abstract class FlameStrategy{
 			 * la même instance de String et est par conséquent optimisé... */
 			return "OpenCL";
 		}
-
-		// TODO : tester ce bout de code !
+		
 		@Override
 		public boolean isSupported() {
-			return JavaCL.listPlatforms().length > 0;
+			try{
+				return JavaCL.listPlatforms().length > 0;
+			} catch(Error e){
+				return false;
+			}
 		}
 		
 		@Override
