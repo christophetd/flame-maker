@@ -30,7 +30,7 @@ import com.nativelibs4java.opencl.CLQueue;
  */
 public class OpenCLFlame extends Flame {
 	
-	private static final int kernel_count = 49152;
+	private static final int MAX_KERNEL_COUNT = 49152;
 	
 	private static final int INLINE_TRANSFO_LENGTH = 13;
 	
@@ -49,6 +49,8 @@ public class OpenCLFlame extends Flame {
 	@Override
 	protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
 			final int density) {
+		
+		int kernel_count = Math.min(MAX_KERNEL_COUNT, density*width*height);
 		
         ByteOrder byteOrder = m_context.getByteOrder();
         
@@ -75,9 +77,9 @@ public class OpenCLFlame extends Flame {
 		generateSeeds(seedsPtr, kernel_count);
 		CLBuffer<Long> seeds = m_context.createBuffer(Usage.InputOutput, seedsPtr);
   
-		int iterations = 10;
+		int iterations = Math.max(1, density*width*height/kernel_count/50);
 		int kernel_iterations = density*width*height/kernel_count/iterations;
-		
+		System.out.println("it : "+iterations);
 		int percent = 0;
 		
 		CLEvent computeEvt = null;
