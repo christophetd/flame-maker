@@ -218,8 +218,19 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent evt) {
+	public void mouseClicked(MouseEvent arg0) {}
 
+	@Override
+	public void mouseEntered(MouseEvent arg0) {}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {}
+
+	@Override
+	public void mouseReleased(MouseEvent evt) {
 		double minArea = Double.MAX_VALUE;
 		int index = -1;
 		Point p = new Point(evt.getX(), evt.getY());
@@ -239,18 +250,6 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 		if(index != -1)
 			notifyTransformationSelected(index);
 	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {}
 	
 	public void addListener(Listener l){
 		m_listeners.add(l);
