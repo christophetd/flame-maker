@@ -115,6 +115,15 @@ public class Rectangle {
 		return (p.x() >= this.left() && p.x() < this.right())
 				&& (p.y() >= this.bottom() && p.y() < this.top());
 	}
+	
+	/**
+	 * Calcule l'aire du rectangle et la retourne
+	 * @return
+	 * 		largeur * hauteur
+	 */
+	public double area(){
+		return m_height * m_width;
+	}
 
 	/**
 	 * @return Le rapport largeur/hauteur du rectangle

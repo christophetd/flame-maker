@@ -2,8 +2,6 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,15 +9,9 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
@@ -84,9 +76,7 @@ public class FlameMakerGUI {
 		
 		JPanel	upperPanel = new JPanel(), 
 				lowerPanel = new JPanel(),
-				transformationsEditPanel = new JPanel(),
-				transformationsPreviewPanel = new JPanel(), 
-				transformationsEditButtons = new JPanel(),
+				transformationsPreviewPanel = new JPanel(),
 				selectedTransformationEditPanel = new JPanel(),
 				fractalPanel = new JPanel();
 		
@@ -112,74 +102,23 @@ public class FlameMakerGUI {
 		window.getContentPane().add(lowerPanel, BorderLayout.PAGE_END);
 		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
 		
+		final TransformationsEditPanel transformationsEditPanel = new TransformationsEditPanel(flameBuilder);
 		// Panneau d'édition des transformations
 		lowerPanel.add(transformationsEditPanel);
+		
+		/* TODO : rassembler du code dupliqué (ici et un peu plus bas) */
+		transformationsEditPanel.addListener(new TransformationsEditPanel.Listener(){
 
-		transformationsEditPanel.setLayout(new BorderLayout());
-		transformationsEditPanel.setBorder(BorderFactory.createTitledBorder("Transformations"));
-		
-		flameBuilder.addTransformation(new FlameTransformation(new AffineTransformation(2, 1, 0, 1, 2, 0), new double[]{1, 0, 0, 0, 0.6, 0}));
-		
-		final TransformationsListModel listModel = new TransformationsListModel(flameBuilder);
-		final JList transformationsList = new JList(listModel);
-		
-		transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		transformationsList.setVisibleRowCount(5);
-		transformationsList.addListSelectionListener(new ListSelectionListener(){
 			@Override
-			public void valueChanged(ListSelectionEvent evt) {
-				self.setSelectedTransformationId(transformationsList.getSelectedIndex());
+			public void onTransformationSelected(int transfoId) {
+				self.setSelectedTransformationId(transfoId);
 			}
-		});
-		transformationsList.setSelectedIndex(0);
-		
-		JScrollPane transformationsPane = new JScrollPane(transformationsList);
-		
-		transformationsEditPanel.add(transformationsPane, BorderLayout.CENTER);
-		transformationsEditPanel.add(transformationsEditButtons, BorderLayout.PAGE_END);
-		
-		transformationsEditButtons.setLayout(new GridLayout(1, 2));
-
-		// Bouton 'supprimer'
-		final 
-		JButton deleteTransformationButton = new JButton("Supprimer");
-		deleteTransformationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int selectedIndex = self.getSelectedTransformationId();
-
-				if(selectedIndex != -1) {
-					listModel.removeTransformation(selectedIndex);
-					transformationsList.setSelectedIndex(Math.max(0, --selectedIndex));
-				}
-				if(self.flameBuilder.transformationsCount() == 1) {
-					deleteTransformationButton.setEnabled(false);
-				}
-				affineTransformationComponent.repaint();
-			}
+			
 		});
 		
-		JButton addTransformationButton = new JButton("Ajouter");
-		transformationsEditButtons.add(addTransformationButton);
-		transformationsEditButtons.add(deleteTransformationButton);
 		
-		/*/!\ Self ? */
-		addTransformationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				listModel.addTransformation(new FlameTransformation(
-						AffineTransformation.IDENTITY, 
-						new double[]{1, 0, 0, 0, 0, 0}						
-				));
-				int newHighlightedIndex = self.flameBuilder.transformationsCount()-1;
-				self.setSelectedTransformationId(newHighlightedIndex);
-				transformationsList.setSelectedIndex(newHighlightedIndex);
-				if(!deleteTransformationButton.isEnabled() && self.flameBuilder.transformationsCount() > 1) {
-					deleteTransformationButton.setEnabled(true);
-				}
-				affineTransformationComponent.repaint();
-			}
-		});
+		
+		
 		
 		/* ---- Paneau d'édition de la transformation sélectionnée ---- */
 		
@@ -190,6 +129,17 @@ public class FlameMakerGUI {
 		final AffineModificationComponent affineModificationComponent = new AffineModificationComponent(flameBuilder);
 		affineModificationComponent.setSelectedTransformationIndex(0);
 		affineTransformationComponent.highlightedTransformationIndex(0);
+		
+		/* TODO : rassembler du code dupliqué (ici et un peu plus haut) */
+		affineTransformationComponent.addListener(new AffineTransformationsComponent.Listener(){
+
+			@Override
+			public void onTransformationSelected(int transfoId) {
+				self.setSelectedTransformationId(transfoId);
+			}
+			
+		});
+		
 		selectedTransformationEditPanel.add(affineModificationComponent);
 		
 		selectedTransformationEditPanel.add(new JSeparator());
@@ -204,13 +154,14 @@ public class FlameMakerGUI {
 			public void onSelectedTransformationIdChange(int id) {
 				affineTransformationComponent.highlightedTransformationIndex(id);
 				affineModificationComponent.setSelectedTransformationIndex(id);
+				transformationsEditPanel.setSelectedTransformationIndex(id);
 				weightsModificationComponent.setSelectedTransformationIndex(id);
 			}
 			
 		});
 		
 		/* -------- */
-		MenuBar.build(window, flameBuilder, listModel);
+		MenuBar.build(window, flameBuilder, transformationsEditPanel.getListModel());
 		
 		window.pack();
 		window.setLocationRelativeTo(null);
@@ -229,6 +180,9 @@ public class FlameMakerGUI {
 	 * @param id of the transformation
 	 */
 	public void setSelectedTransformationId(int id){
+		if(m_selectedTransformationId == id)
+			return;
+		
 		m_selectedTransformationId = id;
 
 		Iterator<Listener> it = m_listeners.iterator();

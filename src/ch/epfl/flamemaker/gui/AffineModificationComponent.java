@@ -13,23 +13,19 @@ import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
-import ch.epfl.flamemaker.flame.Variation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
-import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
 public class AffineModificationComponent extends JComponent {
 
-	final private ObservableFlameBuilder flameBuilder;
 	private int selectedTransformationIndex;
 	
 	public AffineModificationComponent(final ObservableFlameBuilder flameBuilder){
-		this.flameBuilder = flameBuilder;
 		
 		GroupLayout affineGroup = new GroupLayout(this);
 		
@@ -403,7 +399,6 @@ public class AffineModificationComponent extends JComponent {
 	}
 
 	public void setSelectedTransformationIndex(int id) {
-		System.out.println("New index : "+id);
 		this.selectedTransformationIndex = id;		
 	}
 }

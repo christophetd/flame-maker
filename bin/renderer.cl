@@ -1,7 +1,8 @@
 #define SIZEOF_TRANSFORM	13
 #define VARIATIONS_POS		7
 #define COLOR_INDEX_POS		6
-#define TRANSFORMS_ARRAY_SIZE	11*SIZEOF_TRANSFORM
+#define MAX_TRANSFORMS_COUNT  50
+#define TRANSFORMS_ARRAY_SIZE	MAX_TRANSFORMS_COUNT*SIZEOF_TRANSFORM
 
 void transformPoint(const float *transform, float *px, float *py);
 

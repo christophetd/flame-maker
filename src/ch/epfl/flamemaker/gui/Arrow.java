@@ -11,6 +11,7 @@ public class Arrow {
 	private Point m_to;
 	private Point m_leftComponent;
 	private Point m_rightComponent;
+	
 	public Arrow(Point from, Point to) {
 		m_from = from;
 		m_to = to;
@@ -19,11 +20,7 @@ public class Arrow {
 	}
 	
 	
-	public void draw(Graphics2D g, Transformation mapper) {
-		m_from = mapper.transformPoint(m_from);
-		m_to = mapper.transformPoint(m_to);
-		m_leftComponent = mapper.transformPoint(m_leftComponent);
-		m_rightComponent = mapper.transformPoint(m_rightComponent);
+	public void draw(Graphics2D g) {
 		
 		g.draw(new Line2D.Double(m_from.x(), m_from.y(), m_to.x(), m_to.y()));
 		g.draw(new Line2D.Double(m_to.x(), m_to.y(), m_rightComponent.x(), m_rightComponent.y()));
@@ -37,5 +34,21 @@ public class Arrow {
 		m_rightComponent = transfo.transformPoint(m_rightComponent);
 		
 		return this;
+	}
+	
+	public Point from(){
+		return new Point(m_from.x(), m_from.y());
+	}
+	
+	public Point to(){
+		return new Point(m_to.x(), m_to.y());
+	}
+	
+	public Point leftComponent(){
+		return new Point(m_leftComponent.x(), m_leftComponent.y());
+	}
+	
+	public Point rightComponent(){
+		return new Point(m_rightComponent.x(), m_rightComponent.y());
 	}
 }

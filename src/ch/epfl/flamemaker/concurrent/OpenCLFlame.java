@@ -79,7 +79,7 @@ public class OpenCLFlame extends Flame {
   
 		int iterations = Math.max(1, density*width*height/kernel_count/50);
 		int kernel_iterations = density*width*height/kernel_count/iterations;
-		System.out.println("it : "+iterations);
+
 		int percent = 0;
 		
 		CLEvent computeEvt = null;

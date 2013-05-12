@@ -87,7 +87,6 @@ public abstract class FlameStrategy{
 
 		@Override
 		public void deactivate() {
-			System.out.println("deactivate");
 			context.release();
 			program.release();
 			queue.release();
@@ -97,6 +96,9 @@ public abstract class FlameStrategy{
 			program = null;
 			computeKernel = null;
 			context = null;
+			
+			// Force la garbage collection pour libérer les ressources graphiques
+			System.gc();
 		}
 	}
 	
