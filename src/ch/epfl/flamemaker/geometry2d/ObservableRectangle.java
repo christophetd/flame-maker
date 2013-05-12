@@ -110,6 +110,16 @@ public class ObservableRectangle {
 	}
 	
 	/**
+	 * Modifie la taille du rectangle et informe les observateurs
+	 * @param width nouvelle largeur
+	 * @param height nouvelle hauteur
+	 */
+	public void setSize(double width, double height){
+		m_rect = new Rectangle(m_rect.center(), width, height);
+		notifyObservers();
+	}
+	
+	/**
 	 * Change toutes les propriétés pour celles passées en paramètre
 	 * @param rect
 	 * 		Rectangle à recopier
@@ -177,6 +187,15 @@ public class ObservableRectangle {
 	 */
 	public void addListener(Listener l){
 		m_listeners.add(l);
+	}
+	
+	/**
+	 * Retourne une instance de Rectangle ayant les même propriétés que cet ObservableRectangle.
+	 * @return
+	 * 		Une instance de la classe Rectangle
+	 */
+	public Rectangle toRectangle(){
+		return m_rect;
 	}
 	
 	/**

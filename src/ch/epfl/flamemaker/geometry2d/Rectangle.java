@@ -132,6 +132,16 @@ public class Rectangle {
 		return (m_width / m_height);
 	}
 
+	
+	public boolean equals(Rectangle other){
+		return other.m_width == m_width && other.m_height == m_height 
+				&& other.m_center.x() == m_center.x() && other.m_center.y() == m_center.y();
+	}
+	
+	public int hashCode(){
+		return ((((((int)m_width << 8) ^ (int)m_height) << 8) ^ (int)m_center.x()) << 8) ^ (int)m_center.y();
+	}
+	
 	/**
 	 * Construit le plus petit rectangle ayant le même centre que le récepteur,
 	 * le rapport largeur/hauteur <i>aspectRatio</i> et contenant totalement le

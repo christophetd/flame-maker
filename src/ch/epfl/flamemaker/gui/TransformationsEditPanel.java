@@ -44,7 +44,6 @@ public class TransformationsEditPanel extends JPanel{
 		m_transformationsList.addListSelectionListener(new ListSelectionListener(){
 			@Override
 			public void valueChanged(ListSelectionEvent evt) {
-				System.out.println("Value changed : "+m_transformationsList.getSelectedIndex());
 				notifyTransformationSelected(m_transformationsList.getSelectedIndex());
 			}
 		});
