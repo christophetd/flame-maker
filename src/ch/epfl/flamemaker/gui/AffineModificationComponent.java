@@ -268,7 +268,7 @@ public class AffineModificationComponent extends JComponent {
 				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
-						.newShearX(((Number)dilatationFactor.getValue()).doubleValue())
+						.newShearX(-((Number)transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
 				);
 				
@@ -284,7 +284,7 @@ public class AffineModificationComponent extends JComponent {
 				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
-						.newShearX(-((Number) dilatationFactor.getValue()).doubleValue())
+						.newShearX(((Number) transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
 				);
 				
@@ -300,7 +300,7 @@ public class AffineModificationComponent extends JComponent {
 				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
-						.newShearY(((Number) dilatationFactor.getValue()).doubleValue())
+						.newShearY(((Number) transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
 				);
 				
@@ -316,7 +316,7 @@ public class AffineModificationComponent extends JComponent {
 				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
-						.newShearY(-((Number) dilatationFactor.getValue()).doubleValue())
+						.newShearY(-((Number) transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
 				);
 				
