@@ -47,9 +47,12 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	// Cadre redimentionné pour atteindre le ratio du composant
 	private Rectangle m_realFrame;
 	
-	private boolean m_dragging;
+	private Rectangle m_drawingRect;
 	
-	private boolean m_inProgress;
+	private boolean m_dragging;
+	private boolean m_displayProgress;
+	
+	private Integer m_progress = -1;
 	
 	// Densité du dessin
 	private int m_density;
@@ -109,6 +112,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	@Override
 	protected void paintComponent(final Graphics g){
 		super.paintComponent(g);
+		
 		// L'utilisateur a modifié ou modifie le cadre de vue
 		if(m_dragging){
 			int newWidth = (int)(m_lastFrame.width()/m_frame.width()*this.getWidth());
@@ -118,31 +122,38 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			g.setColor(java.awt.Color.BLACK);
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			
-			g.drawImage(m_image, 
-					(int)((m_lastFrame.center().x() - m_frame.center().x())*(this.getWidth()/m_realFrame.width())) + (getWidth() - newWidth)/2, 
-					(int)((m_frame.center().y() - m_lastFrame.center().y())*(this.getHeight()/m_realFrame.height())) + (getHeight() - newHeight)/2
-					, newWidth, newHeight, null);
+			m_drawingRect = new Rectangle(new Point(
+					(m_lastFrame.center().x() - m_frame.center().x())*(this.getWidth()/m_realFrame.width()) + getWidth()/2, 
+					(m_frame.center().y() - m_lastFrame.center().y())*(this.getHeight()/m_realFrame.height()) + getHeight()/2),
+					newWidth,
+					newHeight);
+			
+			g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
+					, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
 			
 			// Il a fini de modifier la vue
 			if(!m_preventRecompute) {
 				m_dragging = false;
 				recompute();
 			}
-		} else if(m_inProgress){
-			m_inProgress = false;
-		// Aucune vue n'est disponible ou le composant a été redimentionné
-		} else if(m_accu == null || m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
+		// le composant a été redimentionné
+		} else if(m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
 			recompute();
 			if(m_image != null){
 				
 				Rectangle rect = new Rectangle(new Point(0,0), this.getWidth(), this.getHeight())
 						.expandToAspectRatio((double)m_image.getWidth()/m_image.getHeight());
 						
-				g.drawImage(m_image, (int)(this.getWidth()-rect.width())/2, (int)(this.getHeight()-rect.height())/2, (int)rect.width(), (int)rect.height(), null);
+				m_drawingRect = new Rectangle(new Point(
+						(this.getWidth())/2,
+						(this.getHeight())/2),
+						rect.width(), rect.height());
+
+				g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
+						, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
 			}
 		// Sinon, c'est qu'on a fini un recompute, on génère l'image résultante
-		} else{
-			
+		} else if(m_accu != null){
 			m_lastFrame = m_frame.toRectangle();
 			
 			m_image = new BufferedImage(m_accu.width(), m_accu.height(), BufferedImage.TYPE_INT_RGB);
@@ -156,8 +167,40 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			
 			//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
 			g.drawImage(m_image, 0, 0, null);
-
+			
+			m_drawingRect = new Rectangle(new Point(getWidth()/2, getHeight()/2), getWidth(), getHeight());
+			m_accu = null;
+			
+		} else if(m_displayProgress) {
+			g.setColor(java.awt.Color.BLACK);
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			
+			if(m_drawingRect != null){
+				g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
+						, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
+			}
+			
+			synchronized(m_progress){
+				drawProgressBar(g);
+			}
+		} else if(m_image != null) {
+			g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
+					, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
 		}
+		
+		// Sinon, on ne sais pas pourquoi il fallait repeindre
+	}
+	
+	private void drawProgressBar(Graphics g){
+		g.setColor(java.awt.Color.WHITE);
+		
+		int barWidth = getWidth() - 10 - 50;
+		int fillWidth = (m_progress == 0) ? 0 : (barWidth-4)*m_progress/100;
+		int barY = getHeight() - 10 - 10;
+		
+		g.drawString(m_progress+"%", getWidth() - 40, barY + 10);
+		g.drawRect(10, barY, barWidth, 10);
+		g.fillRect(12, barY+2, fillWidth, 7);
 	}
 	
 	/**
@@ -175,20 +218,27 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			m_flame = null;
 		}
 		
+		
 		// On peut maintenant calculer la fractale avec les paramètres de taille
 		m_flame = m_builder.build();
 		m_flame.addListener(new Flame.Listener() {
 			
 			@Override
 			public void onComputeProgress(int percent) {
-				m_inProgress = true;
-				repaint();
+				synchronized(m_progress){
+					m_progress = percent;
+					m_displayProgress = true;
+					repaint();
+				}
 			}
 			
 			@Override
 			public void onComputeDone(FlameAccumulator accumulator) {
-				m_accu = accumulator;
-				repaint();
+				synchronized(m_progress){
+					m_accu = accumulator;
+					m_displayProgress = false;
+					repaint();
+				}
 			}
 		});
 	
@@ -198,6 +248,12 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		m_lastWidth = this.getWidth();
 		
 		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_density);
+		
+		synchronized(m_progress){
+			m_displayProgress = true;
+			m_progress = 0;
+			repaint();
+		}
 	}
 	
 	/**

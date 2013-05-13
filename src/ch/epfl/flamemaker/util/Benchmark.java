@@ -48,7 +48,7 @@ public class Benchmark {
 	 * @param name
 	 * 		Nom de la première section de la capture
 	 */
-	public void startCapture(String name){
+	synchronized public void startCapture(String name){
 		 m_beginTime = System.nanoTime()/1000;
 		 m_totalTime = m_currentTime = 0;
 		 m_results = new LinkedList<Element>();
@@ -59,7 +59,7 @@ public class Benchmark {
 	/**
 	 * Arrête la séquence de capture
 	 */
-	public void stopCapture(){
+	synchronized public void stopCapture(){
 		nextSection("blank");
 	}
 	
@@ -68,7 +68,7 @@ public class Benchmark {
 	 * @param name
 	 * 		Nom de la prochaine section
 	 */
-	public void nextSection(String name){
+	synchronized public void nextSection(String name){
 		
 		long newTime = System.nanoTime()/1000 - m_beginTime;
 		

@@ -10,9 +10,10 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 class DefaultStrategy extends FlameStrategy {
 	
+	public static final int PROGRESS_DEFINITION = 5;
 	@Override
 	public String name() {
-		return "Par défaut";
+		return "Standard";
 	}
 	
 	@Override
@@ -72,11 +73,12 @@ class DefaultStrategy extends FlameStrategy {
 				point = transformations.get(transformationNum).transformPoint(point);
 				lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
 				
-				if(i >= progress + progressStep){
-					progress += progressStep;
-					triggerComputeProgress(progress/progressStep);
-				}
 				builder.hit(point, lastColor);
+				
+				if(i >= (progress + PROGRESS_DEFINITION)*progressStep){
+					progress += PROGRESS_DEFINITION;
+					triggerComputeProgress(progress);
+				}
 			}
 			
 			// On construit l'accumulateur

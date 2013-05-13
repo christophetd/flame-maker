@@ -40,6 +40,7 @@ public class Flame {
 		if(m_worker != null){
 			abort();
 		}
+		
 		/* On démarre le travail dans un nouveau thread. On utilise une classe anonyme pour encapsuler le thread
 		 * puisqu'on veut uniquement exposer l'API compute() et abort() .
 		 */
@@ -64,14 +65,16 @@ public class Flame {
 	}
 	
 	public final void abort(){
-		m_aborted = true;
-		try {
-			m_worker.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(m_worker != null){
+			m_aborted = true;
+			try {
+				m_worker.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			m_worker = null;
 		}
-		m_worker = null;
 	}
 	
 	protected boolean isAborted(){
@@ -112,7 +115,7 @@ public class Flame {
 	}
 	
 	protected List<FlameTransformation> getTransforms(){
-	return new ArrayList<FlameTransformation>(m_transforms);
+		return new ArrayList<FlameTransformation>(m_transforms);
 	}
 	
 	/**

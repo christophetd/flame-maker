@@ -166,16 +166,16 @@ class OpenCLStrategy extends FlameStrategy {
 				
 				computeEvt = m_kernel.enqueueNDRange(m_queue, new int[] { kernel_count });
 				
-				if(100*i/iterations > percent+4){
+				computeEvt.waitFor();
+				
+				if(100*i/iterations > percent){
 					percent = 100*i/iterations;
 					triggerComputeProgress(percent);
 				}
 			}
-			
 			intensitiesPtr = intensities.read(m_queue, computeEvt);
 			
 			mapPtr = map.read(m_queue);
-			
 			//On libère les ressources inutiles
 			seeds.release();
 			seedsPtr.release();
@@ -199,17 +199,10 @@ class OpenCLStrategy extends FlameStrategy {
 				}
 	        }
 			
-			
 			intensitiesPtr.release();
 			mapPtr.release();
 			
-			
-			triggerComputeProgress(100);
-			
-			
-			FlameAccumulator ret = new FlameAccumulator(hitCountArray, colorArray);		
-			
-			return ret;
+			return new FlameAccumulator(hitCountArray, colorArray);
 		}
 		
 		/**
