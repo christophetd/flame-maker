@@ -12,7 +12,7 @@ class DefaultStrategy extends FlameStrategy {
 	
 	@Override
 	public String name() {
-		return "default";
+		return "Par défaut";
 	}
 	
 	@Override

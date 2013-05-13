@@ -1,5 +1,6 @@
 package ch.epfl.flamemaker.gui;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -48,6 +49,8 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	
 	private boolean m_dragging;
 	
+	private boolean m_inProgress;
+	
 	// Densité du dessin
 	private int m_density;
 	
@@ -93,6 +96,8 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);
+		this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+		
 		m_frame.addListener(this);
 	}
 
@@ -103,11 +108,16 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	 */
 	@Override
 	protected void paintComponent(final Graphics g){
-		
+		super.paintComponent(g);
 		// L'utilisateur a modifié ou modifie le cadre de vue
 		if(m_dragging){
 			int newWidth = (int)(m_lastFrame.width()/m_frame.width()*this.getWidth());
 			int newHeight = (int)(m_lastFrame.height()/m_frame.height()*this.getHeight());
+			
+			/* Evite d'afficher la couleur par défaut dans les zones pas couvertes par l'image */
+			g.setColor(java.awt.Color.BLACK);
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			
 			g.drawImage(m_image, 
 					(int)((m_lastFrame.center().x() - m_frame.center().x())*(this.getWidth()/m_realFrame.width())) + (getWidth() - newWidth)/2, 
 					(int)((m_frame.center().y() - m_lastFrame.center().y())*(this.getHeight()/m_realFrame.height())) + (getHeight() - newHeight)/2
@@ -118,11 +128,18 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 				m_dragging = false;
 				recompute();
 			}
-		
+		} else if(m_inProgress){
+			m_inProgress = false;
 		// Aucune vue n'est disponible ou le composant a été redimentionné
 		} else if(m_accu == null || m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
 			recompute();
-			g.drawImage(m_image, 0, 0, this.getWidth(), this.getHeight(), null);
+			if(m_image != null){
+				
+				Rectangle rect = new Rectangle(new Point(0,0), this.getWidth(), this.getHeight())
+						.expandToAspectRatio((double)m_image.getWidth()/m_image.getHeight());
+						
+				g.drawImage(m_image, (int)(this.getWidth()-rect.width())/2, (int)(this.getHeight()-rect.height())/2, (int)rect.width(), (int)rect.height(), null);
+			}
 		// Sinon, c'est qu'on a fini un recompute, on génère l'image résultante
 		} else{
 			
@@ -164,7 +181,8 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			
 			@Override
 			public void onComputeProgress(int percent) {
-				//System.out.println("progress : "+percent+"%");
+				m_inProgress = true;
+				repaint();
 			}
 			
 			@Override

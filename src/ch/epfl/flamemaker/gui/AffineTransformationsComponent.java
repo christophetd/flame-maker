@@ -34,8 +34,6 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 	
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
-	final private static Color BACKGROUND_COLOR = new Color(214, 217, 223, 255);
-	
 	public AffineTransformationsComponent(ObservableFlameBuilder builder, ObservableRectangle frame) {
 		m_builder = builder;
 		m_frame = frame;
@@ -238,7 +236,7 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 		for(int i = 0 ; i < m_boundingBoxes.size() ; i++){
 			Rectangle rect = m_boundingBoxes.get(i);
 			
-			if(rect.contains(p)){
+			if(rect.contains(p) && m_highlightedTransformationIndex != i){
 				double area = rect.area();
 				if( area < minArea){
 					minArea = rect.area();
