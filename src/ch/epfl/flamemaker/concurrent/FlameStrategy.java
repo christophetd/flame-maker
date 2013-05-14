@@ -13,6 +13,7 @@ public abstract class FlameStrategy{
 	 */
 	public static final List<FlameStrategy> ALL_STARTEGIES = Arrays.asList(
 		new OpenCLStrategy(),
+		new ThreadStartegy(),
 		new DefaultStrategy()
 	);
 	

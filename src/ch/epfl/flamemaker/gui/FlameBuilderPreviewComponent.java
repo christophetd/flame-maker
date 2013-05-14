@@ -248,12 +248,6 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		m_lastWidth = this.getWidth();
 		
 		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_density);
-		
-		synchronized(m_progress){
-			m_displayProgress = true;
-			m_progress = 0;
-			repaint();
-		}
 	}
 	
 	/**
@@ -290,6 +284,11 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		m_dragging = true;
 		
 		addMouseMotionListener(this);
+		
+		if(m_flame != null){
+			m_flame.destroy();
+			m_flame = null;
+		}
 	}
 
 

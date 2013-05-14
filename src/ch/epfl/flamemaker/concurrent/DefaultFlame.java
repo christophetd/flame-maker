@@ -35,6 +35,9 @@ class DefaultStrategy extends FlameStrategy {
 		@Override
 		protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
 				final int density) {
+			
+			triggerComputeProgress(0);
+			
 			// On initialise un random déterminé par la graine 2013
 			Random randomizer = new Random(2013);
 			
@@ -55,7 +58,7 @@ class DefaultStrategy extends FlameStrategy {
 	
 			// Garde en mémoire la couleur du dernier point accumulé
 			double lastColor = 0;
-	
+			
 			// 20 premières itérations dans le vide pour l'algorithme du chaos
 			for (int i = 0; i < k; i++) {
 				transformationNum = randomizer.nextInt(size);
