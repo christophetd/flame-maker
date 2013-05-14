@@ -333,7 +333,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		
 		
-		double factor = (evt.getWheelRotation() > 0) ? 1.0/ZOOM_FACTOR : ZOOM_FACTOR;
+		double factor = (evt.getWheelRotation() < 0) ? 1.0/ZOOM_FACTOR : ZOOM_FACTOR;
 		
 		m_dragging = true;
 		m_frame.setSize(m_frame.width()*factor, m_frame.height()*factor);
