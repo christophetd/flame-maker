@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import ch.epfl.flamemaker.concurrent.FlameSet;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
@@ -34,9 +35,9 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 	
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
-	public AffineTransformationsComponent(ObservableFlameBuilder builder, ObservableRectangle frame) {
-		m_builder = builder;
-		m_frame = frame;
+	public AffineTransformationsComponent(FlameSet set) {
+		m_builder = set.getBuilder();
+		m_frame = set.getFrame();
 		
 		m_frame.addListener(this);
 		

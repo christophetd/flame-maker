@@ -20,41 +20,40 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
+import ch.epfl.flamemaker.concurrent.FlameSet;
 import ch.epfl.flamemaker.concurrent.FlameStrategy;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
-import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
-import ch.epfl.flamemaker.geometry2d.Rectangle;
-import ch.epfl.flamemaker.color.Color;
-import ch.epfl.flamemaker.color.Palette;
+import ch.epfl.flamemaker.flame.Preset;
 
 public class MenuBar {
 
 	private static String currentFilePath = null;
 	
-	public static void build(final JFrame window, final ObservableFlameBuilder flameBuilder, 
-			final ObservableRectangle observableFrame, 
-			final Palette palette, 
-			final Color bgColor,
-			final TransformationsListModel transformationsListModel) {
+	public static void build(final JFrame window, final FlameSet set, final TransformationsListModel transformationsListModel) {
 		/* Menu bar */
 		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("Fichier");
 		JMenuItem openMenuItem = new JMenuItem("Ouvrir");
 		JMenuItem newMenuItem = new JMenuItem("Nouveau [todo]");
-		JMenu newFromMenuItem = new JMenu("Nouveau à partir d'un modèle [todo]");
+		JMenu newFromMenuItem = new JMenu("Nouveau à partir d'un modèle");
 		JMenuItem saveMenuItem = new JMenuItem("Enregistrer");
 		final JMenuItem saveAsMenuItem = new JMenuItem("Enregistrer sous");
 		JMenuItem exportMenuItem =  new JMenuItem("Exporter");
 		JMenuItem closeMenuItem = new JMenuItem("Quitter");
 		
-		JMenuItem sharkFinItem = new JMenuItem("Shark fin");
-		JMenuItem turbulenceItem = new JMenuItem("Turbulence");
-		JMenuItem fougereItem = new JMenuItem("Fougère");
-		newFromMenuItem.add(sharkFinItem);
-		newFromMenuItem.add(turbulenceItem);
-		newFromMenuItem.add(fougereItem);
+		for(final Preset p : Preset.ALL_PRESETS){
+			JMenuItem item = new JMenuItem(p.name());
+			newFromMenuItem.add(item);
+			item.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					set.loadPreset(p);
+				}
+				
+			});
+		}
 		
 		fileMenu.add(openMenuItem);
 		fileMenu.add(newMenuItem);
@@ -93,9 +92,9 @@ public class MenuBar {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					flameBuilder.getComputeStrategy().deactivate();
+					set.getBuilder().getComputeStrategy().deactivate();
 					strategy.activate();
-					flameBuilder.setComputeStrategy(strategy);
+					set.getBuilder().setComputeStrategy(strategy);
 				}
 				
 			});
@@ -186,7 +185,7 @@ public class MenuBar {
 		saveMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				if(currentFilePath != null) {
-					FlameFile.saveToFile(flameBuilder, currentFilePath);
+					FlameFile.saveToFile(set.getBuilder(), currentFilePath);
 				}
 				else {
 					saveAsMenuItem.doClick();
@@ -194,12 +193,12 @@ public class MenuBar {
 			}        
 		});
 		
-		saveAsMenuItem.addActionListener(new MenuBar.SaveAsActionListener(window, flameBuilder));
+		saveAsMenuItem.addActionListener(new MenuBar.SaveAsActionListener(window, set.getBuilder()));
 		
 		exportMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFrame exportWindow = new ExportWindow(flameBuilder, observableFrame, palette, bgColor);
+				new ExportWindow(set);
 			}
 		});
 		

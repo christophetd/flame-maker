@@ -14,59 +14,30 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import sun.awt.image.PixelConverter.Bgrx;
-
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
-import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.concurrent.Flame;
+import ch.epfl.flamemaker.concurrent.FlameSet;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.flame.Preset;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 
 public class FlameMakerGUI {
 
-	private ObservableFlameBuilder flameBuilder;
-	private Color backgroundColor;
-	private Palette palette;
-	private ObservableRectangle frame;
-	private int density;
+	/*
+	 * Contient toutes les informations sur la flame courante et ses informations d'affichage
+	 */
+	private FlameSet m_set;
+	
 	
 	private int m_selectedTransformationId;
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
 	public FlameMakerGUI() {
-		
-		// Tableau des transformations
-		ArrayList<FlameTransformation> transformations = new ArrayList<FlameTransformation>();
-
-		// Définition des transformations
-		transformations.add(new FlameTransformation(new AffineTransformation(
-				-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
-				new double[] { 1, 0.1, 0, 0, 0, 0 }));
-
-		transformations.add(new FlameTransformation(new AffineTransformation(
-				-0.3957339, 0, -1.6, 0, -0.3957337, 0.2), new double[] { 0, 0,
-				0, 0, 0.8, 1 }));
-
-		transformations.add(new FlameTransformation(new AffineTransformation(
-				0.4810169, 0, 1, 0, 0.4810169, 0.9), new double[] { 1, 0, 0, 0,
-				0, 0 }));
-		flameBuilder = new ObservableFlameBuilder(new Flame(transformations));
-		backgroundColor = Color.BLACK;
-		
-		ArrayList<Color> paletteColors = new ArrayList<Color>();
-		paletteColors.add(Color.RED);
-		paletteColors.add(Color.GREEN);
-		paletteColors.add(Color.BLUE);
-		palette = new InterpolatedPalette(paletteColors);
-		
-		frame = new ObservableRectangle(new Point(-0.25, 0), 5, 4);
-		
-		density = 50;
-		
+		m_set = new FlameSet(Preset.ALL_PRESETS.get(0));
 	}
 	
 	public void start() {
@@ -83,7 +54,7 @@ public class FlameMakerGUI {
 				selectedTransformationEditPanel = new JPanel(),
 				fractalPanel = new JPanel();
 		
-		final AffineTransformationsComponent affineTransformationComponent = new AffineTransformationsComponent(flameBuilder, frame);
+		final AffineTransformationsComponent affineTransformationComponent = new AffineTransformationsComponent(m_set);
 		
 		/* Upper panel */
 		window.getContentPane().add(upperPanel, BorderLayout.CENTER);
@@ -99,13 +70,13 @@ public class FlameMakerGUI {
 	
 		
 		transformationsPreviewPanel.add(affineTransformationComponent, BorderLayout.CENTER);
-		fractalPanel.add(new FlameBuilderPreviewComponent(flameBuilder, backgroundColor, palette, frame, density), BorderLayout.CENTER);
+		fractalPanel.add(new FlameBuilderPreviewComponent(m_set), BorderLayout.CENTER);
 		
 		/* Lower panel */
 		window.getContentPane().add(lowerPanel, BorderLayout.PAGE_END);
 		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
 		
-		final TransformationsEditPanel transformationsEditPanel = new TransformationsEditPanel(flameBuilder);
+		final TransformationsEditPanel transformationsEditPanel = new TransformationsEditPanel(m_set.getBuilder());
 		// Panneau d'édition des transformations
 		lowerPanel.add(transformationsEditPanel);
 		
@@ -129,7 +100,7 @@ public class FlameMakerGUI {
 		selectedTransformationEditPanel.setLayout(new BoxLayout(selectedTransformationEditPanel, BoxLayout.PAGE_AXIS));
 		selectedTransformationEditPanel.setBorder(BorderFactory.createTitledBorder("Transformation courante"));
 		
-		final AffineModificationComponent affineModificationComponent = new AffineModificationComponent(flameBuilder);
+		final AffineModificationComponent affineModificationComponent = new AffineModificationComponent(m_set.getBuilder());
 		affineModificationComponent.setSelectedTransformationIndex(0);
 		affineTransformationComponent.highlightedTransformationIndex(0);
 		
@@ -147,7 +118,7 @@ public class FlameMakerGUI {
 		
 		selectedTransformationEditPanel.add(new JSeparator());
 		
-		final WeightsModificationComponent weightsModificationComponent = new WeightsModificationComponent(flameBuilder);
+		final WeightsModificationComponent weightsModificationComponent = new WeightsModificationComponent(m_set.getBuilder());
 		weightsModificationComponent.setSelectedTransformationIndex(0);
 		selectedTransformationEditPanel.add(weightsModificationComponent);
 		
@@ -164,7 +135,7 @@ public class FlameMakerGUI {
 		});
 		
 		/* -------- */
-		MenuBar.build(window, flameBuilder, frame, palette, backgroundColor, transformationsEditPanel.getListModel());
+		MenuBar.build(window, m_set, transformationsEditPanel.getListModel());
 		
 		ImageIcon icon = new ImageIcon("C:\\Users\\Christophe\\workspace\\flame-maker\\icon.png");
 		window.setIconImage(icon.getImage());

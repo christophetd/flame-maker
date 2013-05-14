@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.concurrent.Flame;
+import ch.epfl.flamemaker.concurrent.FlameSet;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
@@ -30,18 +31,6 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	
 	static public final double ZOOM_FACTOR = 1.1;
 	
-	// Palette de couleur avec laquelle dessiner la fractale
-	private Palette m_palette;
-	
-	// Couleur de fond
-	private Color m_bgColor;
-	
-	// Constructeur de la fractale à dessiner
-	private ObservableFlameBuilder m_builder;
-	
-	// Cadre de la fractale à dessiner
-	private ObservableRectangle m_frame;
-	
 	private Rectangle m_lastFrame;
 	
 	// Cadre redimentionné pour atteindre le ratio du composant
@@ -54,8 +43,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	
 	private Integer m_progress = -1;
 	
-	// Densité du dessin
-	private int m_density;
+	private FlameSet m_set;
 	
 	private Flame m_flame;
 	
@@ -74,34 +62,21 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 
 	/**
 	 * Constructeur, initialise les arguments.
-	 * @param builder Constructeur de la fractale à dessiner
-	 * @param backgroundColor Couleur de fond
-	 * @param palette Palette de couleur avec laquelle dessiner la fractale
-	 * @param frame Cadre de la fractale à dessiner
-	 * @param density Densité du dessin
+	 * TODO : javadoc
 	 */
-	public FlameBuilderPreviewComponent(
-			ObservableFlameBuilder builder,
-			Color backgroundColor,
-			Palette palette,
-			ObservableRectangle frame,
-			int density){
+	public FlameBuilderPreviewComponent(FlameSet set){
 		
-		m_bgColor = backgroundColor;
-		m_palette = palette;
-		m_builder = builder;
-		m_frame = frame;
-		m_density = density;
+		m_set = set;
 		
-		m_lastFrame = m_frame.toRectangle();
+		m_lastFrame = set.getFrame().toRectangle();
 		
-		m_builder.addListener(this);
+		set.getBuilder().addListener(this);
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);
 		this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 		
-		m_frame.addListener(this);
+		set.getFrame().addListener(this);
 	}
 
 	
@@ -115,16 +90,16 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		// L'utilisateur a modifié ou modifie le cadre de vue
 		if(m_dragging){
-			int newWidth = (int)(m_lastFrame.width()/m_frame.width()*this.getWidth());
-			int newHeight = (int)(m_lastFrame.height()/m_frame.height()*this.getHeight());
+			int newWidth = (int)(m_lastFrame.width()/m_set.getFrame().width()*this.getWidth());
+			int newHeight = (int)(m_lastFrame.height()/m_set.getFrame().height()*this.getHeight());
 			
 			/* Evite d'afficher la couleur par défaut dans les zones pas couvertes par l'image */
 			g.setColor(java.awt.Color.BLACK);
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			
 			m_drawingRect = new Rectangle(new Point(
-					(m_lastFrame.center().x() - m_frame.center().x())*(this.getWidth()/m_realFrame.width()) + getWidth()/2, 
-					(m_frame.center().y() - m_lastFrame.center().y())*(this.getHeight()/m_realFrame.height()) + getHeight()/2),
+					(m_lastFrame.center().x() - m_set.getFrame().center().x())*(this.getWidth()/m_realFrame.width()) + getWidth()/2, 
+					(m_set.getFrame().center().y() - m_lastFrame.center().y())*(this.getHeight()/m_realFrame.height()) + getHeight()/2),
 					newWidth,
 					newHeight);
 			
@@ -154,16 +129,18 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			}
 		// Sinon, c'est qu'on a fini un recompute, on génère l'image résultante
 		} else if(m_accu != null){
-			m_lastFrame = m_frame.toRectangle();
+			m_lastFrame = m_set.getFrame().toRectangle();
 			
 			m_image = new BufferedImage(m_accu.width(), m_accu.height(), BufferedImage.TYPE_INT_RGB);
 			
 			for(int x = 0 ; x < m_accu.width() ; x++){
 				for(int y = 0 ; y < m_accu.height() ; y++){
 					// On met à jour la couleur du pixel courant
-					m_image.setRGB(x, m_accu.height() - y -1, m_accu.color(m_palette, m_bgColor, x, y).asPackedRGB());
+					m_image.setRGB(x, m_accu.height() - y -1, m_accu.color(m_set.getPalette(), m_set.getBackgroundColor(), x, y).asPackedRGB());
 				}
 			}
+			
+			// GaussianBlurFilter f;
 			
 			//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
 			g.drawImage(m_image, 0, 0, null);
@@ -220,7 +197,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		
 		// On peut maintenant calculer la fractale avec les paramètres de taille
-		m_flame = m_builder.build();
+		m_flame = m_set.getBuilder().build();
 		m_flame.addListener(new Flame.Listener() {
 			
 			@Override
@@ -242,12 +219,12 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			}
 		});
 	
-		m_realFrame = m_frame.expandToAspectRatio((double)this.getWidth()/this.getHeight());
+		m_realFrame = m_set.getFrame().expandToAspectRatio((double)this.getWidth()/this.getHeight());
 		
 		m_lastHeight = this.getHeight();
 		m_lastWidth = this.getWidth();
 		
-		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_density);
+		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_set.getDensity());
 	}
 	
 	/**
@@ -296,9 +273,9 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	public void mouseReleased(MouseEvent evt) {
 		m_preventRecompute = false;
 		
-		m_frame.setCenter(new Point(
-				m_frame.center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
-				m_frame.center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
+		m_set.getFrame().setCenter(new Point(
+				m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
+				m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
 		));
 		
 		removeMouseMotionListener(this);
@@ -313,9 +290,9 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 
 	@Override
 	public void mouseDragged(MouseEvent evt) {
-		m_frame.setCenter(new Point(
-				m_frame.center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
-				m_frame.center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
+		m_set.getFrame().setCenter(new Point(
+				m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
+				m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
 		));
 		
 		m_mouseX = evt.getX();
@@ -336,6 +313,6 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		double factor = (evt.getWheelRotation() < 0) ? 1.0/ZOOM_FACTOR : ZOOM_FACTOR;
 		
 		m_dragging = true;
-		m_frame.setSize(m_frame.width()*factor, m_frame.height()*factor);
+		m_set.getFrame().setSize(m_set.getFrame().width()*factor, m_set.getFrame().height()*factor);
 	}
 }

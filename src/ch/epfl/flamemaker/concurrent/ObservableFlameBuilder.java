@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import ch.epfl.flamemaker.concurrent.Flame;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.Variation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
@@ -22,6 +23,11 @@ public class ObservableFlameBuilder {
 	 */
 	public ObservableFlameBuilder(Flame flame) {
 		m_builder = new Flame.Builder(flame);
+	}
+	
+	public void set(Flame flame){
+		m_builder = new Flame.Builder(flame);
+		notifyObservers();
 	}
 	
 	/**

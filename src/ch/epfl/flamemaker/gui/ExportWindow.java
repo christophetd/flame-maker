@@ -25,9 +25,8 @@ import javax.swing.JProgressBar;
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.concurrent.Flame;
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.concurrent.FlameSet;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 
 @SuppressWarnings("serial")
 public class ExportWindow extends JFrame implements Flame.Listener {
@@ -44,9 +43,9 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 
 	private long m_beginComputeTime;
 	
-	public ExportWindow(final ObservableFlameBuilder flameBuilder, final ObservableRectangle observableFrame, final Palette palette, final Color bgColor) {
-		m_palette = palette;
-		m_bgColor = bgColor;
+	public ExportWindow(final FlameSet set) {
+		m_palette = set.getPalette();
+		m_bgColor = set.getBackgroundColor();
 
 		setPreferredSize(new Dimension(400, 200));
 		setTitle("Exporter la fractale");
@@ -140,7 +139,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					
 					m_progressBar.setString("0 %");
 					
-					final Flame flame = flameBuilder.build();
+					final Flame flame = set.getBuilder().build();
 					flame.addListener(flameListener);
 					
 					m_cancelButton.addActionListener(new ActionListener() {
@@ -161,7 +160,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					
 					
 					
-					flame.compute(observableFrame.toRectangle().expandToAspectRatio((double)width/height)
+					flame.compute(set.getFrame().toRectangle().expandToAspectRatio((double)width/height)
 							, width, height, ((Number)densityField.getValue()).intValue());
 					
 					/*window.setVisible(false);

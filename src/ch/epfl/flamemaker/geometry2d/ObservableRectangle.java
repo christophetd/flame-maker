@@ -35,6 +35,11 @@ public class ObservableRectangle {
 	public ObservableRectangle(Point center, double width, double height) {
 		m_rect = new Rectangle(center, width, height);
 	}
+	
+	//TODO javadoc
+	public ObservableRectangle(Rectangle rect){
+		m_rect = rect;
+	}
 
 	/**
 	 * @return La plus petite coordonnée horizontale du rectangle.
