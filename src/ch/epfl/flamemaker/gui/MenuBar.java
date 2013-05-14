@@ -22,13 +22,21 @@ import javax.swing.KeyStroke;
 
 import ch.epfl.flamemaker.concurrent.FlameStrategy;
 import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
+import ch.epfl.flamemaker.geometry2d.Rectangle;
+import ch.epfl.flamemaker.color.Color;
+import ch.epfl.flamemaker.color.Palette;
 
 public class MenuBar {
 
 	private static String currentFilePath = null;
 	
 	public static void build(final JFrame window, final ObservableFlameBuilder flameBuilder, 
+			final ObservableRectangle observableFrame, 
+			final Palette palette, 
+			final Color bgColor,
 			final TransformationsListModel transformationsListModel) {
 		/* Menu bar */
 		final JMenuBar menuBar = new JMenuBar();
@@ -38,7 +46,7 @@ public class MenuBar {
 		JMenu newFromMenuItem = new JMenu("Nouveau à partir d'un modèle [todo]");
 		JMenuItem saveMenuItem = new JMenuItem("Enregistrer");
 		final JMenuItem saveAsMenuItem = new JMenuItem("Enregistrer sous");
-		JMenuItem exportMenuItem =  new JMenuItem("Exporter [todo]");
+		JMenuItem exportMenuItem =  new JMenuItem("Exporter");
 		JMenuItem closeMenuItem = new JMenuItem("Quitter");
 		
 		JMenuItem sharkFinItem = new JMenuItem("Shark fin");
@@ -191,7 +199,7 @@ public class MenuBar {
 		exportMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFrame exportWindow = new ExportWindow();
+				JFrame exportWindow = new ExportWindow(flameBuilder, observableFrame, palette, bgColor);
 			}
 		});
 		

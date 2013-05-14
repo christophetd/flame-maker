@@ -9,9 +9,12 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+
+import sun.awt.image.PixelConverter.Bgrx;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
@@ -161,8 +164,10 @@ public class FlameMakerGUI {
 		});
 		
 		/* -------- */
-		MenuBar.build(window, flameBuilder, transformationsEditPanel.getListModel());
+		MenuBar.build(window, flameBuilder, frame, palette, backgroundColor, transformationsEditPanel.getListModel());
 		
+		ImageIcon icon = new ImageIcon("C:\\Users\\Christophe\\workspace\\flame-maker\\icon.png");
+		window.setIconImage(icon.getImage());
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
