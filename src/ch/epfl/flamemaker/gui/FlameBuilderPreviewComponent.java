@@ -14,11 +14,11 @@ import javax.swing.JComponent;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.concurrent.Flame;
-import ch.epfl.flamemaker.concurrent.FlameSet;
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder.Listener;
+import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
+import ch.epfl.flamemaker.flame.FlameSet;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;

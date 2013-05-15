@@ -2,21 +2,21 @@ package ch.epfl.flamemaker.flame;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
-import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
-/**
- * Classe modélisant une fractale de type Flame
- */
 public class Flame {
-	
 	/**
 	 * Contient la liste des transformations caractérisant la fractale
 	 */
 	final private List<FlameTransformation> m_transforms;
+	
+	private List<Listener> m_listeners = new ArrayList<Listener>();
+	
+	private boolean m_aborted = false;
+	
+	private Thread m_worker;
 
 	/**
 	 * Construit une nouvelle fractale à partir d'une liste de transformation la
@@ -24,72 +24,104 @@ public class Flame {
 	 * 
 	 * @param transforms
 	 *            La liste des transformation
+	 * @param strategy
+	 * 			  Strategie employée pour le rendu
 	 */
-	public Flame(List<FlameTransformation> transforms) {
-		m_transforms = new ArrayList<FlameTransformation>(transforms);
+	public Flame(List<FlameTransformation> transforms){ 
+		m_transforms = transforms;
 	}
-
-	/**
-	 * @param frame
-	 *            La région du plan dans laquelle calculer la fractale
-	 * @param width
-	 *            La largeur de l'accumulateur à générer
-	 * @param height
-	 *            La hauteur de l'accumulateur à générer
-	 * @param density
-	 *            La densité utilisée pour générer les points de la fractale
-	 *            (influe sur le nombre de points calculés par l'algorithme)
-	 * @return L'accumulateur contenant les points de la fractale
-	 */
-	public FlameAccumulator compute(Rectangle frame, int width, int height,
-			int density) {
-		// On initialise un random déterminé par la graine 2013
-		Random randomizer = new Random(2013);
-
-		// Création des variables utilisées dans les boucles de calcul
-		Point point = new Point(0, 0);
-		int k = 20;
-		int transformationNum;
-
-		// On récupère une fois pour toutes la taille de la liste de
-		// transformations
-		int size = m_transforms.size();
-
-		// Création du builder
-		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame,
-				width, height);
-
-		// Garde en mémoire la couleur du dernier point accumulé
-		double lastColor = 0;
-
-		// 20 premières itérations dans le vide pour l'algorithme du chaos
-		for (int i = 0; i < k; i++) {
-			transformationNum = randomizer.nextInt(size);
-			point = m_transforms.get(transformationNum).transformPoint(point);
-			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
+	
+	public final void compute(final Rectangle frame, final int width, final int height,
+			final int density){
+		
+		if(m_worker != null){
+			abort();
 		}
-
-		// Iterations accumulées pour le rendu
-		int m = density * width * height;
-		for (int i = 0; i < m; i++) {
-			transformationNum = randomizer.nextInt(size);
-			point = m_transforms.get(transformationNum).transformPoint(point);
-			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
-
-			builder.hit(point, lastColor);
-		}
-
-		// On construit l'accumulateur
-		return builder.build();
+		
+		/* On démarre le travail dans un nouveau thread. On utilise une classe anonyme pour encapsuler le thread
+		 * puisqu'on veut uniquement exposer l'API compute() et abort() .
+		 */
+		m_worker = new Thread(){
+			@Override
+			public void run(){
+				FlameAccumulator acc = doCompute(frame, width, height, density);
+				// Quand on a fini de calculer :
+				triggerComputeDone(acc);
+			}
+		};
+		m_aborted = false;
+		m_worker.start();
+		
 	}
-
+	
+	public void destroy(){
+		synchronized(m_listeners) {
+			m_listeners.clear();
+		}
+		abort();
+	}
+	
+	public final void abort(){
+		if(m_worker != null){
+			m_aborted = true;
+			try {
+				m_worker.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			m_worker = null;
+		}
+	}
+	
+	protected boolean isAborted(){
+		return m_aborted;
+	}
+	
+	protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
+			final int density){
+		throw new UnsupportedOperationException("L'implémentation par défaut de flame ne permet pas le rendu !");
+	}
+	
+	public void addListener(Listener l){
+		synchronized(m_listeners) {
+			m_listeners.add(l);
+		}
+	}
+	
+	public void removeListener(Listener l){
+		synchronized(m_listeners) {
+			m_listeners.remove(l);
+		}
+	}
+	
+	protected void triggerComputeDone(FlameAccumulator acc){
+		synchronized(m_listeners) {
+			for(Listener l : m_listeners){
+				l.onComputeDone(acc);
+			}
+		}
+	}
+	
+	protected void triggerComputeProgress(int percent){
+		synchronized(m_listeners) {
+			for(Listener l : m_listeners){
+				l.onComputeProgress(percent);
+			}
+		}
+	}
+	
+	protected List<FlameTransformation> getTransforms(){
+		return new ArrayList<FlameTransformation>(m_transforms);
+	}
+	
 	/**
 	 * @param index
 	 *            L'index de la transformation de laquelle on désire avoir
 	 *            l'index de couleur
 	 * @return L'index de couleur associé à la transformation
 	 */
-	private double getColorIndex(int index) {
+	protected double getColorIndex(int index) {
 
 		if (index >= 2) {
 			double denominateur = Math.pow(2,
@@ -99,6 +131,13 @@ public class Flame {
 		} else {
 			return index;
 		}
+	}
+	
+	public interface Listener {
+		
+		public void onComputeDone(FlameAccumulator acc);
+		
+		public void onComputeProgress(int percent);
 	}
 
 	/**
@@ -111,9 +150,11 @@ public class Flame {
 		 * qui sera construite
 		 */
 		private List<FlameTransformation.Builder> m_transformationsBuilders;
+		
+		private FlameStrategy m_strategy;
 	
 		/**
-		 * Construit un bâtisseur à partir d'une fractale existante
+		 * Construit un bâtisseur à partir d'une fractale existante et choisis la meilleure stratégie de calcul.
 		 * 
 		 * @param flame
 		 *            La fractale flame
@@ -123,6 +164,31 @@ public class Flame {
 			for(FlameTransformation transformation : flame.m_transforms) {
 				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
 			}
+			
+			for(FlameStrategy f : FlameStrategy.ALL_STARTEGIES){
+				if(f.isSupported()){
+					m_strategy = f;
+					m_strategy.activate();
+					break;
+				}
+			}
+		}
+		
+		/**
+		 * Construit un bâtisseur à partir d'une fractale donnée et de la stratégie donnée
+		 * 
+		 * @param flame
+		 * 			La fractale flame
+		 * @param strategy
+		 * 			La stratégie à utiliser
+		 */
+		public Builder(Flame flame, FlameStrategy strategy){
+			m_transformationsBuilders = new ArrayList<FlameTransformation.Builder>();
+			for(FlameTransformation transformation : flame.m_transforms) {
+				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
+			}
+			
+			m_strategy = strategy;
 		}
 
 		/**
@@ -224,6 +290,15 @@ public class Flame {
 			checkIndex(index);
 			m_transformationsBuilders.remove(index);
 		}
+		
+		/**
+		 * Change la stratégie de calcul de la fractale
+		 * @param strategy
+		 * 		Nouvelle stratégie à utiliser.
+		 */
+		public void setComputeStrategy(FlameStrategy strategy){
+			m_strategy = strategy;
+		}
 	
 		/**
 		 * Construit une fractale Flame à partir des informations récoltées
@@ -235,7 +310,7 @@ public class Flame {
 				builtTransformations.add(transfoBuilder.build());
 			}
 			
-			return new Flame(builtTransformations);
+			return m_strategy.createFlame(builtTransformations);
 		}
 	
 		/**
@@ -256,6 +331,9 @@ public class Flame {
 		public FlameTransformation getTransformation(int index) {
 			return m_transformationsBuilders.get(index).build();
 		}
+		
+		public FlameStrategy getComputeStrategy(){
+			return m_strategy;
+		}
 	}
-
 }

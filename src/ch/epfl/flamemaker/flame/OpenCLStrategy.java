@@ -1,4 +1,4 @@
-package ch.epfl.flamemaker.concurrent;
+package ch.epfl.flamemaker.flame;
 
 import static org.bridj.Pointer.allocateFloats;
 import static org.bridj.Pointer.allocateInts;
@@ -11,8 +11,6 @@ import java.util.Random;
 
 import org.bridj.Pointer;
 
-import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 

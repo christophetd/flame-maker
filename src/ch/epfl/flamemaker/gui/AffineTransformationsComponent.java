@@ -14,8 +14,8 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import ch.epfl.flamemaker.concurrent.FlameSet;
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.FlameSet;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;

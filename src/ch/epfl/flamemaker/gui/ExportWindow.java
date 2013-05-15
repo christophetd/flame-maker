@@ -24,9 +24,9 @@ import javax.swing.JProgressBar;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.concurrent.Flame;
-import ch.epfl.flamemaker.concurrent.FlameSet;
+import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
+import ch.epfl.flamemaker.flame.FlameSet;
 
 @SuppressWarnings("serial")
 public class ExportWindow extends JFrame implements Flame.Listener {

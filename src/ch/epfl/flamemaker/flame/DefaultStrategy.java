@@ -1,10 +1,8 @@
-package ch.epfl.flamemaker.concurrent;
+package ch.epfl.flamemaker.flame;
 
 import java.util.List;
 import java.util.Random;
 
-import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 

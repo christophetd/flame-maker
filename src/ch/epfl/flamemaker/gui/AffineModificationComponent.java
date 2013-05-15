@@ -17,7 +17,7 @@ import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 @SuppressWarnings("serial")

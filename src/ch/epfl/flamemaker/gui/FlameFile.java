@@ -14,7 +14,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.swing.JOptionPane;
 
 import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
 public class FlameFile {
 	public static ArrayList<FlameTransformation> getTransformationsFromFile(String filePath) throws IOException, ClassNotFoundException {

@@ -1,9 +1,8 @@
-package ch.epfl.flamemaker.concurrent;
+package ch.epfl.flamemaker.flame;
 
 import java.util.Arrays;
 import java.util.List;
 
-import ch.epfl.flamemaker.flame.FlameTransformation;
 
 public abstract class FlameStrategy{
 	

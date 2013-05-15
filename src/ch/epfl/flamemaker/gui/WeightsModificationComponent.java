@@ -19,7 +19,7 @@ import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Variation;
 
 @SuppressWarnings("serial")

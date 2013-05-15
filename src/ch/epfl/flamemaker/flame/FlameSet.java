@@ -1,11 +1,9 @@
-package ch.epfl.flamemaker.concurrent;
+package ch.epfl.flamemaker.flame;
 
 import java.util.ArrayList;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.flame.Preset;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 
 // TODO javadoc

@@ -7,6 +7,7 @@ import ch.epfl.flamemaker.geometry2d.*;
 /**
  * Classe modélisant une transformation de type Flame
  */
+@SuppressWarnings("serial")
 public class FlameTransformation implements Transformation, Serializable {
 
 	/**

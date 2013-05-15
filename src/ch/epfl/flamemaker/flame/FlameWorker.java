@@ -1,4 +1,4 @@
-package ch.epfl.flamemaker.concurrent;
+package ch.epfl.flamemaker.flame;
 
 public class FlameWorker {
 

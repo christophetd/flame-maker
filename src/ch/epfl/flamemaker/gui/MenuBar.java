@@ -20,10 +20,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import ch.epfl.flamemaker.concurrent.FlameSet;
-import ch.epfl.flamemaker.concurrent.FlameStrategy;
-import ch.epfl.flamemaker.concurrent.ObservableFlameBuilder;
+import ch.epfl.flamemaker.flame.FlameSet;
+import ch.epfl.flamemaker.flame.FlameStrategy;
 import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Preset;
 
 public class MenuBar {
