@@ -96,7 +96,7 @@ class OpenCLStrategy extends FlameStrategy {
 
 	private class OpenCLFlame extends Flame {
 		
-		private static final int MAX_KERNEL_COUNT = 49152;
+		private static final long MAX_KERNEL_COUNT = 49152;
 		
 		private static final int INLINE_TRANSFO_LENGTH = 13;
 		
@@ -116,7 +116,7 @@ class OpenCLStrategy extends FlameStrategy {
 		protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
 				final int density) {
 			
-			int kernel_count = Math.min(MAX_KERNEL_COUNT, density*width*height);
+			int kernel_count = (int) Math.min(MAX_KERNEL_COUNT, (long)density*width*height);
 			
 	        ByteOrder byteOrder = m_context.getByteOrder();
 	        

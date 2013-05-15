@@ -72,6 +72,18 @@ public class Preset {
 	            					new double[] { 1, 0, 0, 0, 0, 0 })
 			)),
 			new Preset(
+					"Oeil de verre",
+					new Rectangle(new Point(0, 0), 15, 15),
+					new InterpolatedPalette(Arrays.asList(new Color(1,1,1), new Color(0.6, 0.3, 0), new Color(0.1, 0, 0.4))),
+					Arrays.asList(
+							new FlameTransformation(
+									new AffineTransformation(1, 0, 0, 0, 1, 0),
+									new double[] {1, 1, 1, 0, 0, 0}),
+	            			new FlameTransformation(
+	            					new AffineTransformation(-0.70710, -0.70710, -0.9, 0.70710, -0.70710, 0),
+	            					new double[] { 1, 0, .4, .4, 0, 0 })
+			)),
+			new Preset(
 					"Shark fin",
 					new Rectangle(new Point(-0.25, 0), 5, 4),
 					new InterpolatedPalette(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE)),
