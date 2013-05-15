@@ -35,7 +35,7 @@ public class MenuBar {
 		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("Fichier");
 		JMenuItem openMenuItem = new JMenuItem("Ouvrir");
-		JMenuItem newMenuItem = new JMenuItem("Nouveau [todo]");
+		JMenuItem newMenuItem = new JMenuItem("Nouveau");
 		JMenu newFromMenuItem = new JMenu("Nouveau à partir d'un modèle");
 		JMenuItem saveMenuItem = new JMenuItem("Enregistrer");
 		final JMenuItem saveAsMenuItem = new JMenuItem("Enregistrer sous");
@@ -54,6 +54,15 @@ public class MenuBar {
 				
 			});
 		}
+		
+		newMenuItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				set.loadPreset(Preset.EMPTY_PRESET);
+			}
+			
+		});
 		
 		fileMenu.add(openMenuItem);
 		fileMenu.add(newMenuItem);
