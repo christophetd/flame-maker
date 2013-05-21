@@ -45,16 +45,16 @@ public class TransformationsEditPanel extends JPanel {
 		m_transformationsList = new JList(m_listModel);
 
 		m_transformationsList
-				.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		m_transformationsList.setVisibleRowCount(5);
 		m_transformationsList
-				.addListSelectionListener(new ListSelectionListener() {
-					@Override
-					public void valueChanged(ListSelectionEvent evt) {
-						notifyTransformationSelected(m_transformationsList
-								.getSelectedIndex());
-					}
-				});
+		.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent evt) {
+				notifyTransformationSelected(m_transformationsList
+						.getSelectedIndex());
+			}
+		});
 
 		JScrollPane transformationsPane = new JScrollPane(m_transformationsList);
 

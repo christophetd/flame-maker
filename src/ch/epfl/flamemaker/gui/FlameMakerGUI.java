@@ -53,11 +53,11 @@ public class FlameMakerGUI {
 				new FlameTransformation(new AffineTransformation(-0.4113504,
 						-0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
 						new double[] { 1, 0.1, 0, 0, 0, 0 }),
-				new FlameTransformation(new AffineTransformation(-0.3957339, 0,
-						-1.6, 0, -0.3957337, 0.2), new double[] { 0, 0, 0, 0,
-						0.8, 1 }), new FlameTransformation(
-						new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169,
-								0.9), new double[] { 1, 0, 0, 0, 0, 0 }))));
+						new FlameTransformation(new AffineTransformation(-0.3957339, 0,
+								-1.6, 0, -0.3957337, 0.2), new double[] { 0, 0, 0, 0,
+							0.8, 1 }), new FlameTransformation(
+									new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169,
+											0.9), new double[] { 1, 0, 0, 0, 0, 0 }))));
 	}
 
 	public void start() {
@@ -103,14 +103,14 @@ public class FlameMakerGUI {
 
 		/* TODO : rassembler du code dupliqué (ici et un peu plus bas) */
 		transformationsEditPanel
-				.addListener(new TransformationsEditPanel.Listener() {
+		.addListener(new TransformationsEditPanel.Listener() {
 
-					@Override
-					public void onTransformationSelected(int transfoId) {
-						self.setSelectedTransformationId(transfoId);
-					}
+			@Override
+			public void onTransformationSelected(int transfoId) {
+				self.setSelectedTransformationId(transfoId);
+			}
 
-				});
+		});
 
 		/* ---- Paneau d'édition de la transformation sélectionnée ---- */
 
@@ -139,7 +139,7 @@ public class FlameMakerGUI {
 			@Override
 			public void onSelectedTransformationIdChange(int id) {
 				affineTransformationComponent
-						.highlightedTransformationIndex(id);
+				.highlightedTransformationIndex(id);
 				affineModificationComponent.setSelectedTransformationIndex(id);
 				transformationsEditPanel.setSelectedTransformationIndex(id);
 				weightsModificationComponent.setSelectedTransformationIndex(id);

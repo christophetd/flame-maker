@@ -84,9 +84,9 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newTranslation(
 								-1
-										* ((Number) translationFactor
-												.getValue()).doubleValue(), 0)
-								.composeWith(t));
+								* ((Number) translationFactor
+										.getValue()).doubleValue(), 0)
+										.composeWith(t));
 			}
 		});
 		H3.addComponent(translationLeftButton);
@@ -103,7 +103,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newTranslation(
 								((Number) translationFactor.getValue())
-										.doubleValue(), 0).composeWith(t));
+								.doubleValue(), 0).composeWith(t));
 			}
 		});
 		H4.addComponent(translationRightButton);
@@ -121,7 +121,7 @@ public class AffineModificationComponent extends JComponent {
 						AffineTransformation.newTranslation(
 								0,
 								((Number) translationFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 			}
 		});
 		H5.addComponent(translationUpButton);
@@ -139,9 +139,9 @@ public class AffineModificationComponent extends JComponent {
 						AffineTransformation.newTranslation(
 								0,
 								-1
-										* ((Number) translationFactor
-												.getValue()).doubleValue())
-								.composeWith(t));
+								* ((Number) translationFactor
+										.getValue()).doubleValue())
+										.composeWith(t));
 			}
 		});
 		H6.addComponent(translationDownButton);
@@ -167,8 +167,8 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newRotation(
 								(Math.PI / 180)
-										* ((Number) rotationFactor.getValue())
-												.doubleValue()).composeWith(t));
+								* ((Number) rotationFactor.getValue())
+								.doubleValue()).composeWith(t));
 			}
 		});
 		H3.addComponent(rotationPositiveButton);
@@ -185,8 +185,8 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newRotation(
 								-(Math.PI / 180)
-										* ((Number) rotationFactor.getValue())
-												.doubleValue()).composeWith(t));
+								* ((Number) rotationFactor.getValue())
+								.doubleValue()).composeWith(t));
 			}
 		});
 		H4.addComponent(rotationNegativeButton);
@@ -214,7 +214,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newScaling(
 								((Number) dilatationFactor.getValue())
-										.doubleValue(), 1).composeWith(t));
+								.doubleValue(), 1).composeWith(t));
 
 			}
 		});
@@ -232,7 +232,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newScaling(
 								1 / ((Number) dilatationFactor.getValue())
-										.doubleValue(), 1).composeWith(t));
+								.doubleValue(), 1).composeWith(t));
 
 			}
 		});
@@ -250,7 +250,7 @@ public class AffineModificationComponent extends JComponent {
 						AffineTransformation.newScaling(
 								1,
 								((Number) dilatationFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 
 			}
 		});
@@ -268,7 +268,7 @@ public class AffineModificationComponent extends JComponent {
 						AffineTransformation.newScaling(
 								1,
 								1 / ((Number) dilatationFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 
 			}
 		});
@@ -294,7 +294,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newShearX(
 								-((Number) transvectionFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 
 			}
 		});
@@ -311,7 +311,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newShearX(
 								((Number) transvectionFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 
 			}
 		});
@@ -328,7 +328,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newShearY(
 								((Number) transvectionFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 
 			}
 		});
@@ -345,7 +345,7 @@ public class AffineModificationComponent extends JComponent {
 						selectedTransformationIndex,
 						AffineTransformation.newShearY(
 								-((Number) transvectionFactor.getValue())
-										.doubleValue()).composeWith(t));
+								.doubleValue()).composeWith(t));
 
 			}
 		});

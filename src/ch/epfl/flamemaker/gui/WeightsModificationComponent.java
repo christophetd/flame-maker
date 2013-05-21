@@ -35,7 +35,7 @@ public class WeightsModificationComponent extends JComponent {
 
 	public WeightsModificationComponent(
 			final ObservableFlameBuilder flameBuilder) {
-		
+
 		this.flameBuilder = flameBuilder;
 
 		GroupLayout weightsGroup = new GroupLayout(this);
@@ -69,24 +69,24 @@ public class WeightsModificationComponent extends JComponent {
 			formattedTextField.addPropertyChangeListener("value",
 					new PropertyChangeListener() {
 
-						@Override
-						public void propertyChange(PropertyChangeEvent evt) {
-							double newWeight = ((Number) formattedTextField
-									.getValue()).doubleValue();
-							Variation concernedVariation = null;
-							for (Variation v : Variation.ALL_VARIATIONS) {
-								if (v.name().equals(label.getText())) {
-									concernedVariation = v;
-								}
-							}
-
-							if (concernedVariation != null) {
-								flameBuilder.setVariationWeight(
-										selectedTransformationIndex,
-										concernedVariation, newWeight);
-							}
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					double newWeight = ((Number) formattedTextField
+							.getValue()).doubleValue();
+					Variation concernedVariation = null;
+					for (Variation v : Variation.ALL_VARIATIONS) {
+						if (v.name().equals(label.getText())) {
+							concernedVariation = v;
 						}
-					});
+					}
+
+					if (concernedVariation != null) {
+						flameBuilder.setVariationWeight(
+								selectedTransformationIndex,
+								concernedVariation, newWeight);
+					}
+				}
+			});
 
 			horizontalGroups.get(h).addComponent(label);
 			verticalGroups.get(v).addComponent(label);

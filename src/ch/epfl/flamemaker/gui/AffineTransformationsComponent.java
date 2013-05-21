@@ -21,7 +21,7 @@ import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
 public class AffineTransformationsComponent extends JComponent implements
-		ObservableFlameBuilder.Listener {
+ObservableFlameBuilder.Listener {
 
 	private ObservableFlameBuilder m_builder;
 
@@ -173,9 +173,9 @@ public class AffineTransformationsComponent extends JComponent implements
 					verticalArrowCoordinates[1]);
 
 			horizontalArrow.applyTransformation(transfo)
-					.applyTransformation(gridMapper).draw(g);
+			.applyTransformation(gridMapper).draw(g);
 			verticalArrow.applyTransformation(transfo)
-					.applyTransformation(gridMapper).draw(g);
+			.applyTransformation(gridMapper).draw(g);
 		}
 
 		g.setColor(oldColor);

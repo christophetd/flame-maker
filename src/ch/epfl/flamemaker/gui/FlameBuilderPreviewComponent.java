@@ -23,7 +23,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  */
 @SuppressWarnings("serial")
 public class FlameBuilderPreviewComponent extends JComponent implements
-		Listener {
+Listener {
 
 	// Palette de couleur avec laquelle dessiner la fractale
 	private Palette m_palette;
