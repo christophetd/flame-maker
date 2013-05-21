@@ -22,23 +22,6 @@ public class ObservableFlameBuilder {
 		m_builder = new Flame.Builder(flame);
 	}
 	
-	public void set(Flame flame){
-		m_builder = new Flame.Builder(flame);
-		notifyObservers();
-	}
-	
-	/**
-	 * Construit un bâtisseur à partir d'une fractale donnée et de la stratégie donnée
-	 * 
-	 * @param flame
-	 * 			La fractale flame
-	 * @param strategy
-	 * 			La stratégie à utiliser
-	 */
-	public ObservableFlameBuilder(Flame flame, FlameStrategy strategy){
-		m_builder = new Flame.Builder(flame, strategy);
-	}
-	
 	/**
 	 * Renvoie la transformation flame à l'index donné
 	 * @param index L'index de la transformation
@@ -173,21 +156,6 @@ public class ObservableFlameBuilder {
 		m_builder.removeTransformation(index);
 		
 		notifyObservers();
-	}
-	
-	/**
-	 * Change la stratégie de calcul de la fractale
-	 * @param strategy
-	 * 		Nouvelle stratégie à utiliser.
-	 */
-	public void setComputeStrategy(FlameStrategy s){
-		m_builder.setComputeStrategy(s);
-		
-		notifyObservers();
-	}
-	
-	public FlameStrategy getComputeStrategy(){
-		return m_builder.getComputeStrategy();
 	}
 	
 	/**

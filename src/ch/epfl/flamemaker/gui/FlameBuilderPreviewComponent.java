@@ -1,197 +1,89 @@
 package ch.epfl.flamemaker.gui;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener;
-import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
-import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
  * Ce component dessine la fractale définie par les paramètres du GUI
- * @todo Modifier rendu
  */
 @SuppressWarnings("serial")
 public class FlameBuilderPreviewComponent extends JComponent implements Listener{
-	
-	static public final double ZOOM_FACTOR = 1.1;
-	
-	private Rectangle m_lastFrame;
-	
-	// Cadre redimentionné pour atteindre le ratio du composant
-	private Rectangle m_realFrame;
-	
-	private Rectangle m_drawingRect;
-	
-	private boolean m_dragging;
-	private boolean m_displayProgress;
-	
-	private Integer m_progress = -1;
-	
-	private FlameSet m_set;
-	
-	private Flame m_flame;
-	
-	private boolean m_preventRecompute;
-	
-	private FlameAccumulator m_accu;
-	
-	private BufferedImage m_image;
-	
-	private int m_lastHeight = 0,
-				m_lastWidth = 0;
-	
-	// Coordonnées du mousePressed
-	private int m_mouseX;
-	private int m_mouseY;
+
+	// Palette de couleur avec laquelle dessiner la fractale
+	private Palette m_palette;
+
+	// Couleur de fond
+	private Color m_bgColor;
+
+	// Constructeur de la fractale à dessiner
+	private ObservableFlameBuilder m_builder;
+
+	// Cadre de la fractale à dessiner
+	private Rectangle m_frame;
+
+	// Densité du dessin
+	private int m_density;
 
 	/**
 	 * Constructeur, initialise les arguments.
-	 * TODO : javadoc
+	 * @param builder Constructeur de la fractale à dessiner
+	 * @param backgroundColor Couleur de fond
+	 * @param palette Palette de couleur avec laquelle dessiner la fractale
+	 * @param frame Cadre de la fractale à dessiner
+	 * @param density Densité du dessin
 	 */
-	public FlameBuilderPreviewComponent(FlameSet set){
-		
-		m_set = set;
-		
-		m_lastFrame = set.getFrame().toRectangle();
-		
-		set.getBuilder().addListener(this);
-		
-		//addMouseListener(this);
-		//addMouseWheelListener(this);
-		//this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		
-		//set.getFrame().addListener(this);
+	public FlameBuilderPreviewComponent(
+			ObservableFlameBuilder builder,
+			Color backgroundColor,
+			Palette palette,
+			Rectangle frame,
+			int density){
+
+		m_bgColor = backgroundColor;
+		m_palette = palette;
+		m_builder = builder;
+		m_frame = frame;
+		m_density = density;
+
+		m_builder.addListener(this);
 	}
 
-	
+
 	/**
-	 * Méthode appellée pour rafraichir le dessin. Si le dessin stocké n'est pas à jour, elle demande un nouveau 
-	 * calcul avec recompute() et redimentionne l'image pour un affichage temporaire.
+	 * Méthode appellée pour rafraichir le dessin
 	 */
 	@Override
-	protected void paintComponent(final Graphics g){
-		super.paintComponent(g);
-		
-		if(m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
-			recompute();
-			if(m_image != null){
-				
-				Rectangle rect = new Rectangle(new Point(0,0), this.getWidth(), this.getHeight())
-						.expandToAspectRatio((double)m_image.getWidth()/m_image.getHeight());
-						
-				m_drawingRect = new Rectangle(new Point(
-						(this.getWidth())/2,
-						(this.getHeight())/2),
-						rect.width(), rect.height());
+	protected void paintComponent(Graphics g){
+		// On calcule le vrai cadre de la fractale basé sur le ratio de taille du component
+		Rectangle realFrame = m_frame.expandToAspectRatio((double)this.getWidth()/this.getHeight());
 
-				g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
-						, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
-			}
-		// Sinon, c'est qu'on a fini un recompute, on génère l'image résultante
-		} else if(m_accu != null){
-			m_lastFrame = m_set.getFrame().toRectangle();
-			
-			m_image = new BufferedImage(m_accu.width(), m_accu.height(), BufferedImage.TYPE_INT_RGB);
-			
-			for(int x = 0 ; x < m_accu.width() ; x++){
-				for(int y = 0 ; y < m_accu.height() ; y++){
-					// On met à jour la couleur du pixel courant
-					m_image.setRGB(x, m_accu.height() - y -1, m_accu.color(m_set.getPalette(), m_set.getBackgroundColor(), x, y).asPackedRGB());
-				}
-			}
-			
-			// GaussianBlurFilter f;
-			
-			//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
-			g.drawImage(m_image, 0, 0, null);
-			
-			m_drawingRect = new Rectangle(new Point(getWidth()/2, getHeight()/2), getWidth(), getHeight());
-			m_accu = null;
-			
-		} else if(m_displayProgress) {
-			g.setColor(java.awt.Color.BLACK);
-			g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			
-			if(m_drawingRect != null){
-				g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
-						, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
-			}
-			
-			synchronized(m_progress){
-				//drawProgressBar(g);
-			}
-		} else if(m_image != null) {
-			g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
-					, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
-		}
-		
-		// Sinon, on ne sais pas pourquoi il fallait repeindre
-	}
-		
-	/**
-	 * Demande un nouveau calcul de la fractale. 
-	 * Cette méthode demande à son tour un nouveau dessin du composant quand le calcul est terminé.
-	 */
-	private void recompute(){
-		
-		// Protege contre des calculs inutiles
-		if(this.getWidth() == 0 || this.getHeight() == 0)
-			return;
-		
-		if(m_flame != null){
-			m_flame.destroy();
-			m_flame = null;
-		}
-		
-		
 		// On peut maintenant calculer la fractale avec les paramètres de taille
-		m_flame = m_set.getBuilder().build();
-		m_flame.addListener(new Flame.Listener() {
-			
-			@Override
-			public void onComputeProgress(int percent) {
-				synchronized(m_progress){
-					m_progress = percent;
-					m_displayProgress = true;
-					repaint();
-				}
+		FlameAccumulator accumulator = m_builder.build().compute(realFrame, this.getWidth(), this.getHeight(), m_density);
+
+		// Crée l'image sur laquelle on va rendre la fractale
+		BufferedImage image = new BufferedImage(accumulator.width(), accumulator.height(), BufferedImage.TYPE_INT_RGB);
+
+		for(int x = 0 ; x < accumulator.width() ; x++){
+			for(int y = 0 ; y < accumulator.height() ; y++){
+				// On met à jour la couleur du pixel courant
+				image.setRGB(x, accumulator.height() - y -1, accumulator.color(m_palette, m_bgColor, x, y).asPackedRGB());
 			}
-			
-			@Override
-			public void onComputeDone(FlameAccumulator accumulator) {
-				synchronized(m_progress){
-					m_accu = accumulator;
-					m_displayProgress = false;
-					repaint();
-				}
-			}
-		});
-	
-		m_realFrame = m_set.getFrame().expandToAspectRatio((double)this.getWidth()/this.getHeight());
-		
-		m_lastHeight = this.getHeight();
-		m_lastWidth = this.getWidth();
-		
-		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_set.getDensity());
+		}
+
+		//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
+		g.drawImage(image, 0, 0, null);
 	}
-	
+
 	/**
 	 * Retourne la taille préférée (par défaut : 200x100)
 	 */
@@ -203,6 +95,6 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {
-		recompute();
+		repaint();
 	}
 }
