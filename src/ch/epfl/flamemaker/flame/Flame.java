@@ -67,7 +67,6 @@ public class Flame {
 			try {
 				m_worker.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			m_worker = null;
