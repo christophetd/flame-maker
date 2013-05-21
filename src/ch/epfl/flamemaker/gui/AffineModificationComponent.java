@@ -263,8 +263,6 @@ public class AffineModificationComponent extends JComponent {
 		transvectionLeftButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(transvectionFactor.getValue());
-				System.out.println(transvectionFactor.getValue().getClass());
 				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
