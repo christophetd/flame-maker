@@ -2,7 +2,6 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -14,16 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import ch.epfl.flamemaker.color.Color;
-import ch.epfl.flamemaker.color.InterpolatedPalette;
-import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameSet;
-import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Preset;
-import ch.epfl.flamemaker.geometry2d.AffineTransformation;
-import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
-import ch.epfl.flamemaker.geometry2d.Point;
 
 public class FlameMakerGUI {
 
@@ -136,9 +127,10 @@ public class FlameMakerGUI {
 		
 		/* -------- */
 		MenuBar.build(window, m_set, transformationsEditPanel.getListModel());
-		
+
 		ImageIcon icon = new ImageIcon("C:\\Users\\Christophe\\workspace\\flame-maker\\icon.png");
 		window.setIconImage(icon.getImage());
+		
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
