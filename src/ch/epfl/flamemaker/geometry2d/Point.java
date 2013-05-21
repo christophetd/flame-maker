@@ -13,12 +13,12 @@ public class Point {
 	 * L'origine du repère, définie comme le point de coordonnées cartésiennes
 	 * (0;0)
 	 */
-	public static final Point ORIGIN = new Point(0, 0);
+	final public static Point ORIGIN = new Point(0, 0);
 
 	/**
 	 * Les coordonnées cartésiennes du point
 	 */
-	private double m_x, m_y;
+	final private double m_x, m_y;
 
 	/**
 	 * Crée un point à partir de ses coordonnées cartésiennes

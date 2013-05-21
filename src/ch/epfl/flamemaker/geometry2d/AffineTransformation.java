@@ -17,7 +17,7 @@ public class AffineTransformation implements Transformation, Serializable {
 	 * Les 6 nombres représentant les deux premières lignes de la matrice
 	 * homogène de la transformation (a b c) (d e f) (0 0 1)
 	 */
-	private double m_a, m_b, m_c, m_d, m_e, m_f;
+	final private double m_a, m_b, m_c, m_d, m_e, m_f;
 
 	/**
 	 * Crée une transformation affine à partir des valeurs des deux premières

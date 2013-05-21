@@ -10,15 +10,32 @@ package ch.epfl.flamemaker.color;
  * retourne une représentation RGB avec 8 bits par cannaux, sur un type int.
  */
 public class Color {
-
-	// Color components
-	private double m_r, m_g, m_b;
-
+	
 	public static final Color 	BLACK = new Color(0, 0, 0), 
-								WHITE = new Color(1, 1, 1), 
-								RED = new Color(1, 0, 0), 
-								GREEN = new Color(0, 1, 0),
-								BLUE = new Color(0, 0, 1);
+			WHITE = new Color(1, 1, 1), 
+			RED = new Color(1, 0, 0), 
+			GREEN = new Color(0, 1, 0),
+			BLUE = new Color(0, 0, 1);
+	
+	// Color components
+	final private double m_r, m_g, m_b;
+
+
+	/**
+	 * Convertit une composante de la couleur sur une valeur entière comprise
+	 * entre 0 et max, en gamma-encodant celle-ci.
+	 * 
+	 * @param v
+	 *            valeur de la composante à convertir
+	 * @param max
+	 *            valeur maximum du résultat
+	 * @return valeur encodée de la composante.
+	 */
+	static public int sRGBEncode(double v, int max) {
+		return (int) (max * ((v <= 0.0031308) ? 12.92 * v : 1.055 * Math.pow(v,
+				1 / 2.4) - 0.055));
+	}
+	
 
 	/**
 	 * Construit une couleur avec les quantité de rouge, vert et bleu passées en
@@ -43,6 +60,15 @@ public class Color {
 		m_r = r;
 		m_g = g;
 		m_b = b;
+	}
+	
+	/**
+	 * Constructeur de copie : construit une couleur à partir d'une autre
+	 */
+	public Color(Color from) {
+		m_r = from.red();
+		m_g = from.green();
+		m_b = from.blue();
 	}
 
 	/**
@@ -114,20 +140,5 @@ public class Color {
 	public int asPackedRGB() {
 		return 0xFFFFFFFF & (sRGBEncode(m_r, 0xFF) << 16
 				| sRGBEncode(m_g, 0xFF) << 8 | sRGBEncode(m_b, 0xFF));
-	}
-
-	/**
-	 * Convertit une composante de la couleur sur une valeur entière comprise
-	 * entre 0 et max, en gamma-encodant celle-ci.
-	 * 
-	 * @param v
-	 *            valeur de la composante à convertir
-	 * @param max
-	 *            valeur maximum du résultat
-	 * @return valeur encodée de la composante.
-	 */
-	static public int sRGBEncode(double v, int max) {
-		return (int) (max * ((v <= 0.0031308) ? 12.92 * v : 1.055 * Math.pow(v,
-				1 / 2.4) - 0.055));
 	}
 }
