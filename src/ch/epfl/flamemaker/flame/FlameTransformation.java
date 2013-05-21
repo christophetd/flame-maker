@@ -30,13 +30,13 @@ public class FlameTransformation implements Transformation, Serializable {
 	 *            Les poids des différentes variations
 	 * @throws IllegalArgumentException
 	 *             Si le tableau des poids des différentes variations ne
-	 *             contient pas 6 éléments
+	 *             contient pas autant d'éléments qu'il y a de transformations
 	 */
 	public FlameTransformation(AffineTransformation affineTransformation,
 			double[] variationWeight) {
-		if (variationWeight.length != 6) {
+		if (variationWeight.length != Variation.ALL_VARIATIONS.size()) {
 			throw new IllegalArgumentException(
-					"variationWeight must have length 6");
+					"variationWeight must have length "+Variation.ALL_VARIATIONS.size());
 		}
 
 		m_affineTransfo = affineTransformation;
@@ -49,25 +49,20 @@ public class FlameTransformation implements Transformation, Serializable {
 	@Override
 	public Point transformPoint(Point p) {
 
-		Point tmp, ret = new Point(0, 0);
-
+		Point tmp, result = new Point(0, 0);
+		
+		// On applique la transformation affine au point
+		p = m_affineTransfo.transformPoint(p);
+		
 		for (int i = 0; i < Variation.ALL_VARIATIONS.size(); i++) {
 			if (m_weight[i] != 0) {
-				tmp = Variation.ALL_VARIATIONS.get(i).transformPoint(
-						m_affineTransfo.transformPoint(p));
-				ret = new Point(ret.x() + m_weight[i] * tmp.x(), ret.y()
+				tmp = Variation.ALL_VARIATIONS.get(i).transformPoint(p);
+				result = new Point(result.x() + m_weight[i] * tmp.x(), result.y()
 						+ m_weight[i] * tmp.y());
 			}
 		}
 
-		return ret;
-	}
-
-	/**
-	 * @return La composante affine de la transformation
-	 */
-	public AffineTransformation affineTransformation() {
-		return new AffineTransformation(m_affineTransfo);
+		return result;
 	}
 
 	/**
@@ -90,9 +85,19 @@ public class FlameTransformation implements Transformation, Serializable {
 
 	/**
 	 * @return Le tableau des poids des différentes variations
+	 * @see	ch.epfl.flamemaker.gui.WeightsModificationComponent
 	 */
 	public double[] weights() {
 		return m_weight.clone();
+	}
+	
+	/**
+	 * @return La composante affine de la transformation
+	 * @see ch.epfl/flamemaker.flame.OpenCLStrategy
+	 */
+	public AffineTransformation affineTransformation() {
+		// Pas besoin de retourner une copie, les transformations affines sont immutables
+		return m_affineTransfo;
 	}
 	
 	/**
@@ -118,8 +123,8 @@ public class FlameTransformation implements Transformation, Serializable {
 		 * @param transformation
 		 */
 		public Builder(FlameTransformation transformation) {
-			m_affineTransfo = transformation.affineTransformation();
-			m_weights = transformation.weights();
+			m_affineTransfo = transformation.m_affineTransfo;
+			m_weights = transformation.m_weight;
 		}
 		
 		/**

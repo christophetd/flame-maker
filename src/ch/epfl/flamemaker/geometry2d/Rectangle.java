@@ -9,17 +9,17 @@ public class Rectangle {
 	/**
 	 * Le centre du rectangle
 	 */
-	private Point m_center;
+	final private Point m_center;
 
 	/**
 	 * La largeur du rectangle
 	 */
-	private double m_width;
+	final private double m_width;
 
 	/**
 	 * La hauteur du rectangle
 	 */
-	private double m_height;
+	final private double m_height;
 
 	/**
 	 * Construit un rectangle de centre, largeur et hauteur passés en paramètres

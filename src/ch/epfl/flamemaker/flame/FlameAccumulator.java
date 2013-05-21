@@ -15,7 +15,7 @@ public class FlameAccumulator {
 	/**
 	 * Le nombre de points de chaque case de l'accumulateur
 	 */
-	private int[][] m_grid;
+	private int[][] m_hitCount;
 
 	/**
 	 * La somme des index de couleur de l'accumulateur
@@ -43,15 +43,15 @@ public class FlameAccumulator {
 		int width = hitCount.length;
 		int height = hitCount[0].length;
 
-		m_grid = new int[width][];	
+		m_hitCount = new int[width][];	
 		m_colorIndexes = new double[width][];
 
 		for (int i = 0; i < width; i++) {
-			m_grid[i] = new int[height];
+			m_hitCount[i] = new int[height];
 			m_colorIndexes[i] = new double[height];
 
 			for (int j = 0; j < height; j++) {
-				m_grid[i][j] = hitCount[i][j];
+				m_hitCount[i][j] = hitCount[i][j];
 				m_colorIndexes[i][j] = colorIndexSum[i][j];
 
 				if (maxHit < hitCount[i][j]) {
@@ -68,14 +68,14 @@ public class FlameAccumulator {
 	 * @return La largeur de l'accumulateur
 	 */
 	public int width() {
-		return m_grid.length;
+		return m_hitCount.length;
 	}
 
 	/**
 	 * @return La hauteur de l'accumulateur
 	 */
 	public int height() {
-		return m_grid[0].length;
+		return m_hitCount[0].length;
 	}
 
 	/**
@@ -84,11 +84,11 @@ public class FlameAccumulator {
 	 * @return L'intensité de la case de coordonnées x, y de l'accumulateur
 	 */
 	public double intensity(int x, int y) {
-		if (x < 0 || y < 0 || x > m_grid.length || y > m_grid[0].length) {
+		if (x < 0 || y < 0 || x > m_hitCount.length || y > m_hitCount[0].length) {
 			throw new IndexOutOfBoundsException();
 		}
 
-		return Math.log(m_grid[x][y] + 1) / m_denominator;
+		return Math.log(m_hitCount[x][y] + 1) / m_denominator;
 	}
 
 	/**
