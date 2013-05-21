@@ -57,18 +57,7 @@ public class AffineTransformation implements Transformation, Serializable {
 	public Point transformPoint(Point p) {
 		return new Point(m_a * p.x() + m_b * p.y() + m_c, m_d * p.x() + m_e
 				* p.y() + m_f);
-	}
-	
-	/**
-	 * Retourne la matrice de coefficients sous forme d'un tableau de double contenant
-	 * les coefficients dans l'ordre alphabétique (ie. [a, b, c, d, e, f] ).
-	 * Attention, modifier ce tableau ne modifie pas la transformation
-	 * 
-	 * @return Un tableau des coefficients de la matrice.
-	 */
-	public double[] getMatrixCoeffs(){
-		return new double[]{ m_a, m_b, m_c, m_d, m_e, m_f };
-	}
+	}	
 
 	/**
 	 * Compose la transformation actuelle avec celle passée en paramètre, en
