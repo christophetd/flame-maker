@@ -25,9 +25,10 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
  * Ce component dessine la fractale définie par les paramètres du GUI
+ * @todo Modifier rendu
  */
 @SuppressWarnings("serial")
-public class FlameBuilderPreviewComponent extends JComponent implements Listener, MouseListener, ObservableRectangle.Listener, MouseMotionListener, MouseWheelListener{
+public class FlameBuilderPreviewComponent extends JComponent implements Listener{
 	
 	static public final double ZOOM_FACTOR = 1.1;
 	
@@ -72,11 +73,11 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		set.getBuilder().addListener(this);
 		
-		addMouseListener(this);
-		addMouseWheelListener(this);
-		this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+		//addMouseListener(this);
+		//addMouseWheelListener(this);
+		//this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 		
-		set.getFrame().addListener(this);
+		//set.getFrame().addListener(this);
 	}
 
 	
@@ -88,31 +89,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	protected void paintComponent(final Graphics g){
 		super.paintComponent(g);
 		
-		// L'utilisateur a modifié ou modifie le cadre de vue
-		if(m_dragging){
-			int newWidth = (int)(m_lastFrame.width()/m_set.getFrame().width()*this.getWidth());
-			int newHeight = (int)(m_lastFrame.height()/m_set.getFrame().height()*this.getHeight());
-			
-			/* Evite d'afficher la couleur par défaut dans les zones pas couvertes par l'image */
-			g.setColor(java.awt.Color.BLACK);
-			g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			
-			m_drawingRect = new Rectangle(new Point(
-					(m_lastFrame.center().x() - m_set.getFrame().center().x())*(this.getWidth()/m_realFrame.width()) + getWidth()/2, 
-					(m_set.getFrame().center().y() - m_lastFrame.center().y())*(this.getHeight()/m_realFrame.height()) + getHeight()/2),
-					newWidth,
-					newHeight);
-			
-			g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
-					, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
-			
-			// Il a fini de modifier la vue
-			if(!m_preventRecompute) {
-				m_dragging = false;
-				recompute();
-			}
-		// le composant a été redimentionné
-		} else if(m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
+		if(m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
 			recompute();
 			if(m_image != null){
 				
@@ -158,7 +135,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			}
 			
 			synchronized(m_progress){
-				drawProgressBar(g);
+				//drawProgressBar(g);
 			}
 		} else if(m_image != null) {
 			g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
@@ -167,19 +144,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		// Sinon, on ne sais pas pourquoi il fallait repeindre
 	}
-	
-	private void drawProgressBar(Graphics g){
-		g.setColor(java.awt.Color.WHITE);
 		
-		int barWidth = getWidth() - 10 - 50;
-		int fillWidth = (m_progress == 0) ? 0 : (barWidth-4)*m_progress/100;
-		int barY = getHeight() - 10 - 10;
-		
-		g.drawString(m_progress+"%", getWidth() - 40, barY + 10);
-		g.drawRect(10, barY, barWidth, 10);
-		g.fillRect(12, barY+2, fillWidth, 7);
-	}
-	
 	/**
 	 * Demande un nouveau calcul de la fractale. 
 	 * Cette méthode demande à son tour un nouveau dessin du composant quand le calcul est terminé.
@@ -239,80 +204,5 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {
 		recompute();
-	}
-
-
-	/* Interaction avec la souris */
-	
-	// Les trois méthodes suivantes ne nous intéressent pas
-	@Override
-	public void mouseClicked(MouseEvent arg0) {}
-	@Override
-	public void mouseEntered(MouseEvent arg0) {}
-	@Override
-	public void mouseExited(MouseEvent arg0) {}
-
-
-	@Override
-	public void mousePressed(MouseEvent evt) {
-		m_mouseX = evt.getX();
-		m_mouseY = evt.getY();
-		m_preventRecompute = true;
-		m_dragging = true;
-		
-		addMouseMotionListener(this);
-		
-		if(m_flame != null){
-			m_flame.destroy();
-			m_flame = null;
-		}
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent evt) {
-		m_preventRecompute = false;
-		
-		m_set.getFrame().setCenter(new Point(
-				m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
-				m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
-		));
-		
-		removeMouseMotionListener(this);
-	}
-
-
-	@Override
-	public void onRectangleChange(ObservableRectangle rect) {
-		repaint();
-	}
-
-
-	@Override
-	public void mouseDragged(MouseEvent evt) {
-		m_set.getFrame().setCenter(new Point(
-				m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
-				m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
-		));
-		
-		m_mouseX = evt.getX();
-		m_mouseY = evt.getY();
-	}
-
-
-	@Override
-	public void mouseMoved(MouseEvent arg0) {}
-
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent evt) {
-		if(evt.getWheelRotation() == 0) return;
-		
-		
-		
-		double factor = (evt.getWheelRotation() < 0) ? 1.0/ZOOM_FACTOR : ZOOM_FACTOR;
-		
-		m_dragging = true;
-		m_set.getFrame().setSize(m_set.getFrame().width()*factor, m_set.getFrame().height()*factor);
 	}
 }
