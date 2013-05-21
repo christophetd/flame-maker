@@ -1,8 +1,8 @@
 package ch.epfl.flamemaker.geometry2d;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Classe mutable et observable représentant un rectangle dans l'espace à deux dimentions.<br />
@@ -18,7 +18,7 @@ public class ObservableRectangle {
 	/**
 	 * Observateurs du rectangle
 	 */
-	private List<Listener> m_listeners = new LinkedList<Listener>();
+	private Set<Listener> m_listeners = new HashSet<Listener>();
 
 	/**
 	 * Construit un rectangle de centre, largeur et hauteur passés en paramètres

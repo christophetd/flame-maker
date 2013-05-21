@@ -26,6 +26,7 @@ import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Preset;
 
+// TODO : javadoc
 public class MenuBar {
 
 	private static String currentFilePath = null;

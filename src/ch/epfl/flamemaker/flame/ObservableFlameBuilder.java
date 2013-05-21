@@ -1,8 +1,8 @@
 package ch.epfl.flamemaker.flame;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
@@ -10,7 +10,7 @@ public class ObservableFlameBuilder {
 	
 	private Flame.Builder m_builder;
 
-	private List<Listener> m_listeners = new LinkedList<Listener>();
+	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
 	/**
 	 * Construit un bâtisseur à partir d'une fractale existante

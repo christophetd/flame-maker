@@ -8,22 +8,24 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JFormattedTextField.AbstractFormatter;
+import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Variation;
 
+// TODO : javadoc
 @SuppressWarnings("serial")
 public class WeightsModificationComponent extends JComponent {
+	
+	// TODO : unused ?
 	final private static int NB_VARIATIONS_PER_LINE = 3;
 	
 	final private ObservableFlameBuilder flameBuilder;

@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.swing.JOptionPane;
-
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
@@ -27,6 +25,8 @@ public class FlameFile {
 			ObjectInputStream objectInputStream = new ObjectInputStream(gzip);
 			Object o = objectInputStream.readObject();
 			objectInputStream.close();
+			
+			// TODO
 			
 			if(o instanceof ArrayList) {
 				ArrayList<FlameTransformation> transformationsList = (ArrayList) o;

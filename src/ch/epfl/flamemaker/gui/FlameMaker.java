@@ -2,7 +2,6 @@ package ch.epfl.flamemaker.gui;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class FlameMaker {
 	
