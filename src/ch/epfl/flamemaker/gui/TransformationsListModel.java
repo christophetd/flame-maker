@@ -6,12 +6,13 @@ import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
 @SuppressWarnings("serial")
-public class TransformationsListModel extends AbstractListModel {
+public class TransformationsListModel extends AbstractListModel implements ObservableFlameBuilder.Listener {
 	
 	private ObservableFlameBuilder m_builder;
 	
 	public TransformationsListModel(ObservableFlameBuilder flameBuilder) {
 		m_builder = flameBuilder;
+		m_builder.addListener(this);
 	}
 
 	@Override
@@ -33,5 +34,10 @@ public class TransformationsListModel extends AbstractListModel {
 	public void removeTransformation(int index) {
 		m_builder.removeTransformation(index);
 		this.fireIntervalRemoved(this, index, index);
+	}
+
+	@Override
+	public void onFlameBuilderChange(ObservableFlameBuilder b) {
+		this.fireContentsChanged(this, 0, b.transformationsCount());
 	}
 }
