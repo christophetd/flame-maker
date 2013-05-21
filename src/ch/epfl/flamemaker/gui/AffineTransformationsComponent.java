@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
@@ -23,27 +24,19 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
 @SuppressWarnings("serial")
-public class AffineTransformationsComponent extends JComponent implements ObservableFlameBuilder.Listener, MouseListener, ObservableRectangle.Listener {
+public class AffineTransformationsComponent extends JComponent implements ObservableFlameBuilder.Listener {//implements ObservableFlameBuilder.Listener, MouseListener, ObservableRectangle.Listener {
 	
 	private ObservableFlameBuilder m_builder;
 	
-	private ObservableRectangle m_frame;
+	private Rectangle m_frame;
 
-	private int m_highlightedTransformationIndex = 2;
-	
-	private List<Rectangle> m_boundingBoxes = new ArrayList<Rectangle>();
-	
-	private List<Listener> m_listeners = new LinkedList<Listener>();
-	
-	public AffineTransformationsComponent(FlameSet set) {
-		m_builder = set.getBuilder();
-		m_frame = set.getFrame();
-		
-		m_frame.addListener(this);
+	private int m_highlightedTransformationIndex = 0;
+
+	public AffineTransformationsComponent(ObservableFlameBuilder builder, Rectangle frame) {
+		m_builder = builder;
+		m_frame = frame;
 		
 		m_builder.addListener(this);
-		
-		this.addMouseListener(this);
 	}
 	
 	public void highlightedTransformationIndex(int index) {
@@ -118,8 +111,6 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 	public void printTransformations(Graphics2D g, Rectangle frame) {
 		double scaleRatio = getWidth()/frame.width();
 		
-		m_boundingBoxes.clear();
-		
 		// On récupère la couleur actuelle pour la restaurer après l'affichage de la grille
 		Color oldColor = g.getColor();
 		
@@ -149,10 +140,7 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 			verticalArrow
 				.applyTransformation(transfo)
 				.applyTransformation(gridMapper);
-			
-			Rectangle bb = makeBoundingBox(horizontalArrow, verticalArrow);
-			m_boundingBoxes.add(bb);
-			
+						
 			if(numTransfo != m_highlightedTransformationIndex){
 				horizontalArrow.draw(g);
 				verticalArrow.draw(g);
@@ -181,26 +169,6 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 		g.setColor(oldColor);
 	}
 	
-	private static Rectangle makeBoundingBox(Arrow a1, Arrow a2){
-		List<Point> points = Arrays.asList(
-				a1.from(), a1.to(), a1.leftComponent(), a1.rightComponent(),
-				a2.from(), a2.to(), a2.leftComponent(), a2.rightComponent());
-		
-		double minX = Double.MAX_VALUE, maxX = 0, minY = Double.MAX_VALUE, maxY = 0;
-		
-		for(Point p : points){
-			minX = (p.x() < minX) ? p.x() : minX;
-			minY = (p.y() < minY) ? p.y() : minY;
-			maxX = (p.x() > maxX) ? p.x() : maxX;
-			maxY = (p.y() > maxY) ? p.y() : maxY;
-		}
-		
-		double width = maxX - minX;
-		double height = maxY - minY;
-		
-		return new Rectangle(new Point(minX + width/2, minY + height/2), width, height);
-	}
-	
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension((int) m_frame.width(), (int) m_frame.height());
@@ -209,62 +177,5 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {
 		repaint();
-	}
-
-	@Override
-	public void onRectangleChange(ObservableRectangle rect) {
-		repaint();
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {}
-
-	@Override
-	public void mouseReleased(MouseEvent evt) {
-		double minArea = Double.MAX_VALUE;
-		int index = -1;
-		Point p = new Point(evt.getX(), evt.getY());
-
-		for(int i = 0 ; i < m_boundingBoxes.size() ; i++){
-			Rectangle rect = m_boundingBoxes.get(i);
-			
-			if(rect.contains(p) && m_highlightedTransformationIndex != i){
-				double area = rect.area();
-				if( area < minArea){
-					minArea = rect.area();
-					index = i;
-				}
-			}
-		}
-		
-		if(index != -1)
-			notifyTransformationSelected(index);
-	}
-	
-	public void addListener(Listener l){
-		m_listeners.add(l);
-	}
-	
-	public void removeListener(Listener l){
-		m_listeners.remove(l);
-	}
-	
-	private void notifyTransformationSelected(int id){
-		for(Listener l : m_listeners){
-			l.onTransformationSelected(id);
-		}
-	}
-	
-	public interface Listener {
-		public void onTransformationSelected(int transfoId);
 	}
 }
