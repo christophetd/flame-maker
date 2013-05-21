@@ -37,7 +37,7 @@ public class FlameAccumulator {
 	 * @param colorIndexSum
 	 *            La somme des index de couleur de chaque case
 	 */
-	public FlameAccumulator(int[][] hitCount, double[][] colorIndexSum) {
+	private FlameAccumulator(int[][] hitCount, double[][] colorIndexSum) {
 
 		int maxHit = 0;
 		int width = hitCount.length;
