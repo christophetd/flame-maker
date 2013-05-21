@@ -21,7 +21,7 @@ import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 @SuppressWarnings("serial")
-public class TransformationsEditPanel extends JPanel{
+public class TransformationsEditPanel extends JPanel {
 
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
@@ -104,6 +104,7 @@ public class TransformationsEditPanel extends JPanel{
 	public void setSelectedTransformationIndex(int id) {
 		m_transformationsList.setSelectedIndex(id);
 	}
+	
 	
 	public void addListener(Listener l){
 		m_listeners.add(l);

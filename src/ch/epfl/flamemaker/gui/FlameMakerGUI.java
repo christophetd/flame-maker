@@ -16,7 +16,7 @@ import javax.swing.JSeparator;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.Preset;
 
-public class FlameMakerGUI {
+public class FlameMakerGUI implements FlameSet.Listener {
 
 	/*
 	 * Contient toutes les informations sur la flame courante et ses informations d'affichage
@@ -29,6 +29,8 @@ public class FlameMakerGUI {
 	
 	public FlameMakerGUI() {
 		m_set = new FlameSet(Preset.ALL_PRESETS.get(0));
+		
+		m_set.addListener(this);
 	}
 	
 	public void start() {
@@ -80,10 +82,6 @@ public class FlameMakerGUI {
 			}
 			
 		});
-		
-		
-		
-		
 		
 		/* ---- Paneau d'édition de la transformation sélectionnée ---- */
 		
@@ -148,8 +146,6 @@ public class FlameMakerGUI {
 	 * @param id of the transformation
 	 */
 	public void setSelectedTransformationId(int id){
-		if(m_selectedTransformationId == id)
-			return;
 		
 		m_selectedTransformationId = id;
 
@@ -183,4 +179,11 @@ public class FlameMakerGUI {
 	public interface Listener{
 		public void onSelectedTransformationIdChange(int id);
 	}
+
+	@Override
+	public void onSetChanged(FlameSet set) {
+		setSelectedTransformationId(0);
+	}
+	
+	
 }

@@ -1,6 +1,8 @@
 package ch.epfl.flamemaker.flame;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
@@ -16,6 +18,8 @@ public class FlameSet {
 	private Palette m_palette;
 	private ObservableRectangle m_frame;
 	private int m_density;
+	
+	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
 	public FlameSet(){
 		m_frame = new ObservableRectangle(null);
@@ -56,5 +60,25 @@ public class FlameSet {
 		m_palette = preset.palette();
 		m_frame.set(preset.frame());
 		m_flameBuilder.set(new Flame(preset.transformations()));
+		
+		notifyListeners();
+	}
+	
+	public void addListener(Listener l){
+		m_listeners.add(l);
+	}
+	
+	public void removeListener(Listener l){
+		m_listeners.remove(l);
+	}
+	
+	private void notifyListeners(){
+		for(Listener l : m_listeners){
+			l.onSetChanged(this);
+		}
+	}
+	
+	public interface Listener{
+		public void onSetChanged(FlameSet set);
 	}
 }
