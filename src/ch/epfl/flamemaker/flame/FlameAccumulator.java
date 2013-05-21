@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.flame;
 
 import ch.epfl.flamemaker.color.Palette;
@@ -43,7 +48,7 @@ public class FlameAccumulator {
 		int width = hitCount.length;
 		int height = hitCount[0].length;
 
-		m_hitCount = new int[width][];	
+		m_hitCount = new int[width][];
 		m_colorIndexes = new double[width][];
 
 		for (int i = 0; i < width; i++) {

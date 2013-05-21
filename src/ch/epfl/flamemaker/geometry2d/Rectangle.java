@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.geometry2d;
 
 /**
@@ -115,13 +120,13 @@ public class Rectangle {
 		return (p.x() >= this.left() && p.x() < this.right())
 				&& (p.y() >= this.bottom() && p.y() < this.top());
 	}
-	
+
 	/**
 	 * Calcule l'aire du rectangle et la retourne
-	 * @return
-	 * 		largeur * hauteur
+	 * 
+	 * @return largeur * hauteur
 	 */
-	public double area(){
+	public double area() {
 		return m_height * m_width;
 	}
 
@@ -132,16 +137,17 @@ public class Rectangle {
 		return (m_width / m_height);
 	}
 
-	
-	public boolean equals(Rectangle other){
-		return other.m_width == m_width && other.m_height == m_height 
-				&& other.m_center.x() == m_center.x() && other.m_center.y() == m_center.y();
+	public boolean equals(Rectangle other) {
+		return other.m_width == m_width && other.m_height == m_height
+				&& other.m_center.x() == m_center.x()
+				&& other.m_center.y() == m_center.y();
 	}
-	
-	public int hashCode(){
-		return ((((((int)m_width << 8) ^ (int)m_height) << 8) ^ (int)m_center.x()) << 8) ^ (int)m_center.y();
+
+	public int hashCode() {
+		return ((((((int) m_width << 8) ^ (int) m_height) << 8) ^ (int) m_center
+				.x()) << 8) ^ (int) m_center.y();
 	}
-	
+
 	/**
 	 * Construit le plus petit rectangle ayant le même centre que le récepteur,
 	 * le rapport largeur/hauteur <i>aspectRatio</i> et contenant totalement le
@@ -157,7 +163,8 @@ public class Rectangle {
 	public Rectangle expandToAspectRatio(double aspectRatio) {
 		if (aspectRatio <= 0) {
 			throw new IllegalArgumentException(
-					"Le nouveau ratio du rectangle doit etre strictement positif (donné : "+aspectRatio+")");
+					"Le nouveau ratio du rectangle doit etre strictement positif (donné : "
+							+ aspectRatio + ")");
 		}
 
 		/*

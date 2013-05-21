@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.geometry2d;
 
 import java.io.Serializable;
@@ -57,7 +62,7 @@ public class AffineTransformation implements Transformation, Serializable {
 	public Point transformPoint(Point p) {
 		return new Point(m_a * p.x() + m_b * p.y() + m_c, m_d * p.x() + m_e
 				* p.y() + m_f);
-	}	
+	}
 
 	/**
 	 * Compose la transformation actuelle avec celle passée en paramètre, en

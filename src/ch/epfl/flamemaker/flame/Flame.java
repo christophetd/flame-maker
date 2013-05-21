@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.flame;
 
 import java.util.ArrayList;
@@ -12,7 +17,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Classe modélisant une fractale de type Flame
  */
 public class Flame {
-	
+
 	/**
 	 * Contient la liste des transformations caractérisant la fractale
 	 */
@@ -45,7 +50,7 @@ public class Flame {
 			int density) {
 		// On initialise un random déterminé par la graine 2013
 		Random randomizer = new Random(2013);
-		
+
 		// Création des variables utilisées dans les boucles de calcul
 		Point point = new Point(0, 0);
 		int k = 20;
@@ -105,13 +110,13 @@ public class Flame {
 	 * Classe modélisant un bâtisseur pour une fractale Flame
 	 */
 	public static class Builder {
-				
+
 		/**
 		 * La liste des bâtisseurs pour les transformations de la fractale Flame
 		 * qui sera construite
 		 */
 		private List<FlameTransformation.Builder> m_transformationsBuilders;
-	
+
 		/**
 		 * Construit un bâtisseur à partir d'une fractale existante
 		 * 
@@ -120,8 +125,9 @@ public class Flame {
 		 */
 		public Builder(Flame flame) {
 			m_transformationsBuilders = new ArrayList<FlameTransformation.Builder>();
-			for(FlameTransformation transformation : flame.m_transforms) {
-				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
+			for (FlameTransformation transformation : flame.m_transforms) {
+				m_transformationsBuilders.add(new FlameTransformation.Builder(
+						transformation));
 			}
 		}
 
@@ -131,7 +137,7 @@ public class Flame {
 		public int transformationsCount() {
 			return m_transformationsBuilders.size();
 		}
-	
+
 		/**
 		 * Ajoute une transformation de type flame à la fractale
 		 * 
@@ -139,9 +145,10 @@ public class Flame {
 		 *            La transformation
 		 */
 		public void addTransformation(FlameTransformation transformation) {
-			m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
+			m_transformationsBuilders.add(new FlameTransformation.Builder(
+					transformation));
 		}
-	
+
 		/**
 		 * @param index
 		 * @return La composante affine de la transformation d'index
@@ -151,10 +158,10 @@ public class Flame {
 		 */
 		public AffineTransformation affineTransformation(int index) {
 			checkIndex(index);
-			
+
 			return m_transformationsBuilders.get(index).affineTransformation();
 		}
-	
+
 		/**
 		 * Remplace la composante affine de la transformation d'index
 		 * <i>index</i> par <i>newTransformation</i>
@@ -166,11 +173,12 @@ public class Flame {
 		 */
 		public void setAffineTransformation(int index,
 				AffineTransformation newTransformation) {
-	
-			checkIndex(index);			
-			m_transformationsBuilders.get(index).setAffineTransformation(newTransformation);
+
+			checkIndex(index);
+			m_transformationsBuilders.get(index).setAffineTransformation(
+					newTransformation);
 		}
-	
+
 		/**
 		 * Retourne le poids de la variation <i>variation</i> pour la
 		 * transformation d'index <i>index</i>
@@ -186,10 +194,11 @@ public class Flame {
 		 */
 		public double variationWeight(int index, Variation variation) {
 			checkIndex(index);
-			
-			return m_transformationsBuilders.get(index).weight(variation.index());
+
+			return m_transformationsBuilders.get(index).weight(
+					variation.index());
 		}
-	
+
 		/**
 		 * Modifie le poids de la variation <i>variation</i> pour la
 		 * transformation d'index <i>index</i>
@@ -206,13 +215,13 @@ public class Flame {
 		 */
 		public void setVariationWeight(int index, Variation variation,
 				double newWeight) {
-	
+
 			checkIndex(index);
-			
-			m_transformationsBuilders.get(index)
-					.setWeight(variation.index(), newWeight);
+
+			m_transformationsBuilders.get(index).setWeight(variation.index(),
+					newWeight);
 		}
-	
+
 		/**
 		 * Supprime le bâtisseur de transformation flame à l'index <i>index</i>
 		 * 
@@ -224,20 +233,21 @@ public class Flame {
 			checkIndex(index);
 			m_transformationsBuilders.remove(index);
 		}
-	
+
 		/**
 		 * Construit une fractale Flame à partir des informations récoltées
+		 * 
 		 * @return La fractale Flame construite
 		 */
 		public Flame build() {
 			List<FlameTransformation> builtTransformations = new ArrayList<FlameTransformation>();
-			for(FlameTransformation.Builder transfoBuilder : m_transformationsBuilders) {
+			for (FlameTransformation.Builder transfoBuilder : m_transformationsBuilders) {
 				builtTransformations.add(transfoBuilder.build());
 			}
-			
+
 			return new Flame(builtTransformations);
 		}
-	
+
 		/**
 		 * Vérifie si l'index passé en argument est valide pour la liste des
 		 * bâtisseurs de transformation flame

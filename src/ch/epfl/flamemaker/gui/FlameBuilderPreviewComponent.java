@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.gui;
 
 import java.awt.Dimension;
@@ -17,7 +22,8 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Ce component dessine la fractale définie par les paramètres du GUI
  */
 @SuppressWarnings("serial")
-public class FlameBuilderPreviewComponent extends JComponent implements Listener{
+public class FlameBuilderPreviewComponent extends JComponent implements
+		Listener {
 
 	// Palette de couleur avec laquelle dessiner la fractale
 	private Palette m_palette;
@@ -36,18 +42,20 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 
 	/**
 	 * Constructeur, initialise les arguments.
-	 * @param builder Constructeur de la fractale à dessiner
-	 * @param backgroundColor Couleur de fond
-	 * @param palette Palette de couleur avec laquelle dessiner la fractale
-	 * @param frame Cadre de la fractale à dessiner
-	 * @param density Densité du dessin
+	 * 
+	 * @param builder
+	 *            Constructeur de la fractale à dessiner
+	 * @param backgroundColor
+	 *            Couleur de fond
+	 * @param palette
+	 *            Palette de couleur avec laquelle dessiner la fractale
+	 * @param frame
+	 *            Cadre de la fractale à dessiner
+	 * @param density
+	 *            Densité du dessin
 	 */
-	public FlameBuilderPreviewComponent(
-			ObservableFlameBuilder builder,
-			Color backgroundColor,
-			Palette palette,
-			Rectangle frame,
-			int density){
+	public FlameBuilderPreviewComponent(ObservableFlameBuilder builder,
+			Color backgroundColor, Palette palette, Rectangle frame, int density) {
 
 		m_bgColor = backgroundColor;
 		m_palette = palette;
@@ -58,29 +66,33 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		m_builder.addListener(this);
 	}
 
-
 	/**
 	 * Méthode appellée pour rafraichir le dessin
 	 */
 	@Override
-	protected void paintComponent(Graphics g){
-		// On calcule le vrai cadre de la fractale basé sur le ratio de taille du component
-		Rectangle realFrame = m_frame.expandToAspectRatio((double)this.getWidth()/this.getHeight());
+	protected void paintComponent(Graphics g) {
+		// On calcule le vrai cadre de la fractale basé sur le ratio de taille
+		// du component
+		Rectangle realFrame = m_frame.expandToAspectRatio((double) this
+				.getWidth() / this.getHeight());
 
 		// On peut maintenant calculer la fractale avec les paramètres de taille
-		FlameAccumulator accumulator = m_builder.build().compute(realFrame, this.getWidth(), this.getHeight(), m_density);
+		FlameAccumulator accumulator = m_builder.build().compute(realFrame,
+				this.getWidth(), this.getHeight(), m_density);
 
 		// Crée l'image sur laquelle on va rendre la fractale
-		BufferedImage image = new BufferedImage(accumulator.width(), accumulator.height(), BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(accumulator.width(),
+				accumulator.height(), BufferedImage.TYPE_INT_RGB);
 
-		for(int x = 0 ; x < accumulator.width() ; x++){
-			for(int y = 0 ; y < accumulator.height() ; y++){
+		for (int x = 0; x < accumulator.width(); x++) {
+			for (int y = 0; y < accumulator.height(); y++) {
 				// On met à jour la couleur du pixel courant
-				image.setRGB(x, accumulator.height() - y -1, accumulator.color(m_palette, m_bgColor, x, y).asPackedRGB());
+				image.setRGB(x, accumulator.height() - y - 1, accumulator
+						.color(m_palette, m_bgColor, x, y).asPackedRGB());
 			}
 		}
 
-		//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
+		// Et on dessine l'image sur l'objet de type Graphics passé en paramètre
 		g.drawImage(image, 0, 0, null);
 	}
 
@@ -88,10 +100,9 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	 * Retourne la taille préférée (par défaut : 200x100)
 	 */
 	@Override
-	public Dimension getPreferredSize(){
+	public Dimension getPreferredSize() {
 		return new Dimension(200, 100);
 	}
-
 
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {

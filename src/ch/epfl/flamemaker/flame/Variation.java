@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.flame;
 
 import java.util.Arrays;
@@ -11,7 +16,7 @@ import ch.epfl.flamemaker.geometry2d.Transformation;
  */
 public abstract class Variation implements Transformation {
 
-	/*
+	/**
 	 * L'index de la variation
 	 */
 	private final int m_index;
@@ -21,7 +26,7 @@ public abstract class Variation implements Transformation {
 	 */
 	private final String m_name;
 
-	/*
+	/**
 	 * Une liste des 6 variations prédéfinies
 	 */
 	public final static List<Variation> ALL_VARIATIONS = Arrays.asList(

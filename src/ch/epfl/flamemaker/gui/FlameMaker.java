@@ -1,32 +1,37 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.gui;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class FlameMaker {
-	
+
 	public static void main(String[] args) {
-		
-		// Essaye de configurer un look and feel agréable sur toutes les plateformes
+
+		// Essaye de configurer un look and feel agréable sur toutes les
+		// plateformes
 		// (celui de windows etant particulièrement moche...)
 		configLookAndFeel();
-		
-	    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	                new FlameMakerGUI().start();
-	            }
-	    });
+
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new FlameMakerGUI().start();
+			}
+		});
 	}
-	
+
 	/**
 	 * Utilise le look "Nimbus" s'il est installé sur la machine
 	 */
-	public static void configLookAndFeel(){
+	public static void configLookAndFeel() {
 		// On itère sur tout les looks installés
-		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()){
+		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 			// Si c'est le look nimbus
-			if(info.getName().equals("Nimbus")){
+			if (info.getName().equals("Nimbus")) {
 				try {
 					// On l'utilise
 					UIManager.setLookAndFeel(info.getClassName());

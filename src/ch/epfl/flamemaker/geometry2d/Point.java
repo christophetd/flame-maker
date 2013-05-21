@@ -1,5 +1,9 @@
-package ch.epfl.flamemaker.geometry2d;
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
 
+package ch.epfl.flamemaker.geometry2d;
 
 /**
  * Classe non mutable représentant un point dans l'espace à deux dimentions.<br />

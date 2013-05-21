@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.color;
 
 /**
@@ -10,16 +15,13 @@ package ch.epfl.flamemaker.color;
  * retourne une représentation RGB avec 8 bits par cannaux, sur un type int.
  */
 public class Color {
-	
-	public static final Color 	BLACK = new Color(0, 0, 0), 
-			WHITE = new Color(1, 1, 1), 
-			RED = new Color(1, 0, 0), 
-			GREEN = new Color(0, 1, 0),
+
+	public static final Color BLACK = new Color(0, 0, 0), WHITE = new Color(1,
+			1, 1), RED = new Color(1, 0, 0), GREEN = new Color(0, 1, 0),
 			BLUE = new Color(0, 0, 1);
-	
+
 	// Color components
 	final private double m_r, m_g, m_b;
-
 
 	/**
 	 * Convertit une composante de la couleur sur une valeur entière comprise
@@ -35,7 +37,6 @@ public class Color {
 		return (int) (max * ((v <= 0.0031308) ? 12.92 * v : 1.055 * Math.pow(v,
 				1 / 2.4) - 0.055));
 	}
-	
 
 	/**
 	 * Construit une couleur avec les quantité de rouge, vert et bleu passées en
@@ -61,7 +62,7 @@ public class Color {
 		m_g = g;
 		m_b = b;
 	}
-	
+
 	/**
 	 * Constructeur de copie : construit une couleur à partir d'une autre
 	 */

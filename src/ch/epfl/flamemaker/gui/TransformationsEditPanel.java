@@ -1,3 +1,8 @@
+/**
+ * @author Hadrien Milano <Sciper : 224340>
+ * @author Christophe Tafani-Dereeper <Sciper : 223529>
+ */
+
 package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
@@ -21,38 +26,41 @@ import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 @SuppressWarnings("serial")
-public class TransformationsEditPanel extends JPanel{
+public class TransformationsEditPanel extends JPanel {
 
 	private List<Listener> m_listeners = new LinkedList<Listener>();
-	
+
 	private TransformationsListModel m_listModel;
-	
+
 	JList m_transformationsList;
-	
-	public TransformationsEditPanel(final ObservableFlameBuilder flameBuilder){
+
+	public TransformationsEditPanel(final ObservableFlameBuilder flameBuilder) {
 		JPanel transformationsEditButtons = new JPanel();
-		
+
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createTitledBorder("Transformations"));
-		
+
 		m_listModel = new TransformationsListModel(flameBuilder);
-		
+
 		m_transformationsList = new JList(m_listModel);
-		
-		m_transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		m_transformationsList
+				.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		m_transformationsList.setVisibleRowCount(5);
-		m_transformationsList.addListSelectionListener(new ListSelectionListener(){
-			@Override
-			public void valueChanged(ListSelectionEvent evt) {
-				notifyTransformationSelected(m_transformationsList.getSelectedIndex());
-			}
-		});
-		
+		m_transformationsList
+				.addListSelectionListener(new ListSelectionListener() {
+					@Override
+					public void valueChanged(ListSelectionEvent evt) {
+						notifyTransformationSelected(m_transformationsList
+								.getSelectedIndex());
+					}
+				});
+
 		JScrollPane transformationsPane = new JScrollPane(m_transformationsList);
-		
+
 		this.add(transformationsPane, BorderLayout.CENTER);
 		this.add(transformationsEditButtons, BorderLayout.PAGE_END);
-		
+
 		transformationsEditButtons.setLayout(new GridLayout(1, 2));
 
 		// Bouton 'supprimer'
@@ -62,63 +70,64 @@ public class TransformationsEditPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				int selectedIndex = m_transformationsList.getSelectedIndex();
 
-				if(selectedIndex != -1) {
+				if (selectedIndex != -1) {
 					m_listModel.removeTransformation(selectedIndex);
-					m_transformationsList.setSelectedIndex(Math.max(0, --selectedIndex));
+					m_transformationsList.setSelectedIndex(Math.max(0,
+							--selectedIndex));
 				}
-				if(flameBuilder.transformationsCount() == 1) {
+				if (flameBuilder.transformationsCount() == 1) {
 					deleteTransformationButton.setEnabled(false);
 				}
 			}
 		});
-		
+
 		JButton addTransformationButton = new JButton("Ajouter");
 		transformationsEditButtons.add(addTransformationButton);
 		transformationsEditButtons.add(deleteTransformationButton);
-		
+
 		addTransformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				m_listModel.addTransformation(new FlameTransformation(
-						AffineTransformation.IDENTITY, 
-						new double[]{1, 0, 0, 0, 0, 0}						
-				));
-				
-				int newHighlightedIndex = flameBuilder.transformationsCount()-1;
-				
+						AffineTransformation.IDENTITY, new double[] { 1, 0, 0,
+								0, 0, 0 }));
+
+				int newHighlightedIndex = flameBuilder.transformationsCount() - 1;
+
 				notifyTransformationSelected(newHighlightedIndex);
-				
-				if(!deleteTransformationButton.isEnabled() && flameBuilder.transformationsCount() > 1) {
+
+				if (!deleteTransformationButton.isEnabled()
+						&& flameBuilder.transformationsCount() > 1) {
 					deleteTransformationButton.setEnabled(true);
 				}
 			}
 		});
-		
+
 		m_transformationsList.setSelectedIndex(0);
 	}
-	
-	public TransformationsListModel getListModel(){
+
+	public TransformationsListModel getListModel() {
 		return m_listModel;
 	}
-	
+
 	public void setSelectedTransformationIndex(int id) {
 		m_transformationsList.setSelectedIndex(id);
 	}
-	
-	public void addListener(Listener l){
+
+	public void addListener(Listener l) {
 		m_listeners.add(l);
 	}
-	
-	public void removeListener(Listener l){
+
+	public void removeListener(Listener l) {
 		m_listeners.remove(l);
 	}
-	
-	private void notifyTransformationSelected(int id){
-		for(Listener l : m_listeners){
+
+	private void notifyTransformationSelected(int id) {
+		for (Listener l : m_listeners) {
 			l.onTransformationSelected(id);
 		}
 	}
-	
+
 	public interface Listener {
 		public void onTransformationSelected(int transfoId);
 	}
