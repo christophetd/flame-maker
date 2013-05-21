@@ -45,7 +45,7 @@ public class Flame {
 			int density) {
 		// On initialise un random déterminé par la graine 2013
 		Random randomizer = new Random(2013);
-
+		
 		// Création des variables utilisées dans les boucles de calcul
 		Point point = new Point(0, 0);
 		int k = 20;
