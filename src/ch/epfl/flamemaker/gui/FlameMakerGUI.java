@@ -152,7 +152,7 @@ public class FlameMakerGUI {
 		Iterator<Listener> it = m_listeners.iterator();
 		while(it.hasNext()){
 			it.next().onSelectedTransformationIdChange(id);
-		}
+		}	
 	}
 	
 	/**
