@@ -126,10 +126,10 @@ public class FlameMakerGUI {
 		});
 		
 		/* -------- */
-		MenuBar.build(window, m_set, transformationsEditPanel.getListModel());
-
-		ImageIcon icon = new ImageIcon("C:\\Users\\Christophe\\workspace\\flame-maker\\icon.png");
-		window.setIconImage(icon.getImage());
+//		MenuBar.build(window, m_set, transformationsEditPanel.getListModel());
+//
+//		ImageIcon icon = new ImageIcon("C:\\Users\\Christophe\\workspace\\flame-maker\\icon.png");
+//		window.setIconImage(icon.getImage());
 		
 		window.pack();
 		window.setLocationRelativeTo(null);
