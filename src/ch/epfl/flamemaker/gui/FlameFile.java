@@ -15,6 +15,9 @@ import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
 public class FlameFile {
+	
+	final static public String FLAME_FILE_EXTENSION = ".flame";
+	
 	public static ArrayList<FlameTransformation> getTransformationsFromFile(String filePath) throws IOException, ClassNotFoundException {
 		if(!(new File(filePath)).exists()) {
 			throw new FileNotFoundException();
