@@ -126,8 +126,9 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		/* -------- */
 		MenuBar.build(window, m_set, transformationsEditPanel.getListModel());
 
-		ImageIcon icon = new ImageIcon("C:\\Users\\Christophe\\workspace\\flame-maker\\icon.png");
-		window.setIconImage(icon.getImage());
+		// TODO
+		//ImageIcon icon = new ImageIcon(this.getClass().getClassLoader().getResource("icon.png"));
+		//window.setIconImage(icon.getImage());
 		
 		window.pack();
 		window.setLocationRelativeTo(null);

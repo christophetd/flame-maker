@@ -33,7 +33,20 @@ public class FlameFileFilter extends FileFilter {
 
 	@Override
 	public String getDescription() {
-		return description;
+		StringBuilder finalDescription = new StringBuilder();;
+		finalDescription.append(description);
+		finalDescription.append("(");
+		for(int i = 0; i < extensions.length; i++) {
+			finalDescription.append(extensions[i]);
+			if(i != extensions.length - 1) {
+				finalDescription.append(", ");
+			}
+		}
+		finalDescription.append(")");
+	
+		System.out.println(finalDescription.toString());
+		return finalDescription.toString();
+			
 	}
 
 }

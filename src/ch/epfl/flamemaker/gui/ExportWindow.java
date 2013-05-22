@@ -1,6 +1,7 @@
 package ch.epfl.flamemaker.gui;
 
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,7 +32,7 @@ import ch.epfl.flamemaker.flame.FlameSet;
 @SuppressWarnings("serial")
 public class ExportWindow extends JFrame implements Flame.Listener {
 
-	private static final int MAX_DENSITY_VALUE = 2000;
+	private static final int MAX_DENSITY_VALUE = 1000;
 	
 	final private JProgressBar m_progressBar;
 	final private JButton m_cancelButton;
@@ -40,6 +41,13 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 	private String m_extension;
 	final private Color m_bgColor;
 	final private Palette m_palette;
+	
+	final static public String[] AVAILABLE_FORMATS = new String[] {
+		"jpg", 
+		"png", 
+		"bmp", 
+		"gif"
+	};
 
 	private long m_beginComputeTime;
 	
@@ -55,19 +63,10 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		final Container contentPane = getContentPane();
 		
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
-		
-		
-		//filePathField.setMaximumSize(new Dimension(1000, filePathField.getPreferredSize().height)); 
-		
-		final String[] formats = new String[] {
-			"jpg", "png", "bmp"
-		};
 
-		
-		
 		JPanel formatPanel = new JPanel();
 		formatPanel.setLayout(new BoxLayout(formatPanel, BoxLayout.LINE_AXIS));
-		final JComboBox formatsList = new JComboBox(formats);
+		final JComboBox formatsList = new JComboBox(ExportWindow.AVAILABLE_FORMATS);
 		formatsList.setMaximumSize(new Dimension(1000, formatsList.getPreferredSize().height));
 		formatPanel.add(new JLabel("Format : "));
 		formatPanel.add(formatsList);
@@ -78,6 +77,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		final JFormattedTextField widthField = buildFormattedTextField();
 		widthField.setMaximumSize(new Dimension(1000, widthField.getPreferredSize().height));
 		final JFormattedTextField heightField = buildFormattedTextField();
+		heightField.setText("");
 		heightField.setMaximumSize(new Dimension(1000, heightField.getPreferredSize().height));
 		dimensionPanel.add(widthField);
 		dimensionPanel.add(new JLabel(" x "));
@@ -117,11 +117,12 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					densityField.setValue(MAX_DENSITY_VALUE);
 				}
 				
+				m_extension = formatsList.getSelectedItem().toString();
+				
 				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.home")));
-				fileChooser.setFileFilter(new FlameFileFilter(formats, "Fichiers image "));
-				if(fileChooser.showSaveDialog(contentPane) == JFileChooser.APPROVE_OPTION) {
+				fileChooser.setFileFilter(new FlameFileFilter(m_extension, "Fichiers image"));
+				if(fileChooser.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
 					String filePath = fileChooser.getSelectedFile().getAbsolutePath();
-					m_extension = formatsList.getSelectedItem().toString();
 					
 					if(!filePath.endsWith("."+m_extension)) {
 						filePath = filePath.concat("."+m_extension);
@@ -162,9 +163,6 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					
 					flame.compute(set.getFrame().toRectangle().expandToAspectRatio((double)width/height)
 							, width, height, ((Number)densityField.getValue()).intValue());
-					
-					/*window.setVisible(false);
-					dispose();*/
 				}
 			}
 		});
@@ -180,6 +178,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 
 	@Override
 	public void onComputeProgress(int percent) {
+		System.out.println(percent);
 		if(!m_progressBar.isEnabled() && !m_cancelButton.isEnabled()) {
 			m_progressBar.setEnabled(true);
 			m_cancelButton.setEnabled(true);
@@ -190,7 +189,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 			long timeElapsed = System.currentTimeMillis()-m_beginComputeTime; 
 			long remaining = (timeElapsed*100)/percent - timeElapsed + 1000;
 
-			String formattedRemaining = String.format("%d minutes et %d secondes restantes", 
+			String formattedRemaining = String.format("environ %d minutes et %d secondes restantes", 
 				    TimeUnit.MILLISECONDS.toMinutes(remaining),
 				    TimeUnit.MILLISECONDS.toSeconds(remaining) - 
 				    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remaining))
@@ -203,6 +202,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 	
 	@Override
 	public void onComputeDone(FlameAccumulator accumulator) {
+		m_progressBar.setString("Génération de l'image");
 		BufferedImage tmpImage = new BufferedImage(accumulator.width(), accumulator.height(), BufferedImage.TYPE_INT_RGB);
 		for(int x = 0 ; x < accumulator.width() ; x++){
 			for(int y = 0 ; y < accumulator.height() ; y++){
@@ -212,6 +212,10 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		}
 		try {
 			ImageIO.write(tmpImage, m_extension, m_fileToSave);
+			
+			if(Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().open(m_fileToSave);
+			}
 		} catch(IOException ioex) {
 			ioex.printStackTrace();
 		}

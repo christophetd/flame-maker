@@ -1,13 +1,11 @@
 package ch.epfl.flamemaker.gui;
 
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
@@ -47,7 +45,6 @@ public class MenuBar {
 			JMenuItem item = new JMenuItem(p.name());
 			newFromMenuItem.add(item);
 			item.addActionListener(new ActionListener(){
-
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					set.loadPreset(p);
@@ -76,7 +73,9 @@ public class MenuBar {
 		fileMenu.add(closeMenuItem);
 		
 		JMenu helpMenu = new JMenu("Aide");
-		JMenuItem documentationMenuItem = new JMenuItem("Documentation [todo]");
+		JMenuItem documentationMenuItem = new JMenuItem("Documentation");
+		documentationMenuItem.setEnabled(false);
+		
 		JMenuItem aboutMenuItem = new JMenuItem("À propos");
 		
 		helpMenu.add(documentationMenuItem);
@@ -139,19 +138,7 @@ public class MenuBar {
 		));
 		
 		/* Comportements */
-		documentationMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					  Desktop desktop = java.awt.Desktop.getDesktop();
-					  URI oURL = new URI("http://github.com/christophetd/flame-maker/wiki/Documentation");
-					  desktop.browse(oURL);
-				} 
-				catch (Exception ex) {
-					  ex.printStackTrace();
-				}
-			}
-		});
-		
+	
 		aboutMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(window, "Ce programme a été développé par Hadrien Milano <hadrien.milano@epfl.ch> et Christophe Tafani-Dereeper <christophe.tafani-dereeper@epfl.ch> dans le cadre d'un projet de semestre");				
@@ -159,9 +146,13 @@ public class MenuBar {
 		});
 		openMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				String userHome = System.getProperty("user.home");
+				if(userHome == null) {
+					userHome = "";
+				}
 				
-				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty( "user.home" )));	
-				fileChooser.addChoosableFileFilter(new FlameFileFilter(".flame", "Fichier de fractale Flame (.flame)"));
+				JFileChooser fileChooser = new JFileChooser(new File(userHome));	
+				fileChooser.addChoosableFileFilter(new FlameFileFilter(".flame", "Fichier de fractale Flame"));
 				
 				// Lorsque l'utilisateur a choisi un fichier à ouvrir
 				if(fileChooser.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
@@ -235,7 +226,7 @@ public class MenuBar {
 		
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty( "user.home" )));	
-				fileChooser.addChoosableFileFilter(new FlameFileFilter(".flame", "Fichier de fractale Flame (.flame)"));
+				fileChooser.addChoosableFileFilter(new FlameFileFilter(".flame", "Fichier de fractale Flame"));
 				
 				// Lorsque l'utilisateur a choisi le fichier dans lequel enregistrer sa fractale
 				if(fileChooser.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
