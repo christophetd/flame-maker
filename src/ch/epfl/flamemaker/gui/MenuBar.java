@@ -102,8 +102,8 @@ public class MenuBar {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					set.getBuilder().getComputeStrategy().deactivate();
-					strategy.activate();
+					set.getBuilder().getComputeStrategy().disable();
+					strategy.enable();
 					set.getBuilder().setComputeStrategy(strategy);
 				}
 				

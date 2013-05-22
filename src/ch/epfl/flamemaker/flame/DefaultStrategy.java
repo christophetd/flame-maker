@@ -6,9 +6,15 @@ import java.util.Random;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
+/**
+ * Implémente la stratégie de calcul par défaut. Un algorithme du chaos calcule tous les points de la fractale dans un seul processus.
+ * Cette stratégie est compatible avec toutes les machines capable de faire tourner flame-maker.
+ */
 class DefaultStrategy extends FlameStrategy {
 	
-	public static final int PROGRESS_DEFINITION = 5;
+	// Définit le "pas" entre chaque appel à triggerProgressCompute
+	private static final int PROGRESS_DEFINITION = 5;
+
 	@Override
 	public String name() {
 		return "Standard";
@@ -16,7 +22,7 @@ class DefaultStrategy extends FlameStrategy {
 	
 	@Override
 	public boolean isSupported() {
-		return true;
+		return true; // Cette stratégie est tout le temps supportée
 	}
 
 	@Override
@@ -24,8 +30,9 @@ class DefaultStrategy extends FlameStrategy {
 		return new DefaultFlame(transformations);
 	}
 	
+	// Implémentation de Flame avec l'algorithme par défaut.
 	private class DefaultFlame extends Flame {
-
+		
 		public DefaultFlame(List<FlameTransformation> transforms) {
 			super(transforms);
 		}
@@ -34,6 +41,7 @@ class DefaultStrategy extends FlameStrategy {
 		protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
 				final int density) {
 			
+			// On signale tout de suite que le calcul a commencé
 			triggerComputeProgress(0);
 			
 			// On initialise un random déterminé par la graine 2013
@@ -76,6 +84,7 @@ class DefaultStrategy extends FlameStrategy {
 				
 				builder.hit(point, lastColor);
 				
+				// Si on a suffisamment avancé, on informe l'extérieur de l'avancement.
 				if(i >= (progress + PROGRESS_DEFINITION)*progressStep){
 					progress += PROGRESS_DEFINITION;
 					triggerComputeProgress(progress);

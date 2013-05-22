@@ -70,7 +70,7 @@ public class ObservableFlameBuilder {
 	 * @return Le nombre actuel de transformations de la fractale
 	 */
 	public int transformationsCount() {
-		return m_builder.transformationsCount();
+		return m_builder.getTransformationsCount();
 	}
 	
 	/**
@@ -104,7 +104,7 @@ public class ObservableFlameBuilder {
 	 *             Si l'index n'est pas valide
 	 */
 	public AffineTransformation affineTransformation(int index) {
-		return m_builder.affineTransformation(index);
+		return m_builder.getAffineTransformation(index);
 	}
 	
 	/**
@@ -137,7 +137,7 @@ public class ObservableFlameBuilder {
 	 *             Si l'index n'est pas valide
 	 */
 	public double variationWeight(int index, Variation variation) {
-		return m_builder.variationWeight(index, variation);
+		return m_builder.getVariationWeight(index, variation);
 	}
 	
 	/**

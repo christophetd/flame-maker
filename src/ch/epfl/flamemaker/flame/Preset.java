@@ -17,8 +17,6 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * 
  * Un preset définit une liste de transformations pour créer une flame 
  * ainsi que des attributs d'affichage (palette, frame) et est défini par son nom (name).
- * 
- * @author Hadrien
  *
  */
 public class Preset {
@@ -35,7 +33,7 @@ public class Preset {
 			));
 	
 	/**
-	 * Contient tous les presets enregistrés dans l'application rangés par ordre alphabétique.
+	 * Contient tous les presets enregistrés dans l'application, rangés par ordre alphabétique.
 	 */
 	public static final List<Preset> ALL_PRESETS = Arrays.asList(
 			new Preset(
