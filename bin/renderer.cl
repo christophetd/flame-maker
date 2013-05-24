@@ -1,26 +1,35 @@
 #define SIZEOF_TRANSFORM	13
 #define VARIATIONS_POS		7
 #define COLOR_INDEX_POS		6
-#define MAX_TRANSFORMS_COUNT  50
+#define MAX_TRANSFORMS_COUNT  16
 #define TRANSFORMS_ARRAY_SIZE	MAX_TRANSFORMS_COUNT*SIZEOF_TRANSFORM
 
 void transformPoint(const float *transform, float *px, float *py);
 
 unsigned int next(unsigned long *seed, int bits);
-unsigned long nextLong(unsigned long *seed);
 unsigned int nextInt(unsigned long *seed, int n);
 
-/**
- * Computes a serie of points_n points using chaos game on the given transforms
+/*
+ * Calcule une fractale flame avec l'algorithme du chaos.
  * 
- * transforms : array of transformations.
- *   format of transformation : [ linera matrix (6) | color index (1) | variations weights (6) ]
+ * paramètres:
+ * - seeds (unsigned long*)     tableau de graines pour le générateur pseudo-aléatoire
+ * - colorOut (float[])         buffer de sortie pour les indices de couleur
+ * - intensOut (unsigned int[]) buffer de sortie pour les intensitées
+ * - outWidth (int)             largeur du cadre de sortie
+ * - outHeight (int)            hauteur du cadre de sortie
+ * - g_transforms (const float[]) tableau des transformations
+ * - trans_n (int)              nombre de transformations sérialisées selon le format ci-dessous
+ * - iterations (int)           nombre d'itérations à effecture
+ * - points (float[])           buffer d'entrée/sortie des points des algorithmes du chaos
+ * 
+ * format des transformations : [ linera matrix (6) | color index (1) | variations weights (6) ]
  *
-**/
+ */
 __kernel void compute(
 	__global unsigned long* seeds, 
-	__global float out[],
-	__global unsigned int intensities[],
+	__global float colorOut[],
+	__global unsigned int intensOut[],
 	int outWidth, 
 	int outHeight, 
 	__global const float g_transforms[], 
@@ -41,7 +50,9 @@ __kernel void compute(
 	float color = points[id*3+2];
 	float cx, cy;
 	
+    // Si l'algorithme a tout juste commencé
 	if(x == 0 && y == 0){
+        // On fait 20 tours de chauffe
 		for(int i = 0 ; i < 20 ; i++){
             int transformID = nextInt(&seed, transf_n);
 			transformPoint(&transforms[transformID*SIZEOF_TRANSFORM], &x, &y);
@@ -50,6 +61,7 @@ __kernel void compute(
 		}
 	}
 	
+    // Algorithme du chaos
 	for(; iterations > 0 ; iterations--){
 		int transformID = nextInt(&seed, transf_n);
 		transformPoint(&transforms[transformID*SIZEOF_TRANSFORM], &x, &y);
@@ -65,17 +77,13 @@ __kernel void compute(
 			//then hit
 			int pos = (outHeight -1 - (int)floor(cy)) * outWidth + (int)floor(cx);
 			
-			if(intensities[pos] < 2147483647){
-				int intensity = intensities[pos];
-				out[pos] = native_divide(out[pos]*intensity + color, intensity +1);
-				intensities[pos] ++;
+			if(intensOut[pos] < 2147483647){
+				int intensity = intensOut[pos];
+				colorOut[pos] = native_divide(colorOut[pos]*intensity + color, intensity +1);
+				intensOut[pos] ++;
 			}
 		}
 	}
-    
-    for(int i = 0 ; i < 2147483647 ; i++){
-        int b = ((i/5)%101 > 100)? i - 3 : 2+points[id*3]/i;
-    }
 	
 	points[id*3] = x;
 	points[id*3+1] = y;
@@ -84,6 +92,9 @@ __kernel void compute(
     seeds[id] = seed;
 }
 
+/*
+ * trasnforme un point avec la transformation passée en argument
+ */
 void transformPoint(const float *transform, float *px, float *py){
 	float tx = transform[0]*(*px)+transform[1]*(*py)+transform[2];
 	float ty = transform[3]*(*px)+transform[4]*(*py)+transform[5];
@@ -122,14 +133,9 @@ void transformPoint(const float *transform, float *px, float *py){
 	*py = y;
 }
 
-/*unsigned int consumeRandom(unsigned long *rand, unsigned int modulo){
-	int ret = *rand % modulo;
-	*rand /= modulo;
-	return ret;
-}*/
-
-//TODO : inplémenter ça :
-
+/* Portage en C des méthodes de génération de nombres pseudo-aléatoires
+ * de java.util.Random ( http://docs.oracle.com/javase/6/docs/api/java/util/Random.html )
+ */
 unsigned int nextInt(unsigned long *seed, int n) {
 
     if ((n & -n) == n)  // i.e., n is a power of 2
@@ -147,10 +153,6 @@ unsigned int nextInt(unsigned long *seed, int n) {
 unsigned int next(unsigned long *seed, int bits){
     *seed = (*seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
     return (int)(*seed >> (48 - bits));
-}
-
-unsigned long nextLong(unsigned long *seed) {
-    return ((long)next(seed, 32) << 32) + next(seed, 32);
 }
 
 // This comment magically prevents compilation errors

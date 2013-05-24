@@ -4,25 +4,25 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Définit une façon de calculer une fractale Flame par une variante du pattern strategy.<br>
+ * Définit une façon de calculer une fractale Flame par une variante du pattern factory.<br>
  * <br>
- * Cette classe indique les propriétés de la méthode de rendu ( {@link #name()}, {@link #isSupported() } )
+ * Cette classe indique les propriétés de la technique de rendu ( {@link #name()}, {@link #isSupported() } )
  * et gère les ressources de celles-ci grâce à {@link #enable()} et {@link #disable() }.<br>
  * <br>
- * Elle doit instancier une sous-classe de Flame implémentant la méthode de rendu en question grâce
+ * Elle doit instancier une sous-classe de Flame implémentant la technique de rendu en question grâce
  * à la méthode {@link #createFlame(List) }
  *
  */
-public abstract class FlameStrategy{
+public abstract class FlameFactory{
 	
 	/**
 	 * Liste des stratégies disponibles pour le rendu de la fractale triée par ordre de compatibilité
 	 * (moins compatible en premier, plus compatible à la fin)
 	 */
-	public static final List<FlameStrategy> ALL_STARTEGIES = Arrays.asList(
-		new OpenCLStrategy(),
-		new ThreadStartegy(),
-		new DefaultStrategy()
+	public static final List<FlameFactory> ALL_FACTORIES = Arrays.asList(
+		new OpenCLFlameFactory(),
+		new ThreadFlameFactory(),
+		new DefaultFlameFactory()
 	);
 	
 	/**

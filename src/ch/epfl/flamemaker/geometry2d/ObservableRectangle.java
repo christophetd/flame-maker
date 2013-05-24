@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Classe mutable et observable représentant un rectangle dans l'espace à deux dimentions.<br />
+ * Classe mutable et observable représentant un rectangle dans l'espace à deux dimensions.<br />
  * Le rectangle est caractérisé par son centre ({@link Point Point}), sa largeur
  * et sa hauteur (double).
  */
@@ -36,7 +36,10 @@ public class ObservableRectangle {
 		m_rect = new Rectangle(center, width, height);
 	}
 	
-	//TODO javadoc
+	/**
+	 * Construit un nouveau rectangle observable à partir du rectangle passé en argument
+	 * @param rect rectangle de référence pour cet ObservableRectangle
+	 */
 	public ObservableRectangle(Rectangle rect){
 		m_rect = rect;
 	}
@@ -212,6 +215,7 @@ public class ObservableRectangle {
 		m_listeners.remove(l);
 	}
 	
+	// Informe les observateurs d'un changement
 	private void notifyObservers(){
 		Iterator<Listener> it = m_listeners.iterator();
 		while(it.hasNext()){

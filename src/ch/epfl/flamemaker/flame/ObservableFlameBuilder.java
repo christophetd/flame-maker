@@ -6,6 +6,9 @@ import java.util.Set;
 
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
+/**
+ * Décorateur pour rendre observable la classe {@link Flame.Builder}.
+ */
 public class ObservableFlameBuilder {
 	
 	private Flame.Builder m_builder;
@@ -35,7 +38,7 @@ public class ObservableFlameBuilder {
 	 * @param strategy
 	 * 			La stratégie à utiliser
 	 */
-	public ObservableFlameBuilder(Flame flame, FlameStrategy strategy){
+	public ObservableFlameBuilder(Flame flame, FlameFactory strategy){
 		m_builder = new Flame.Builder(flame, strategy);
 	}
 	
@@ -180,13 +183,13 @@ public class ObservableFlameBuilder {
 	 * @param strategy
 	 * 		Nouvelle stratégie à utiliser.
 	 */
-	public void setComputeStrategy(FlameStrategy s){
+	public void setComputeStrategy(FlameFactory s){
 		m_builder.setComputeStrategy(s);
 		
 		notifyObservers();
 	}
 	
-	public FlameStrategy getComputeStrategy(){
+	public FlameFactory getComputeStrategy(){
 		return m_builder.getComputeStrategy();
 	}
 	

@@ -10,7 +10,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Implémente la stratégie de calcul par défaut. Un algorithme du chaos calcule tous les points de la fractale dans un seul processus.
  * Cette stratégie est compatible avec toutes les machines capable de faire tourner flame-maker.
  */
-class DefaultStrategy extends FlameStrategy {
+class DefaultFlameFactory extends FlameFactory {
 	
 	// Définit le "pas" entre chaque appel à triggerProgressCompute
 	private static final int PROGRESS_DEFINITION = 5;

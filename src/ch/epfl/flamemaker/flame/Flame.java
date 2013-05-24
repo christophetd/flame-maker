@@ -7,7 +7,17 @@ import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 
-
+/**
+ * Classe de base modélisant une fractale flame. Cette classe permet de définir une 
+ * fractale par une liste de transformations mais elle doit être étendue pour pouvoir être calculée.<br>
+ * <br>
+ * Le calcul de la fractal est lancé par l'appel à la méthode {@link #compute(Rectangle, int, int, int)}.
+ * Les classes filles doivent implémenter la méthode {@link #doCompute(Rectangle, int, int, int)} qui est
+ * lancée dans un processus séparé.<br>
+ * Le calcul se fait de manière asynchrone et le résultat est obtenu par le biais des observateurs ({@link Listener}).
+ * 
+ * @see FlameFactory
+ */
 public class Flame {
 	
 	//Contient la liste des transformations caractérisant la fractale
@@ -205,7 +215,8 @@ public class Flame {
 	
 	/**
 	 * Observateur pour la classe flame. 
-	 * Permet de connaître l'avancement du rendu et d'en récupérer le résultat.
+	 * Permet de connaître l'avancement du rendu avec {@link #onComputeProgress(int)} 
+	 * et d'en récupérer le résultat avec {@link #onComputeDone(FlameAccumulator)}
 	 * 
 	 * @see Flame#addListener(Listener)
 	 */
@@ -234,7 +245,7 @@ public class Flame {
 		private List<FlameTransformation.Builder> m_transformationsBuilders;
 		
 		/* Strategie qui sera utilisée pour créer la fractale lors de l'appel à build()*/
-		private FlameStrategy m_strategy;
+		private FlameFactory m_strategy;
 	
 		/**
 		 * Construit un bâtisseur à partir d'une fractale existante et choisis la meilleure stratégie de calcul.
@@ -248,7 +259,7 @@ public class Flame {
 				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
 			}
 			
-			for(FlameStrategy f : FlameStrategy.ALL_STARTEGIES){
+			for(FlameFactory f : FlameFactory.ALL_FACTORIES){
 				if(f.isSupported()){
 					m_strategy = f;
 					m_strategy.enable();
@@ -265,7 +276,7 @@ public class Flame {
 		 * @param strategy
 		 * 			La stratégie à utiliser
 		 */
-		public Builder(Flame flame, FlameStrategy strategy){
+		public Builder(Flame flame, FlameFactory strategy){
 			m_transformationsBuilders = new ArrayList<FlameTransformation.Builder>();
 			for(FlameTransformation transformation : flame.m_transforms) {
 				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
@@ -329,7 +340,7 @@ public class Flame {
 		 * Retourne la stratégie qui sera utilisée pour fabriquer la fractale
 		 * @return stratégie actuellement sélectionnée.
 		 */
-		public FlameStrategy getComputeStrategy(){
+		public FlameFactory getComputeStrategy(){
 			return m_strategy;
 		}
 
@@ -373,7 +384,7 @@ public class Flame {
 		 * @param strategy
 		 * 		Nouvelle stratégie à utiliser.
 		 */
-		public void setComputeStrategy(FlameStrategy strategy){
+		public void setComputeStrategy(FlameFactory strategy){
 			m_strategy = strategy;
 		}
 

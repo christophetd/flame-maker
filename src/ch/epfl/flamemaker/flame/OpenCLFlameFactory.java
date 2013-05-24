@@ -28,9 +28,11 @@ import com.nativelibs4java.util.IOUtils;
 /**
  * Implémente une flame avec un rendu par OpenCL. De nombreux algorithmes du chaos sont lancés en 
  * parallèle sur du matériel adapté au calcul parallel (ex: carte graphique).
- * Cette implementation nécessite des drivers spécifiques mais offre les meilleures performances sur du materiel adéquat.
+ * Cette implementation nécessite des drivers spécifiques mais offre les meilleures performances sur du matériel adéquat.<br>
+ * <br>
+ * Utilise le kernel de rendu OpenCL du fichier bin/renderer.cl
  */
-class OpenCLStrategy extends FlameStrategy {
+class OpenCLFlameFactory extends FlameFactory {
 	
 	private CLContext context;
 	private CLProgram program;
@@ -74,7 +76,7 @@ class OpenCLStrategy extends FlameStrategy {
 		// Lis et compile le code du kernel
         String src = "";
 		try {
-			src = IOUtils.readText(FlameStrategy.class.getClassLoader().getResource("renderer.cl"));
+			src = IOUtils.readText(FlameFactory.class.getClassLoader().getResource("renderer.cl"));
 		} catch (IOException e) {
 			System.err.println("Impossible de charger le fichier du kernel de rendu OpenCL");
 			return;
@@ -180,14 +182,14 @@ class OpenCLStrategy extends FlameStrategy {
 				
 				// On passe les arguments au noyau
 				computeKernel.setArgs(
-		      		seeds, 
-		      		colors, 
-		      		intensities, 
-		      		width, 
-		      		height, 
-		      		transformsBuffer, 
-		      		getTransforms().size(), 
-		      		kernel_iterations, 
+					seeds,
+		      		colors,
+		      		intensities,
+		      		width,
+		      		height,
+		      		transformsBuffer,
+		      		getTransforms().size(),
+		      		kernel_iterations,
 		      		pointsBuffer );
 				
 				// Et on lance kernel_count travaux sur ce noyau.

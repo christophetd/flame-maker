@@ -12,7 +12,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
  * Classe définissant un préréglage de FlameSet. 
- * Le champ statique ALL_PRESETS recence tous les presets enregistrés 
+ * Le champ statique ALL_PRESETS recense tous les presets enregistrés 
  * et le champ EMPTY_PRESET contient un set neutre (utile pour faire une nouvelle fractale à partir de zéro).
  * 
  * Un preset définit une liste de transformations pour créer une flame 
@@ -75,10 +75,10 @@ public class Preset {
 					new InterpolatedPalette(Arrays.asList(new Color(1,1,1), new Color(0.6, 0.3, 0), new Color(0.1, 0, 0.4))),
 					Arrays.asList(
 							new FlameTransformation(
-									new AffineTransformation(1, 0, 0, 0, 1, 0),
-									new double[] {1, 1, 1, 0, 0, 0}),
+									new AffineTransformation(0.99, 0, 0, 0, 0.99, 0),
+									new double[] {1, .9, 1, 0, 0, 0}),
 	            			new FlameTransformation(
-	            					new AffineTransformation(-0.70710, -0.70710, -0.9, 0.70710, -0.70710, 0),
+	            					new AffineTransformation(-0.70, -0.70, -0.9, 0.70, -0.70, 0),
 	            					new double[] { 1, 0, .4, .4, 0, 0 })
 			)),
 			new Preset(

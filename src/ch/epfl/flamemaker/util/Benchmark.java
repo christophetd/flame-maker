@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 /**
  * Permet d'effectuer des relevés de temps d'execution et de les exporter en JSON. <br />
  * Cette classe s'utilise avec le fichier Benchmark.html pour visualiser graphiquement les relevés.<br />
- * (Initialiement développée pour optimiser la stratégie de calcul OpenCL)
+ * (Initialement développée pour optimiser la stratégie de calcul OpenCL)
  * <br/><br/>
  * Utilisation :<br/>
  * <pre>

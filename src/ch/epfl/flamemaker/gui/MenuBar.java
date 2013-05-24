@@ -19,7 +19,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import ch.epfl.flamemaker.flame.FlameSet;
-import ch.epfl.flamemaker.flame.FlameStrategy;
+import ch.epfl.flamemaker.flame.FlameFactory;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Preset;
@@ -101,7 +101,7 @@ public class MenuBar {
 		// supportée(s) et active par défaut la première supportée que l'on
 		// trouve
 		boolean hasSelectedStrategy = false;
-		for (FlameStrategy fs : FlameStrategy.ALL_STARTEGIES) {
+		for (FlameFactory fs : FlameFactory.ALL_FACTORIES) {
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(fs.name());
 			if (!fs.isSupported())
 				item.setEnabled(false);
@@ -112,7 +112,7 @@ public class MenuBar {
 			computeBG.add(item);
 			computeMenu.add(item);
 
-			final FlameStrategy strategy = fs;
+			final FlameFactory strategy = fs;
 			// Lorsque cette technique de rendu est sélectionnée, on l'active
 			item.addActionListener(new ActionListener() {
 				@Override

@@ -15,7 +15,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Cette stratégie n'est supportée que s'il y a plus d'un processeur disponible.
  *
  */
-public class ThreadStartegy extends FlameStrategy {
+class ThreadFlameFactory extends FlameFactory {
 
 	// Nombre de processeurs disponibles.
 	private int m_coreCount = Runtime.getRuntime().availableProcessors();
@@ -66,7 +66,7 @@ public class ThreadStartegy extends FlameStrategy {
 			
 			// On démarre n unités de travail
 			for(int i = 0 ; i < m_coreCount ; i++){
-				Worker w = new Worker(frame, density * width * height / m_coreCount);
+				Worker w = new Worker(frame, density * width * height / m_coreCount, 2013+i);
 				
 				workers.add(w);
 				w.start();
@@ -99,18 +99,20 @@ public class ThreadStartegy extends FlameStrategy {
 			// nombre total d'itérations pour ce processus
 			private final int m;
 			
+			private final Random randomizer;
+			
 			/**
 			 * Construit un processus de calcul. Ce processus va calculer un nombre "iterations" de points pour la fractale "host" 
 			 * @param frame cadre pour le dessin de la fractale
 			 * @param iterations nombre de points à calculer
+			 * @param seed graine pour rendre le calcul déterministe
 			 */
-			public Worker(final Rectangle frame, final int iterations){
+			public Worker(final Rectangle frame, final int iterations, final int seed){
 				m = iterations;
+				randomizer = new Random(seed);
 			}
 			@Override
 			public void run(){
-				// On initialise un random
-				Random randomizer = new Random();
 				
 				List<FlameTransformation> transformations = getTransforms();
 		

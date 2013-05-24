@@ -1,7 +1,7 @@
 package ch.epfl.flamemaker.geometry2d;
 
 /**
- * Classe non mutable représentant un rectangle dans l'espace à deux dimentions.<br />
+ * Classe non mutable représentant un rectangle dans l'espace à deux dimensions.<br />
  * Le rectangle est caractérisé par son centre ({@link Point Point}), sa largeur
  * et sa hauteur (double).
  */
