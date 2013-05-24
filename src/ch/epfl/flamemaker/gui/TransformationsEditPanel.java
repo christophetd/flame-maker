@@ -10,12 +10,14 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import ch.epfl.flamemaker.Config;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
@@ -79,17 +81,21 @@ public class TransformationsEditPanel extends JPanel {
 		addTransformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				m_listModel.addTransformation(new FlameTransformation(
-						AffineTransformation.IDENTITY, 
-						new double[]{1, 0, 0, 0, 0, 0}						
-				));
-				
-				int newHighlightedIndex = flameBuilder.transformationsCount()-1;
-				
-				notifyTransformationSelected(newHighlightedIndex);
-				
-				if(!deleteTransformationButton.isEnabled() && flameBuilder.transformationsCount() > 1) {
-					deleteTransformationButton.setEnabled(true);
+				if(m_listModel.getSize() >= Config.MAX_TRANSFO_COUNT){
+					JOptionPane.showMessageDialog(null, "Nombre maximum de transformations atteint");
+				} else {
+					m_listModel.addTransformation(new FlameTransformation(
+							AffineTransformation.IDENTITY, 
+							new double[]{1, 0, 0, 0, 0, 0}						
+					));
+					
+					int newHighlightedIndex = flameBuilder.transformationsCount()-1;
+					
+					notifyTransformationSelected(newHighlightedIndex);
+					
+					if(!deleteTransformationButton.isEnabled() && flameBuilder.transformationsCount() > 1) {
+						deleteTransformationButton.setEnabled(true);
+					}
 				}
 			}
 		});
