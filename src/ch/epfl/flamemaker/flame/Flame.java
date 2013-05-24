@@ -245,7 +245,7 @@ public class Flame {
 		private List<FlameTransformation.Builder> m_transformationsBuilders;
 		
 		/* Strategie qui sera utilisée pour créer la fractale lors de l'appel à build()*/
-		private FlameFactory m_strategy;
+		private FlameFactory m_factory;
 	
 		/**
 		 * Construit un bâtisseur à partir d'une fractale existante et choisis la meilleure stratégie de calcul.
@@ -261,8 +261,8 @@ public class Flame {
 			
 			for(FlameFactory f : FlameFactory.ALL_FACTORIES){
 				if(f.isSupported()){
-					m_strategy = f;
-					m_strategy.enable();
+					m_factory = f;
+					m_factory.enable();
 					break;
 				}
 			}
@@ -282,7 +282,7 @@ public class Flame {
 				m_transformationsBuilders.add(new FlameTransformation.Builder(transformation));
 			}
 			
-			m_strategy = strategy;
+			m_factory = strategy;
 		}
 
 		/**
@@ -340,8 +340,8 @@ public class Flame {
 		 * Retourne la stratégie qui sera utilisée pour fabriquer la fractale
 		 * @return stratégie actuellement sélectionnée.
 		 */
-		public FlameFactory getComputeStrategy(){
-			return m_strategy;
+		public FlameFactory getFactory(){
+			return m_factory;
 		}
 
 		/**
@@ -380,12 +380,12 @@ public class Flame {
 		}
 
 		/**
-		 * Change la stratégie de calcul de la fractale
-		 * @param strategy
+		 * Change la fabrique de la fractale
+		 * @param factory
 		 * 		Nouvelle stratégie à utiliser.
 		 */
-		public void setComputeStrategy(FlameFactory strategy){
-			m_strategy = strategy;
+		public void setFactory(FlameFactory factory){
+			m_factory = factory;
 		}
 
 		/**
@@ -421,7 +421,7 @@ public class Flame {
 				builtTransformations.add(transfoBuilder.build());
 			}
 			
-			return m_strategy.createFlame(builtTransformations);
+			return m_factory.createFlame(builtTransformations);
 		}
 	
 		/**

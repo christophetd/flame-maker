@@ -37,8 +37,8 @@ __kernel void compute(
 	int iterations,
 	__global float points[]){
 
+    // Copie locale des transforamtions pour un accès plus rapide
 	float transforms[TRANSFORMS_ARRAY_SIZE];
-	
 	for(int i = 0 ; i < (transf_n+1)*SIZEOF_TRANSFORM ; i++){
 		transforms[i] = g_transforms[i];
 	}

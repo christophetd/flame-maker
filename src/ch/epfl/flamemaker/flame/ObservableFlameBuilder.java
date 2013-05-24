@@ -25,8 +25,16 @@ public class ObservableFlameBuilder {
 		m_builder = new Flame.Builder(flame);
 	}
 	
+	/**
+	 * Remplace la construction actuelle par une nouvelle basée sur la fractale flame passée en argument.<br>
+	 * Cette méthode conserve la factory.
+	 * 
+	 * @param flame modèle pour le nouvel état du constructeur
+	 */
 	public void set(Flame flame){
-		m_builder = new Flame.Builder(flame);
+		Flame.Builder b = new Flame.Builder(flame);
+		b.setFactory(m_builder.getFactory());
+		m_builder = b;
 		notifyObservers();
 	}
 	
@@ -184,13 +192,13 @@ public class ObservableFlameBuilder {
 	 * 		Nouvelle stratégie à utiliser.
 	 */
 	public void setComputeStrategy(FlameFactory s){
-		m_builder.setComputeStrategy(s);
+		m_builder.setFactory(s);
 		
 		notifyObservers();
 	}
 	
 	public FlameFactory getComputeStrategy(){
-		return m_builder.getComputeStrategy();
+		return m_builder.getFactory();
 	}
 	
 	/**
