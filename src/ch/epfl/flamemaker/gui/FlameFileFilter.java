@@ -49,7 +49,6 @@ public class FlameFileFilter extends FileFilter {
 		}
 		finalDescription.append(")");
 	
-		System.out.println(finalDescription.toString());
 		return finalDescription.toString();
 			
 	}

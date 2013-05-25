@@ -73,6 +73,7 @@ public class MenuBar {
 			item.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					MenuBar.setCurrentFilePath(null);
 					set.loadPreset(p);
 				}
 			});
@@ -210,15 +211,17 @@ public class MenuBar {
 								"Le fichier est introuvable",
 								"Erreur lors de l'ouverture",
 								JOptionPane.ERROR_MESSAGE);
-					} catch (IOException ioex) {
+					} catch (InvalidFlameFileException fex) {
 						JOptionPane
 								.showMessageDialog(
 										window,
-										"Le fichier n'a pas pu être ouvert dans FlameMaker. Peut-être est-il corrompu ?",
+										"Le fichier n'a pas pu être ouvert dans FlameMaker, sûrement parce qu'il est corrompu.",
 										"Erreur lors de l'ouverture",
 										JOptionPane.ERROR_MESSAGE);
 					} catch (ClassNotFoundException e1) {
 						e1.printStackTrace();
+					} catch(IOException ioex) {
+						ioex.printStackTrace();
 					}
 				}
 			}
@@ -234,7 +237,16 @@ public class MenuBar {
 		saveMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (currentFilePath != null) {
-					FlameFile.saveToFile(set.getBuilder(), currentFilePath);
+					try {
+						FlameFile.saveToFile(set.getBuilder(), currentFilePath);
+					}
+					catch(FileNotFoundException ex) {
+						// Exception lancée si le fichier ne peut être créé, par exemple
+						showSaveErrorDialog(window);
+					}
+					catch(IOException ioex) {
+						ioex.printStackTrace();
+					}
 				} else {
 					saveAsMenuItem.doClick();
 				}
@@ -335,9 +347,32 @@ public class MenuBar {
 				}
 				currentFilePath = filePath;
 				window.setTitle("FlameMaker - " + filePath);
-				FlameFile.saveToFile(flameBuilder, filePath);
+				
+				try {
+					FlameFile.saveToFile(flameBuilder, filePath);
+				}
+				catch (FileNotFoundException e1) {
+					// Cette exception est lancée si le fichier ne peut pas être créé, par exemple
+					showSaveErrorDialog(window);
+				} 
+				catch(IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
+	}
+	
+	private static void showSaveErrorDialog(JFrame window) {
+		JOptionPane
+		.showMessageDialog(
+				window,
+				"La fractale n'a pas pu être enregistrée. Vérifiez que vous disposez des droits nécessaires à la création du fichier",
+				"Erreur lors de l'enregistrement",
+				JOptionPane.ERROR_MESSAGE);
+	}
+	
+	public static void setCurrentFilePath(String filepath) {
+		currentFilePath = filepath;
 	}
 
 }

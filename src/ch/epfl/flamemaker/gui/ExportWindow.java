@@ -14,12 +14,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -27,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
@@ -80,10 +84,11 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		dimensionPanel.setLayout(new BoxLayout(dimensionPanel, BoxLayout.LINE_AXIS));
 		dimensionPanel.add(new JLabel("Dimensions (px) : "));
 		final JFormattedTextField widthField = buildFormattedTextField();
+		widthField.setInputVerifier(new PositiveInputVerifier());
 		widthField.setMaximumSize(new Dimension(1000, widthField.getPreferredSize().height));
 		final JFormattedTextField heightField = buildFormattedTextField();
-		heightField.setText("");
 		heightField.setMaximumSize(new Dimension(1000, heightField.getPreferredSize().height));
+		heightField.setInputVerifier(new PositiveInputVerifier());
 		dimensionPanel.add(widthField);
 		dimensionPanel.add(new JLabel(" x "));
 		dimensionPanel.add(heightField);
@@ -92,6 +97,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		densityPanel.setLayout(new BoxLayout(densityPanel, BoxLayout.LINE_AXIS));
 		JLabel densityLabel = new JLabel("Densité (détails de l'image, "+MAX_DENSITY_VALUE+" maximum) : ");
 		final JFormattedTextField densityField = buildFormattedTextField();
+		densityField.setInputVerifier(new PositiveInputVerifier());
 		densityField.setMaximumSize(new Dimension(1000, densityField.getPreferredSize().height));
 		densityField.setValue(50);
 		densityField.setToolTipText("Si vous spécifiez une densité de plus de 50, le temps de rendu risque d'être plus long");
@@ -240,5 +246,40 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		
 		return field;
 	}
+	
+	private class PositiveInputVerifier extends InputVerifier {
 
+		@Override
+		public boolean verify(JComponent input) {
+			JFormattedTextField tf = (JFormattedTextField) input;
+
+			try {
+				String text = tf.getText();
+
+				AbstractFormatter formatter = tf.getFormatter();
+
+				Number value = (Number) formatter.stringToValue(text);
+
+				/*
+				 * On n'utilise pas setText, mais setValue à la place car
+				 * setText pose des problèmes puisque swing a la riche idée de
+				 * traduire les nombres (remplacer les "." par des ",")... Le
+				 * champ est valide si la valeur est strictement positive
+				 */
+				if (value.doubleValue() <= 0) {
+					tf.setValue(tf.getValue());
+				} else {
+					tf.setValue(value);
+				}
+
+			} catch (ParseException e) {
+				/*
+				 * On n'a rien à gérer ici car le texte est automatiquement
+				 * remplacé par la valeur précédente.
+				 */
+			}
+			return true;
+		}
+
+	}
 }

@@ -19,34 +19,53 @@ import java.util.zip.GZIPOutputStream;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
+/**
+ *	Classe permettant d'enregistrer ou de récupérer d'un fichier une
+ *	liste de transformations FlameTransformation
+ */
 public class FlameFile {
 	
+	/**
+	 * L'extension des fichiers de sauvegarde
+	 */
 	final static public String FLAME_FILE_EXTENSION = ".flame";
 	
+	/**
+	 * Retourne la liste des transformations contenue dans un fichier
+	 * 
+	 * @param filePath	Le fichier duquel récupérer les transformations
+	 * @return	ArrayList<FlameTransformation> La liste des transformations contenu dans le fichier
+	 * @throws IOException, ClassNotFoundException Si une erreur se produit durant la désérialisation ou la lecture du fichier
+	 */
 	public static ArrayList<FlameTransformation> getTransformationsFromFile(String filePath) throws IOException, ClassNotFoundException {
 		if(!(new File(filePath)).exists()) {
 			throw new FileNotFoundException();
 		}
-			// On récupère l'objet sérialisé contenu dans le fichier, en le décompressant au passage
-			FileInputStream inputFile = new FileInputStream(filePath);
-			GZIPInputStream gzip = new GZIPInputStream(inputFile);
-			ObjectInputStream objectInputStream = new ObjectInputStream(gzip);
-			Object o = objectInputStream.readObject();
-			objectInputStream.close();
-			
-			// TODO
-			
-			if(o instanceof ArrayList) {
-				ArrayList<FlameTransformation> transformationsList = (ArrayList) o;
-				return transformationsList;
-			}
-			// Si l'objet désérialisé n'est pas du type ObservableFlameBuilder, le fichier était sûrement invalide
-			else {
-				throw new IOException();
-			}
+		// On récupère l'objet sérialisé contenu dans le fichier, en le décompressant au passage
+		FileInputStream inputFile = new FileInputStream(filePath);
+		GZIPInputStream gzip = new GZIPInputStream(inputFile);
+		ObjectInputStream objectInputStream = new ObjectInputStream(gzip);
+		Object o = objectInputStream.readObject();
+		objectInputStream.close();
+		
+		// Si ce qui était enregistré dans le fichier était bel et bien une liste de transformations
+		if(o instanceof ArrayList && ((ArrayList) o).get(0) instanceof FlameTransformation) {
+			ArrayList<FlameTransformation> transformationsList = (ArrayList<FlameTransformation>) o;
+			return transformationsList;
+		}
+		// Si l'objet désérialisé n'est pas du type ObservableFlameBuilder, le fichier était sûrement invalide
+		else {
+			throw new InvalidFlameFileException();
+		}
 	}
 	
-	public static void saveToFile(ObservableFlameBuilder flameBuilder, String filePath) {
+	/**
+	 * Sauvegarde la liste des transformations d'une fractale dans un fichier
+	 * 
+	 * @param flameBuilder	Le bâtisseur de la fractale à sauvegarder
+	 * @param filePath		Le fichier dans lequel enregistrer les transformations
+	 */
+	public static void saveToFile(ObservableFlameBuilder flameBuilder, String filePath) throws FileNotFoundException, IOException {
 		FileOutputStream outputFile;
 		GZIPOutputStream gzip;
 		ObjectOutputStream objectOutputStream;
@@ -61,18 +80,11 @@ public class FlameFile {
 		
 		
 		// Etape 2 : l'enregistrer dans un fichier
-		try {
-			outputFile = new FileOutputStream(filePath);
-			gzip = new GZIPOutputStream(outputFile);
-			objectOutputStream = new ObjectOutputStream(gzip);
-			objectOutputStream.writeObject(transformationsList);
-			gzip.finish();
-			outputFile.close();
-		} catch (FileNotFoundException e1) {
-			System.out.println("File not found");
-		} catch(IOException e1) {
-			System.out.println("Une erreur est survenue");
-			e1.printStackTrace();
-		}
+		outputFile = new FileOutputStream(filePath);
+		gzip = new GZIPOutputStream(outputFile);
+		objectOutputStream = new ObjectOutputStream(gzip);
+		objectOutputStream.writeObject(transformationsList);
+		gzip.finish();
+		outputFile.close();
 	}
 }
