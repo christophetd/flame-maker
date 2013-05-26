@@ -19,7 +19,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Structure de donnée partagée par tous les éléments de l'UI qui en ont besoin. 
  * Centralise toutes les données nécessaires au calcul et au dessin d'une fractale.
  * Cette structure facilite les interactions entre les différents composants de l'interface
- * graphique et permet de charger des préréglages avec {@link #loadPreset(Preset) }.<br />
+ * graphique et permet de charger des préréglages avec {@link #loadPreset(Presets) }.<br />
  * <br />
  * Le set peut être observé pour savoir quand un préréglage est chargé. A noter toutefois que les
  * objets observables du set informeront aussi leurs observateurs d'un changement.
@@ -56,7 +56,7 @@ public class FlameSet {
 	}
 	
 	/** Construit un set selon le preset fourni en argument */
-	public FlameSet(Preset preset){
+	public FlameSet(Presets preset){
 		m_frame = new ObservableRectangle(preset.frame());
 		m_flameBuilder = new ObservableFlameBuilder(new Flame(preset.transformations()));
 		m_palette = preset.palette();
@@ -93,7 +93,7 @@ public class FlameSet {
 	 * Charge un preset dans le set sélectionné et informe les observateur d'une modification du set.
 	 * @param preset préréglage à charger.
 	 */
-	public void loadPreset(Preset preset){
+	public void loadPreset(Presets preset){
 		m_palette = preset.palette();
 		m_frame.set(preset.frame());
 		m_flameBuilder.set(new Flame(preset.transformations()));
