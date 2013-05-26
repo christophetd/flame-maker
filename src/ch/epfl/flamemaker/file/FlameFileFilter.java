@@ -3,7 +3,7 @@
  * @author Christophe Tafani-Dereeper <Sciper : 223529>
  */
 
-package ch.epfl.flamemaker.gui;
+package ch.epfl.flamemaker.file;
 
 import java.io.File;
 

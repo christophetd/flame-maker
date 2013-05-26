@@ -3,7 +3,7 @@
  * @author Christophe Tafani-Dereeper <Sciper : 223529>
  */
 
-package ch.epfl.flamemaker.gui;
+package ch.epfl.flamemaker.file;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import ch.epfl.flamemaker.exceptions.InvalidFlameFileException;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 

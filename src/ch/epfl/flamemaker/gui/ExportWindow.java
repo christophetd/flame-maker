@@ -34,6 +34,7 @@ import javax.swing.JFormattedTextField.AbstractFormatter;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
+import ch.epfl.flamemaker.file.FlameFileFilter;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameSet;

@@ -1,4 +1,4 @@
-package ch.epfl.flamemaker.exceptions;
+package ch.epfl.flamemaker.file;
 
 @SuppressWarnings("serial")
 public class InvalidFlameFileException extends RuntimeException {
