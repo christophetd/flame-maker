@@ -66,7 +66,7 @@ public class Flame {
 	 * 		#addListener(Listener)
 	 */
 	public final void compute(final Rectangle frame, final int width, final int height,
-			final int density){
+			final int density) {
 		
 		if(m_worker != null){
 			abort();
@@ -78,9 +78,15 @@ public class Flame {
 		m_worker = new Thread(){
 			@Override
 			public void run(){
-				FlameAccumulator acc = doCompute(frame, width, height, density);
-				// Quand on a fini de calculer :
-				triggerComputeDone(acc);
+				try{
+					FlameAccumulator acc = doCompute(frame, width, height, density);
+					// Quand on a fini de calculer :
+					triggerComputeDone(acc);
+				} catch(Exception e){
+					triggerComputeError(e.getMessage());
+				} catch(Error e){
+					triggerComputeError(e.getMessage());
+				}
 			}
 		};
 		m_aborted = false;
@@ -107,7 +113,7 @@ public class Flame {
 	 * @throws UnsupportedOperationException
 	 */
 	protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
-			final int density){
+			final int density) throws FlameComputeException{
 		throw new UnsupportedOperationException("L'implémentation par défaut de flame ne permet pas le rendu !");
 	}
 
@@ -204,6 +210,14 @@ public class Flame {
 		}
 	}
 	
+	private final void triggerComputeError(String msg){
+		synchronized(m_listeners){
+			for(Listener l : m_listeners){
+				l.onComputeError(msg);
+			}
+		}
+	}
+	
 	/**
 	 * Informe les observateurs de l'avancement du calcul en cours. Doit être appelé durant le processus de calcul lors de la redéfinition de doCompute.
 	 * Cette méthode ne doit pas être appelée trop souvent pour éviter d'impacter les performances.
@@ -238,6 +252,8 @@ public class Flame {
 		 * @param percent valeur comprise entre 0 et 100 donnant l'avancement du calcul.
 		 */
 		public void onComputeProgress(int percent);
+		
+		public void onComputeError(String msg);
 	}
 
 	/**

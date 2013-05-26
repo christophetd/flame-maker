@@ -44,7 +44,11 @@ class DefaultFlameFactory extends FlameFactory {
 	
 		@Override
 		protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
-				final int density) {
+				final int density) throws FlameComputeException{
+			
+			
+			if(density > Long.MAX_VALUE / width / height)
+				throw new FlameComputeException("Le nombre total de points à calculer est trop grand !");
 			
 			// On signale tout de suite que le calcul a commencé
 			triggerComputeProgress(0);
@@ -78,11 +82,11 @@ class DefaultFlameFactory extends FlameFactory {
 			}
 	
 			// Iterations accumulées pour le rendu
-			int m = density * width * height;
-			int progressStep = m/100;
+			long m = (long)density * width * height;
+			long progressStep = m/100;
 			int progress = 0;
 			
-			for (int i = 0; i < m && !isAborted() ; i++) {
+			for (long i = 0; i < m && !isAborted() ; i++) {
 				transformationNum = randomizer.nextInt(size);
 				point = transformations.get(transformationNum).transformPoint(point);
 				lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
@@ -98,6 +102,7 @@ class DefaultFlameFactory extends FlameFactory {
 			
 			// On construit l'accumulateur
 			return builder.build();
+			
 		}
 	}
 }

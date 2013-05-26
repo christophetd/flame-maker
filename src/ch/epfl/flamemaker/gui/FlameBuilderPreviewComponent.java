@@ -16,9 +16,11 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
+import ch.epfl.flamemaker.flame.FlameComputeException;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameUtils;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
@@ -218,6 +220,14 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 					}
 				}
 				repaint();
+			}
+
+			@Override
+			public void onComputeError(String msg) {
+				JOptionPane.showMessageDialog(null, 
+						"Une erreur s'est produite durant le calcul de la fractale. Essayez une méthode différente (menu calcul)." +
+						"\n\n Informations sur l'erreur : \n"+msg, 
+						"Erreur de calcul", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 	
