@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import ch.epfl.flamemaker.exceptions.InvalidFlameFileException;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 
@@ -37,6 +38,7 @@ public class FlameFile {
 	 * @return	ArrayList<FlameTransformation> La liste des transformations contenu dans le fichier
 	 * @throws IOException, ClassNotFoundException Si une erreur se produit durant la désérialisation ou la lecture du fichier
 	 */
+	@SuppressWarnings("rawtypes")
 	public static ArrayList<FlameTransformation> getTransformationsFromFile(String filePath) throws IOException, ClassNotFoundException {
 		if(!(new File(filePath)).exists()) {
 			throw new FileNotFoundException();
@@ -47,6 +49,7 @@ public class FlameFile {
 		ObjectInputStream objectInputStream = new ObjectInputStream(gzip);
 		Object o = objectInputStream.readObject();
 		objectInputStream.close();
+		
 		
 		// Si ce qui était enregistré dans le fichier était bel et bien une liste de transformations
 		if(o instanceof ArrayList && ((ArrayList) o).get(0) instanceof FlameTransformation) {

@@ -23,8 +23,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import ch.epfl.flamemaker.flame.FlameSet;
+import ch.epfl.flamemaker.exceptions.InvalidFlameFileException;
 import ch.epfl.flamemaker.flame.FlameFactory;
+import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Preset;

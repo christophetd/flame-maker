@@ -37,6 +37,7 @@ import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameSet;
+import ch.epfl.flamemaker.flame.FlameUtils;
 
 @SuppressWarnings("serial")
 public class ExportWindow extends JFrame implements Flame.Listener {
@@ -189,7 +190,6 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 
 	@Override
 	public void onComputeProgress(int percent) {
-		System.out.println(percent);
 		if(!m_progressBar.isEnabled() && !m_cancelButton.isEnabled()) {
 			m_progressBar.setEnabled(true);
 			m_cancelButton.setEnabled(true);
@@ -214,13 +214,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 	@Override
 	public void onComputeDone(FlameAccumulator accumulator) {
 		m_progressBar.setString("Génération de l'image");
-		BufferedImage tmpImage = new BufferedImage(accumulator.width(), accumulator.height(), BufferedImage.TYPE_INT_RGB);
-		for(int x = 0 ; x < accumulator.width() ; x++){
-			for(int y = 0 ; y < accumulator.height() ; y++){
-				// On met à jour la couleur du pixel courant
-				tmpImage.setRGB(x, accumulator.height() - y -1, accumulator.color(m_palette, m_bgColor, x, y).asPackedRGB());
-			}
-		}
+		BufferedImage tmpImage = FlameUtils.generateBufferedImage(accumulator, m_palette, m_bgColor);
 		try {
 			ImageIO.write(tmpImage, m_extension, m_fileToSave);
 			

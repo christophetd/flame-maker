@@ -20,6 +20,7 @@ import javax.swing.JComponent;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameSet;
+import ch.epfl.flamemaker.flame.FlameUtils;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
@@ -135,14 +136,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			m_lastFrame = m_set.getFrame().toRectangle();
 			
 			synchronized(m_accu){
-				m_image = new BufferedImage(m_accu.width(), m_accu.height(), BufferedImage.TYPE_INT_RGB);
-				
-				for(int x = 0 ; x < m_accu.width() ; x++){
-					for(int y = 0 ; y < m_accu.height() ; y++){
-						// On met à jour la couleur du pixel courant
-						m_image.setRGB(x, m_accu.height() - y -1, m_accu.color(m_set.getPalette(), m_set.getBackgroundColor(), x, y).asPackedRGB());
-					}
-				}
+				m_image = FlameUtils.generateBufferedImage(m_accu, m_set.getPalette(), m_set.getBackgroundColor());
 			}
 			
 			//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
