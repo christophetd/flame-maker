@@ -349,7 +349,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 				if (value.doubleValue() <= 0) {
 					tf.setValue(tf.getValue());
 				} else {
-					tf.setValue(value.intValue());
+					tf.setValue(value);
 				}
 
 			} catch (ParseException e) {
