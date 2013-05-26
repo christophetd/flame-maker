@@ -9,7 +9,6 @@ import static org.bridj.Pointer.allocateFloats;
 import static org.bridj.Pointer.allocateInts;
 import static org.bridj.Pointer.allocateLongs;
 
-import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Random;
@@ -23,10 +22,10 @@ import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLContext;
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLKernel;
-import com.nativelibs4java.opencl.CLProgram;
-import com.nativelibs4java.opencl.JavaCL;
 import com.nativelibs4java.opencl.CLMem.Usage;
+import com.nativelibs4java.opencl.CLProgram;
 import com.nativelibs4java.opencl.CLQueue;
+import com.nativelibs4java.opencl.JavaCL;
 import com.nativelibs4java.util.IOUtils;
 
 
@@ -82,9 +81,10 @@ class OpenCLFlameFactory extends FlameFactory {
         String src = "";
 		try {
 			src = IOUtils.readText(FlameFactory.class.getClassLoader().getResource("renderer.cl"));
-		} catch (IOException e) {
-			System.err.println("Impossible de charger le fichier du kernel de rendu OpenCL");
-			return;
+		} catch (Exception e) {
+			System.err.println();
+			throw new RuntimeException("Impossible de charger le fichier du kernel de rendu OpenCL.\n"
+					+"Vérifiez que le fichier bin\\renderer.cl existe, il disparaît parfois quand l'IDE rafraîchit le dossier bin/");
 		}
 		program = context.createProgram(src);
         // Récupération du kernel
@@ -98,10 +98,14 @@ class OpenCLFlameFactory extends FlameFactory {
 		 * utiliser ou pour permettre la mise en veille du matériel.
 		 * ( Portion de code testée avec optimus de nvidia, la carte graphique passe en veille ).
 		 */
-		context.release();
-		program.release();
-		queue.release();
-		computeKernel.release();
+		if(context != null)
+			context.release();
+		if(program != null)
+			program.release();
+		if(queue != null)
+			queue.release();
+		if(computeKernel != null)
+			computeKernel.release();
 		
 		queue = null;
 		program = null;
@@ -130,7 +134,7 @@ class OpenCLFlameFactory extends FlameFactory {
 		
 		@Override
 		protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
-				final int density) {
+				final int density) throws FlameComputeException {
 			
 			/* Configuration du rendu en fonction de la taille de l'accumulateur */
 			

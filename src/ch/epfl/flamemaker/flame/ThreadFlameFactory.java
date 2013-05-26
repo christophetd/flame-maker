@@ -49,6 +49,9 @@ class ThreadFlameFactory extends FlameFactory {
 		// Le constructeur d'accumulateur utilisé.
 		private FlameAccumulator.Builder m_builder;
 		
+		//Retiens si il y a une erreur dans les workers
+		private String m_error;
+		
 		// Progression totale tous processus confondus
 		private int totalProgress = 0;
 		
@@ -58,8 +61,13 @@ class ThreadFlameFactory extends FlameFactory {
 	
 		@Override
 		protected FlameAccumulator doCompute(final Rectangle frame, final int width, final int height,
-				final int density) {
+				final int density) throws FlameComputeException {
 			
+			if(density > Long.MAX_VALUE / width / height)
+				throw new FlameComputeException("Le nombre total de points à calculer est trop grand !");
+			
+			m_error = "";
+			 
 			//On informe que le calcul à commencé
 			triggerComputeProgress(0);
 			
@@ -71,7 +79,7 @@ class ThreadFlameFactory extends FlameFactory {
 			
 			// On démarre n unités de travail
 			for(int i = 0 ; i < m_coreCount ; i++){
-				Worker w = new Worker(frame, density * width * height / m_coreCount, 2013+i);
+				Worker w = new Worker(frame, (long)density * width * height / m_coreCount, 2013+i);
 				
 				workers.add(w);
 				w.start();
@@ -86,6 +94,10 @@ class ThreadFlameFactory extends FlameFactory {
 				}
 			}
 			
+			if(!m_error.isEmpty()){
+				throw new FlameComputeException(m_error);
+			}
+			
 			// Finalement, on construit l'accumulateur
 			return m_builder.build();
 		}
@@ -96,13 +108,17 @@ class ThreadFlameFactory extends FlameFactory {
 			triggerComputeProgress(totalProgress / m_coreCount);
 		}
 		
+		private void onComputeError(String msg){
+			m_error = msg;
+		}
+		
 		/*
 		 * Classe implémentant un processus de calcul parallèle.
 		 */
 		private class Worker extends Thread {
 			
 			// nombre total d'itérations pour ce processus
-			private final int m;
+			private final long m;
 			
 			private final Random randomizer;
 			
@@ -112,15 +128,23 @@ class ThreadFlameFactory extends FlameFactory {
 			 * @param iterations nombre de points à calculer
 			 * @param seed graine pour rendre le calcul déterministe
 			 */
-			public Worker(final Rectangle frame, final int iterations, final int seed){
+			public Worker(final Rectangle frame, final long iterations, final int seed){
 				m = iterations;
 				randomizer = new Random(seed);
 			}
 			@Override
 			public void run(){
 				
+				try {
+					failableCompute();
+				} catch(Error e){
+					onComputeError(e.getMessage());
+				}
+			}
+			
+			private void failableCompute(){
 				List<FlameTransformation> transformations = getTransforms();
-		
+				
 				// Création des variables utilisées dans les boucles de calcul
 				Point point = new Point(0, 0);
 				int k = 20;
@@ -141,10 +165,10 @@ class ThreadFlameFactory extends FlameFactory {
 				}
 
 				// Iterations accumulées pour le rendu
-				int progressStep = m/100;
+				long progressStep = m/100;
 				int progress = 0;
 				
-				for (int i = 0; i < m && !isAborted() ; i++) {
+				for (long i = 0; i < m && !isAborted() ; i++) {
 					transformationNum = randomizer.nextInt(size);
 					point = transformations.get(transformationNum).transformPoint(point);
 					lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;

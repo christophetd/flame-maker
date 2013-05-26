@@ -25,17 +25,13 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JFormattedTextField.AbstractFormatter;
 
-import com.nativelibs4java.util.IOUtils;
-
-import ch.epfl.flamemaker.color.Color;
-import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.file.FlameFileFilter;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
@@ -164,7 +160,8 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		// Au clic du bouton d'exportation
 		m_exportButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent evt) {
+				
 				// Si la densité indiquée est trop grande, on la réduit
 				if(((Number)densityField.getValue()).intValue() > MAX_DENSITY_VALUE) {
 					densityField.setValue(MAX_DENSITY_VALUE);
@@ -222,7 +219,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					// On récupère la largeur et la hauteur d'exportation spécifiées
 					int width = ((Number) widthField.getValue()).intValue();
 					int height = ((Number)heightField.getValue()).intValue();
-					
+
 					// Et on lance le calcul de la fractale
 					flame.compute(set.getFrame().toRectangle().expandToAspectRatio((double)width/height)
 							, width, height, ((Number)densityField.getValue()).intValue());
@@ -310,7 +307,17 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		m_exportButton.setEnabled(true);
 	}
 	
-	
+	// TODO : javadoc
+	@Override
+	public void onComputeError(String msg) {
+		JOptionPane.showMessageDialog(null,
+			    "La fractale ne peut pas être calculée avec ces paramètres. \n" +
+			    "Essayez une taille ou une densité plus petite où choisissez une autre méthode de calcul (menu calcul)\n\n" +
+			    "Informations sur l'erreur : \n"+msg,
+			    "Erreur de calcul",
+			    JOptionPane.ERROR_MESSAGE);
+	}
+
 	/**
 	 * Construit un champ de texte formatté. Evite la duplication de code.
 	 * @return Le champ de texte formatté
