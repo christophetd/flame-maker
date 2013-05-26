@@ -36,9 +36,10 @@ public class FlameFile {
 	 * @param filePath	Le fichier duquel récupérer les transformations
 	 * @return	ArrayList<FlameTransformation> La liste des transformations contenu dans le fichier
 	 * @throws IOException, ClassNotFoundException Si une erreur se produit durant la désérialisation ou la lecture du fichier
+	 * @throws InvalidFlameFileException Si le fichier ouvert est invalide
 	 */
 	@SuppressWarnings("rawtypes")
-	public static ArrayList<FlameTransformation> getTransformationsFromFile(String filePath) throws IOException, ClassNotFoundException {
+	public static ArrayList<FlameTransformation> getTransformationsFromFile(String filePath) throws IOException, ClassNotFoundException, InvalidFlameFileException {
 		if(!(new File(filePath)).exists()) {
 			throw new FileNotFoundException();
 		}

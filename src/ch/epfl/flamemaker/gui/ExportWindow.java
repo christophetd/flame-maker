@@ -32,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JFormattedTextField.AbstractFormatter;
 
+import com.nativelibs4java.util.IOUtils;
+
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.file.FlameFileFilter;
@@ -43,16 +45,16 @@ import ch.epfl.flamemaker.flame.FlameUtils;
 @SuppressWarnings("serial")
 public class ExportWindow extends JFrame implements Flame.Listener {
 
+	/**
+	 *	La densité maximale que l'utilisateur puisse renseigner. 
+	 */
 	private static final int MAX_DENSITY_VALUE = 1000;
 	
-	final private JProgressBar m_progressBar;
-	final private JButton m_cancelButton;
-	final private JButton m_exportButton;
-	 private File m_fileToSave;
-	private String m_extension;
-	final private Color m_bgColor;
-	final private Palette m_palette;
-	
+	/**
+	 * Les formats d'exportation disponibles.
+	 * Ceux-ci sont disponibles quelle que soit la plateforme 
+	 * d'exécution. 
+	 */
 	final static public String[] AVAILABLE_FORMATS = new String[] {
 		"jpg", 
 		"png", 
@@ -60,11 +62,40 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		"gif"
 	};
 
+	
+	/**
+	 * La barre de progression et les boutons d'exportation et d'annulation.
+	 * Tous trois sont stockés dans des attributs afin d'être accessibles depuis
+	 * plusieurs méthodes.
+	 */
+	final private JProgressBar m_progressBar;
+	final private JButton m_cancelButton;
+	final private JButton m_exportButton;
+	
+	/**
+	 *	L'extension dans laquelle réaliser l'exportation 
+	 */
+	private String m_extension;
+	
+	/**
+	 *	Le FlameSet (contenant entre autres la couleur de fond et la
+	 *	palette) à utiliser pour l'exportation 
+	 */
+	final private FlameSet m_flameSet;
+	
+	/**
+	 *	Le fichier dans lequel exporter la fractale 
+	 */
+	private File m_fileToSave;
+	
+	/**
+	 *	L'instant auquel a débuté le calcul de la fractale.
+	 *	Utilisé pour estimer l'avancement de la progression. 
+	 */
 	private long m_beginComputeTime;
 	
 	public ExportWindow(final FlameSet set) {
-		m_palette = set.getPalette();
-		m_bgColor = set.getBackgroundColor();
+		m_flameSet = set;
 
 		setPreferredSize(new Dimension(400, 200));
 		setTitle("Exporter la fractale");
@@ -73,8 +104,13 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 
 		final Container contentPane = getContentPane();
 		
+		/*
+		 * La fenêtre a un BoxLayout dirigé vers le bas. Chaque ligne de composants
+		 * est un JPanel avec un BoxLayout dirigé vers la droite.
+		 */
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
 
+		// Panel du choix de format
 		JPanel formatPanel = new JPanel();
 		formatPanel.setLayout(new BoxLayout(formatPanel, BoxLayout.LINE_AXIS));
 		final JComboBox formatsList = new JComboBox(ExportWindow.AVAILABLE_FORMATS);
@@ -82,6 +118,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		formatPanel.add(new JLabel("Format : "));
 		formatPanel.add(formatsList);
 		
+		// Panel de la dimension
 		JPanel dimensionPanel = new JPanel();
 		dimensionPanel.setLayout(new BoxLayout(dimensionPanel, BoxLayout.LINE_AXIS));
 		dimensionPanel.add(new JLabel("Dimensions (px) : "));
@@ -95,6 +132,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		dimensionPanel.add(new JLabel(" x "));
 		dimensionPanel.add(heightField);
 		
+		// Panel du choix de la densité
 		JPanel densityPanel = new JPanel();
 		densityPanel.setLayout(new BoxLayout(densityPanel, BoxLayout.LINE_AXIS));
 		JLabel densityLabel = new JLabel("Densité (détails de l'image, "+MAX_DENSITY_VALUE+" maximum) : ");
@@ -106,7 +144,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		densityPanel.add(densityLabel);
 		densityPanel.add(densityField);
 		
-		
+		// Panel contenant les boutons d'exportation et d'annulations
 		JPanel exportPanel = new JPanel();
 		exportPanel.setLayout(new BoxLayout(exportPanel, BoxLayout.LINE_AXIS));
 		m_exportButton = new JButton("Exporter");
@@ -123,27 +161,33 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		final Flame.Listener flameListener = this;
 		final JFrame window = this;
 		
+		// Au clic du bouton d'exportation
 		m_exportButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Si la densité indiquée est trop grande, on la réduit
 				if(((Number)densityField.getValue()).intValue() > MAX_DENSITY_VALUE) {
 					densityField.setValue(MAX_DENSITY_VALUE);
 				}
 				
+				// On récupère l'extension
 				m_extension = formatsList.getSelectedItem().toString();
 				
+				// On affiche un fileChooser pour l'extension choisie
 				JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.home")));
 				fileChooser.setFileFilter(new FlameFileFilter(m_extension, "Fichiers image"));
 				if(fileChooser.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
+					// On récupère le fichier choisi
 					String filePath = fileChooser.getSelectedFile().getAbsolutePath();
 					
+					// Si l'extension n'a pas été spécifiée, on la rajoute automatiquement
 					if(!filePath.endsWith("."+m_extension)) {
 						filePath = filePath.concat("."+m_extension);
 					}
-					final String path = filePath;
+										
+					m_fileToSave = new File(filePath);
 					
-					m_fileToSave = new File(path);
-					
+					// Si le fichier existe déjà, on demande confirmation avant de l'écraser
 					if(m_fileToSave.exists()) {
 						int confirmValue = JOptionPane.showConfirmDialog(window, "Ce fichier existe déjà. Voulez-vous l'écraser ?", "Le fichier existe déjà", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if(confirmValue != JOptionPane.OK_OPTION) {
@@ -153,33 +197,40 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					
 					m_progressBar.setString("0 %");
 					
+					// On construit l'objet Flame et on s'enregistre comme 
+					// observateur, pour être notifié de l'avancement du calcul
 					final Flame flame = set.getBuilder().build();
 					flame.addListener(flameListener);
 					
+					// Au clic du bouton d'annulation, on annule l'exportation
 					m_cancelButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							flame.removeListener(flameListener);
-							flame.abort();
-							m_progressBar.setValue(0);
+							flame.destroy();
+							
+							/*
+							 * On désactive la barre de progression et le bouton 
+							 * d'annulation, et on active le bouton d'exportation
+							 */
 							m_progressBar.setEnabled(false);
-							m_progressBar.setString("Annulé");
 							m_cancelButton.setEnabled(false);
 							m_exportButton.setEnabled(true);
+							m_progressBar.setString("Annulé");
 						}
 					});
 					
+					// On récupère la largeur et la hauteur d'exportation spécifiées
 					int width = ((Number) widthField.getValue()).intValue();
 					int height = ((Number)heightField.getValue()).intValue();
 					
-					
-					
+					// Et on lance le calcul de la fractale
 					flame.compute(set.getFrame().toRectangle().expandToAspectRatio((double)width/height)
 							, width, height, ((Number)densityField.getValue()).intValue());
 				}
 			}
 		});
 		
+		// On ajoute les différents panels à la fenêtre
 		contentPane.add(formatPanel);
 		contentPane.add(dimensionPanel);
 		contentPane.add(densityPanel);
@@ -189,8 +240,17 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		pack();
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.epfl.flamemaker.flame.Flame.Listener#onComputeProgress(int)
+	 */
 	@Override
 	public void onComputeProgress(int percent) {
+		/*
+		 * Si le rendu n'a pas encore commencé, on active la barre de
+		 * progression et le bouton d'annulation, et on désactive le
+		 * bouton d'exportation. On définit aussi le temps auquel a débuté
+		 * le calcul.
+		 */
 		if(!m_progressBar.isEnabled() && !m_cancelButton.isEnabled()) {
 			m_progressBar.setEnabled(true);
 			m_cancelButton.setEnabled(true);
@@ -198,6 +258,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 			m_beginComputeTime = System.currentTimeMillis();
 		}
 		else {
+			// On calcul combien de temps s'est écoulé, et on estime le temps restant
 			long timeElapsed = System.currentTimeMillis()-m_beginComputeTime; 
 			long remaining = (timeElapsed*100)/percent - timeElapsed + 1000;
 
@@ -212,13 +273,24 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.epfl.flamemaker.flame.Flame.Listener#onComputeDone(ch.epfl.flamemaker.flame.FlameAccumulator)
+	 */
 	@Override
 	public void onComputeDone(FlameAccumulator accumulator) {
+		/*
+		 * Quand la fractale a été calculée, il reste encore à générer la
+		 * BufferedImage et à l'écrire dans le fichier.
+		 */
 		m_progressBar.setString("Génération de l'image");
-		BufferedImage tmpImage = FlameUtils.generateBufferedImage(accumulator, m_palette, m_bgColor);
+		BufferedImage tmpImage = FlameUtils.generateBufferedImage(accumulator, m_flameSet);
 		try {
 			ImageIO.write(tmpImage, m_extension, m_fileToSave);
 			
+			/*
+			 * Si l'environnement d'exécution le supporte, on ouvre le fichier image 
+			 * nouvellement créé à l'aide du programme par défaut. 
+			 */
 			if(Desktop.isDesktopSupported()) {
 				Desktop.getDesktop().open(m_fileToSave);
 			}
@@ -226,6 +298,11 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 			ioex.printStackTrace();
 		}
 		
+		/*
+		 * L'exportation est terminée ; on met la barre de progression à 100% en
+		 * la désactivant au passage, on désactive le bouton d'annulation
+		 * et active le bouton d'exportation.
+		 */
 		m_progressBar.setValue(100);
 		m_progressBar.setString("Terminé");
 		m_progressBar.setEnabled(false);
@@ -234,14 +311,22 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 	}
 	
 	
+	/**
+	 * Construit un champ de texte formatté. Evite la duplication de code.
+	 * @return Le champ de texte formatté
+	 */
 	private JFormattedTextField buildFormattedTextField(){
-		final JFormattedTextField field = new JFormattedTextField(new DecimalFormat("####"));
+		final JFormattedTextField field = new JFormattedTextField(new DecimalFormat("######"));
 		field.setValue(500);
 		field.setColumns(5);
 		
 		return field;
 	}
 	
+	/**
+	 *	Classe modélisant un vérificateur pour les JFormattedTextField dont
+	 *	la valeur doit être un entier strictement positif.
+	 */
 	private class PositiveInputVerifier extends InputVerifier {
 
 		@Override
@@ -264,7 +349,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 				if (value.doubleValue() <= 0) {
 					tf.setValue(tf.getValue());
 				} else {
-					tf.setValue(value);
+					tf.setValue(value.intValue());
 				}
 
 			} catch (ParseException e) {

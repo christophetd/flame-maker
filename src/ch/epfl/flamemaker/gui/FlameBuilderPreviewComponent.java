@@ -136,7 +136,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 			m_lastFrame = m_set.getFrame().toRectangle();
 			
 			synchronized(m_accu){
-				m_image = FlameUtils.generateBufferedImage(m_accu, m_set.getPalette(), m_set.getBackgroundColor());
+				m_image = FlameUtils.generateBufferedImage(m_accu, m_set);
 			}
 			
 			//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
