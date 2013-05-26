@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import ch.epfl.flamemaker.flame.FlameSet;
-import ch.epfl.flamemaker.flame.Preset;
+import ch.epfl.flamemaker.flame.Presets;
 
 public class FlameMakerGUI implements FlameSet.Listener {
 
@@ -32,7 +32,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
 	public FlameMakerGUI() {
-		m_set = new FlameSet(Preset.ALL_PRESETS.get(0));
+		m_set = new FlameSet(Presets.SHARKFIN_FRACTALE);
 		
 		m_set.addListener(this);
 	}

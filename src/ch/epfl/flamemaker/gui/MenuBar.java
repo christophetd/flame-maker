@@ -28,7 +28,7 @@ import ch.epfl.flamemaker.flame.FlameFactory;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
-import ch.epfl.flamemaker.flame.Preset;
+import ch.epfl.flamemaker.flame.Presets;
 
 /**
  * Classe modélisant la barre de menus de la fenêtre principale du programme.
@@ -68,8 +68,8 @@ public class MenuBar {
 
 		// On remplit le sous-menu de "Nouveau à partir d'un modèle" avec les
 		// fractales pré-définies existantes
-		for (final Preset p : Preset.ALL_PRESETS) {
-			JMenuItem item = new JMenuItem(p.name());
+		for (final Presets p : Presets.values()) {
+			JMenuItem item = new JMenuItem(p.displayableName());
 			newFromMenuItem.add(item);
 			item.addActionListener(new ActionListener() {
 				@Override
@@ -158,7 +158,7 @@ public class MenuBar {
 		newMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				set.loadPreset(Preset.EMPTY_PRESET);
+				set.loadPreset(Presets.EMPTY_PRESET);
 			}
 
 		});
