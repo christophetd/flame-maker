@@ -3,7 +3,7 @@
  * @author Christophe Tafani-Dereeper <Sciper : 223529>
  */
 
-package ch.epfl.flamemaker.gui;
+package ch.epfl.flamemaker.file;
 
 import java.io.File;
 
@@ -38,9 +38,9 @@ public class FlameFileFilter extends FileFilter {
 
 	@Override
 	public String getDescription() {
-		StringBuilder finalDescription = new StringBuilder();;
+		StringBuilder finalDescription = new StringBuilder();
 		finalDescription.append(description);
-		finalDescription.append("(");
+		finalDescription.append(" (");
 		for(int i = 0; i < extensions.length; i++) {
 			finalDescription.append(extensions[i]);
 			if(i != extensions.length - 1) {
