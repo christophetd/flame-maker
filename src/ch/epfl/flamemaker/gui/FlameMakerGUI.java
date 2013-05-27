@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
@@ -60,7 +61,8 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		contentPane.add(upperPanel, BorderLayout.CENTER);
 		contentPane.add(lowerPanel, BorderLayout.PAGE_END);
 		
-		MenuBar.build(window, m_set, m_transformationsEditPanel.getListModel());
+		JMenuBar menu = MenuBar.build(window, m_set, m_transformationsEditPanel.getListModel());
+		window.setJMenuBar(menu);
 		
 		window.pack();
 		window.setLocationRelativeTo(null);

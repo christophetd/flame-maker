@@ -53,7 +53,7 @@ public class MenuBar {
 	 * @param transformationsListModel
 	 *            Le modèle de la liste des transformations
 	 */
-	public static void build(final JFrame window, final FlameSet set,
+	public static JMenuBar build(final JFrame window, final FlameSet set,
 			final TransformationsListModel transformationsListModel) {
 		
 		final JMenuBar menuBar = new JMenuBar();
@@ -138,8 +138,6 @@ public class MenuBar {
 		menuBar.add(fileMenu);
 		menuBar.add(computeMenu);
 		menuBar.add(helpMenu);
-
-		window.setJMenuBar(menuBar);
 
 		/* Raccourcis clavier */
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
@@ -280,6 +278,8 @@ public class MenuBar {
 				}
 			}
 		});
+		
+		return menuBar;
 
 	}
 
