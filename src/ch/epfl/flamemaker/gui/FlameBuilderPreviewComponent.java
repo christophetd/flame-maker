@@ -20,11 +20,9 @@ import javax.swing.JOptionPane;
 
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.flame.FlameComputeException;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameUtils;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
@@ -33,7 +31,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Ce component dessine la fractale définie par les paramètres du GUI
  */
 @SuppressWarnings("serial")
-public class FlameBuilderPreviewComponent extends JComponent implements Listener, MouseListener, ObservableRectangle.Listener, MouseMotionListener, MouseWheelListener{
+public class FlameBuilderPreviewComponent extends JComponent {
 	
 	static public final double ZOOM_FACTOR = 1.1;
 	
@@ -68,7 +66,7 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 
 	/**
 	 * Constructeur, initialise les arguments.
-	 * TODO : javadoc
+	 * @param set ensemble des propriétés de la fractale à dessiner
 	 */
 	public FlameBuilderPreviewComponent(FlameSet set){
 		
@@ -76,13 +74,100 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 		
 		m_lastFrame = set.getFrame().toRectangle();
 		
-		set.getBuilder().addListener(this);
+		set.getBuilder().addListener(new ObservableFlameBuilder.Listener(){
+
+			@Override
+			public void onFlameBuilderChange(ObservableFlameBuilder b) {
+				recompute();
+			}
+			
+		});
 		
-		addMouseListener(this);
-		addMouseWheelListener(this);
+		// Observateur pour les movements de la souris 
+		addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent evt) {
+				m_set.getFrame().setCenter(new Point(
+						m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/getWidth(),
+						m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/getHeight()
+				));
+				
+				m_mouseX = evt.getX();
+				m_mouseY = evt.getY();
+			}
+
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {}
+			
+		});
+		
+		
+		// Observateur pour les évènements de la souris (autres que le mouvement et la roulette)
+		addMouseListener(new MouseListener(){
+
+
+			// Les trois méthodes suivantes ne nous intéressent pas
+			@Override
+			public void mouseClicked(MouseEvent arg0) {}
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+
+			@Override
+			public void mousePressed(MouseEvent evt) {
+				m_mouseX = evt.getX();
+				m_mouseY = evt.getY();
+				m_preventRecompute = true;
+				m_dragging = true;
+				
+				if(m_flame != null){
+					m_flame.destroy();
+					m_flame = null;
+				}
+			}
+
+
+			@Override
+			public void mouseReleased(MouseEvent evt) {
+				m_preventRecompute = false;
+				
+				m_set.getFrame().setCenter(new Point(
+						m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/getWidth(),
+						m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/getHeight()
+				));
+			}
+			
+		});
+		
+		//Observateur pour la roulette de la souris
+		addMouseWheelListener(new MouseWheelListener(){
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent evt) {
+				if(evt.getWheelRotation() == 0) return;
+				
+				double factor = (evt.getWheelRotation() < 0) ? 1.0/ZOOM_FACTOR : ZOOM_FACTOR;
+				
+				m_dragging = true;
+				m_set.getFrame().setSize(m_set.getFrame().width()*factor, m_set.getFrame().height()*factor);
+			}
+			
+		});
+		
 		this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 		
-		set.getFrame().addListener(this);
+		set.getFrame().addListener(new ObservableRectangle.Listener(){
+
+			@Override
+			public void onRectangleChange(ObservableRectangle rect) {
+				repaint();
+			}
+			
+		});
 	}
 
 	
@@ -164,9 +249,12 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 					, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
 		}
 		
-		// Sinon, on ne sais pas pourquoi il fallait repeindre
+		// Sinon, on ne fais rien (ce cas n'arrive jamais)
 	}
 	
+	/*
+	 * Dessine une barre de progression en bas de l'image
+	 */
 	private void drawProgressBar(Graphics g){
 		g.setColor(java.awt.Color.WHITE);
 		
@@ -245,86 +333,5 @@ public class FlameBuilderPreviewComponent extends JComponent implements Listener
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension(200, 100);
-	}
-
-
-	@Override
-	public void onFlameBuilderChange(ObservableFlameBuilder b) {
-		recompute();
-	}
-
-
-	/* Interaction avec la souris */
-	
-	// Les trois méthodes suivantes ne nous intéressent pas
-	@Override
-	public void mouseClicked(MouseEvent arg0) {}
-	@Override
-	public void mouseEntered(MouseEvent arg0) {}
-	@Override
-	public void mouseExited(MouseEvent arg0) {}
-
-
-	@Override
-	public void mousePressed(MouseEvent evt) {
-		m_mouseX = evt.getX();
-		m_mouseY = evt.getY();
-		m_preventRecompute = true;
-		m_dragging = true;
-		
-		addMouseMotionListener(this);
-		
-		if(m_flame != null){
-			m_flame.destroy();
-			m_flame = null;
-		}
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent evt) {
-		m_preventRecompute = false;
-		
-		m_set.getFrame().setCenter(new Point(
-				m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
-				m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
-		));
-		
-		removeMouseMotionListener(this);
-	}
-
-
-	@Override
-	public void onRectangleChange(ObservableRectangle rect) {
-		repaint();
-	}
-
-
-	@Override
-	public void mouseDragged(MouseEvent evt) {
-		m_set.getFrame().setCenter(new Point(
-				m_set.getFrame().center().x() + (m_mouseX - evt.getX())*m_realFrame.width()/this.getWidth(),
-				m_set.getFrame().center().y() - (m_mouseY - evt.getY())*m_realFrame.height()/this.getHeight()
-		));
-		
-		m_mouseX = evt.getX();
-		m_mouseY = evt.getY();
-	}
-
-
-	@Override
-	public void mouseMoved(MouseEvent arg0) {}
-
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent evt) {
-		if(evt.getWheelRotation() == 0) return;
-		
-		
-		
-		double factor = (evt.getWheelRotation() < 0) ? 1.0/ZOOM_FACTOR : ZOOM_FACTOR;
-		
-		m_dragging = true;
-		m_set.getFrame().setSize(m_set.getFrame().width()*factor, m_set.getFrame().height()*factor);
 	}
 }

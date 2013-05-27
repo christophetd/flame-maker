@@ -27,8 +27,9 @@ import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
+//TODO : javadoc
 @SuppressWarnings("serial")
-public class AffineTransformationsComponent extends JComponent implements ObservableFlameBuilder.Listener, MouseListener, ObservableRectangle.Listener {
+public class AffineTransformationsComponent extends JComponent {
 	
 	private ObservableFlameBuilder m_builder;
 	
@@ -64,11 +65,58 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 		m_builder = set.getBuilder();
 		m_frame = set.getFrame();
 		
-		m_frame.addListener(this);
+		m_frame.addListener(new ObservableRectangle.Listener(){
+			@Override
+			public void onRectangleChange(ObservableRectangle rect) {
+				repaint();
+			}
+		});
 		
-		m_builder.addListener(this);
+		m_builder.addListener(new ObservableFlameBuilder.Listener(){
+
+			@Override
+			public void onFlameBuilderChange(ObservableFlameBuilder b) {
+				repaint();
+			}
+			
+		});
 		
-		this.addMouseListener(this);
+		/* Observateur de la souris qui permet la sélection des transformations */
+		addMouseListener(new MouseListener(){
+			@Override
+			public void mouseClicked(MouseEvent arg0) {}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {}
+
+			@Override
+			public void mouseReleased(MouseEvent evt) {
+				double minArea = Double.MAX_VALUE;
+				int index = -1;
+				Point p = new Point(evt.getX(), evt.getY());
+
+				for(int i = 0 ; i < m_boundingBoxes.size() ; i++){
+					Rectangle rect = m_boundingBoxes.get(i);
+					
+					if(rect.contains(p) && m_highlightedTransformationIndex != i){
+						double area = rect.area();
+						if( area < minArea){
+							minArea = rect.area();
+							index = i;
+						}
+					}
+				}
+				
+				if(index != -1)
+					notifyTransformationSelected(index);
+			}
+		});
 	}
 	
 	public void highlightedTransformationIndex(int index) {
@@ -209,50 +257,6 @@ public class AffineTransformationsComponent extends JComponent implements Observ
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension((int) m_frame.width(), (int) m_frame.height());
-	}
-
-	@Override
-	public void onFlameBuilderChange(ObservableFlameBuilder b) {
-		repaint();
-	}
-
-	@Override
-	public void onRectangleChange(ObservableRectangle rect) {
-		repaint();
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {}
-
-	@Override
-	public void mouseReleased(MouseEvent evt) {
-		double minArea = Double.MAX_VALUE;
-		int index = -1;
-		Point p = new Point(evt.getX(), evt.getY());
-
-		for(int i = 0 ; i < m_boundingBoxes.size() ; i++){
-			Rectangle rect = m_boundingBoxes.get(i);
-			
-			if(rect.contains(p) && m_highlightedTransformationIndex != i){
-				double area = rect.area();
-				if( area < minArea){
-					minArea = rect.area();
-					index = i;
-				}
-			}
-		}
-		
-		if(index != -1)
-			notifyTransformationSelected(index);
 	}
 	
 	public void addListener(Listener l){
