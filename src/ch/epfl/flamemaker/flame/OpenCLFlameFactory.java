@@ -122,7 +122,7 @@ class OpenCLFlameFactory extends FlameFactory {
 	private class OpenCLFlame extends Flame {
 		
 		// Nombre maximum de travaux par vague
-		private static final long MAX_KERNEL_COUNT = 49152;
+		private static final long MAX_KERNEL_COUNT = 10016;
 		
 		// Taille d'une transformation lorsqu'elle est convertie en tableau de floats
 		private static final int INLINE_TRANSFO_LENGTH = 13;
