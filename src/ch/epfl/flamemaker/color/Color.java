@@ -5,6 +5,8 @@
 
 package ch.epfl.flamemaker.color;
 
+import java.io.Serializable;
+
 /**
  * Une couleur est immutable et caractérisée par sa quantité de rouge, vert et
  * bleu représentés par des nombres à virgule flottante dans l'intervalle [0, 1]
@@ -14,7 +16,7 @@ package ch.epfl.flamemaker.color;
  * permet de gamma-encoder une couleur. La méthode {@link #asPackedRGB()}
  * retourne une représentation RGB avec 8 bits par cannaux, sur un type int.
  */
-public class Color {
+public class Color implements Serializable{
 
 	final public static Color 	BLACK = new Color(0, 0, 0), 
 			WHITE = new Color(1, 1, 1), 

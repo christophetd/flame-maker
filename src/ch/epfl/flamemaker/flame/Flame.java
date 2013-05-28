@@ -5,6 +5,7 @@
 
 package ch.epfl.flamemaker.flame;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -259,7 +260,7 @@ public class Flame {
 	/**
 	 * Classe modélisant un bâtisseur pour une fractale Flame
 	 */
-	public final static class Builder {
+	public final static class Builder implements Serializable {
 				
 		/* La liste des bâtisseurs pour les transformations de la fractale Flame
 		 * qui sera construite */

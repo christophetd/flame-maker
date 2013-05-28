@@ -109,7 +109,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		// Panel du choix de format
 		JPanel formatPanel = new JPanel();
 		formatPanel.setLayout(new BoxLayout(formatPanel, BoxLayout.LINE_AXIS));
-		final JComboBox formatsList = new JComboBox(ExportWindow.AVAILABLE_FORMATS);
+		final JComboBox<String> formatsList = new JComboBox<String>(ExportWindow.AVAILABLE_FORMATS);
 		formatsList.setMaximumSize(new Dimension(1000, formatsList.getPreferredSize().height));
 		formatPanel.add(new JLabel("Format : "));
 		formatPanel.add(formatsList);
@@ -258,9 +258,14 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 			// On calcul combien de temps s'est écoulé, et on estime le temps restant
 			long timeElapsed = System.currentTimeMillis()-m_beginComputeTime; 
 			long remaining = (timeElapsed*100)/percent - timeElapsed + 1000;
-
-			String formattedRemaining = String.format("environ %d minutes et %d secondes restantes", 
-				    TimeUnit.MILLISECONDS.toMinutes(remaining),
+			
+			long remainingMinutes = TimeUnit.MILLISECONDS.toMinutes(remaining);
+			String minutesRemainingFormatted = 
+					remainingMinutes == 0 
+				? 	"" 
+				:	String.format("%d minutes et ", remainingMinutes);
+					
+			String formattedRemaining = String.format("environ "+minutesRemainingFormatted+"%d secondes restantes", 
 				    TimeUnit.MILLISECONDS.toSeconds(remaining) - 
 				    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remaining))
 				);

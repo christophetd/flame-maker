@@ -26,6 +26,7 @@ import javax.swing.KeyStroke;
 import ch.epfl.flamemaker.file.FlameFile;
 import ch.epfl.flamemaker.file.FlameFileFilter;
 import ch.epfl.flamemaker.file.InvalidFlameFileException;
+import ch.epfl.flamemaker.file.SerializableFlameSet;
 import ch.epfl.flamemaker.flame.FlameFactory;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameTransformation;
@@ -191,20 +192,23 @@ public class MenuBar {
 					String filePath = fileChooser.getSelectedFile()
 							.getAbsolutePath();
 					try {
-						ArrayList<FlameTransformation> newTransformations = FlameFile
-								.getTransformationsFromFile(filePath);
+						SerializableFlameSet newSet = FlameFile
+								.getSerializableFlameSetFromFile(filePath);
+						set.importDataFrom(newSet);
 
-						// Une fois la liste des transformations récupérée, on supprime
-						// celle de la fractale actuelle et la remplace par la nouvelle
-						int size = transformationsListModel.getSize();
-						for (int i = size - 1; i >= 0; i--) {
-							transformationsListModel.removeTransformation(i);
-						}
-						for (int i = 0; i < newTransformations.size(); i++) {
-							transformationsListModel
-									.addTransformation(newTransformations
-									.get(i));
-						}
+//						set.setAll(newSet);
+//						// Une fois la liste des transformations récupérée, on supprime
+//						// celle de la fractale actuelle et la remplace par la nouvelle
+//						int size = transformationsListModel.getSize();
+//						
+//						for (int i = size - 1; i >= 0; i--) {
+//							transformationsListModel.removeTransformation(i);
+//						}
+//						for (int i = 0; i < ; i++) {
+//							transformationsListModel
+//									.addTransformation(newTransformations
+//									.get(i));
+//						}
 						currentFilePath = filePath;
 						window.setTitle("FlameMaker - " + filePath);
 					} catch (FileNotFoundException e1) {
@@ -239,7 +243,7 @@ public class MenuBar {
 			public void actionPerformed(ActionEvent e) {
 				if (currentFilePath != null) {
 					try {
-						FlameFile.saveToFile(set.getBuilder(), currentFilePath);
+						FlameFile.saveToFile(new SerializableFlameSet(set), currentFilePath);
 					}
 					catch(FileNotFoundException ex) {
 						// Exception lancée si le fichier ne peut être créé, par exemple
@@ -255,7 +259,7 @@ public class MenuBar {
 		});
 
 		// Fonctionnalité "Enregistrer sous"
-		saveAsMenuItem.addActionListener(new MenuBar.SaveAsActionListener(window, set.getBuilder()));
+		saveAsMenuItem.addActionListener(new MenuBar.SaveAsActionListener(window, set));
 
 		// Fonctionnalité "exporter"
 		exportMenuItem.addActionListener(new ActionListener() {
@@ -300,9 +304,9 @@ public class MenuBar {
 		final private JFrame window;
 		
 		/**
-		 *	Le constructeur de la fractale 
+		 *	Le set contenant les informations relatives à la fractale 
 		 */
-		final private ObservableFlameBuilder flameBuilder;
+		final private FlameSet set;
 
 		/**
 		 * Le constructeur de la classe
@@ -310,9 +314,9 @@ public class MenuBar {
 		 * @param flameBuilder	Le constructeur de la fractale
 		 */
 		public SaveAsActionListener(JFrame window,
-				ObservableFlameBuilder flameBuilder) {
+				FlameSet set) {
 			this.window = window;
-			this.flameBuilder = flameBuilder;
+			this.set = set;
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -352,7 +356,7 @@ public class MenuBar {
 				window.setTitle("FlameMaker - " + filePath);
 				
 				try {
-					FlameFile.saveToFile(flameBuilder, filePath);
+					FlameFile.saveToFile(new SerializableFlameSet(set), filePath);
 				}
 				catch (FileNotFoundException e1) {
 					// Cette exception est lancée si le fichier ne peut pas être créé, par exemple

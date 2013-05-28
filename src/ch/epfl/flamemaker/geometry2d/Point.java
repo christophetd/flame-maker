@@ -5,6 +5,8 @@
 
 package ch.epfl.flamemaker.geometry2d;
 
+import java.io.Serializable;
+
 
 /**
  * Classe non mutable représentant un point dans l'espace à deux dimensions.<br />
@@ -12,7 +14,7 @@ package ch.epfl.flamemaker.geometry2d;
  * flottante avec les getters {@link #x()}, {@link #y()}, {@link #r()} et
  * {@link #theta()}
  */
-public class Point {
+public class Point implements Serializable {
 
 	/**
 	 * L'origine du repère, définie comme le point de coordonnées cartésiennes

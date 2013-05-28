@@ -5,13 +5,15 @@
 
 package ch.epfl.flamemaker.color;
 
+import java.io.Serializable;
+
 /**
  * Interface décrivant le comportement d'une palette de couleur. Une palette
  * représente un ensemble de couleurs correspondant à un index compris entre 0
  * et 1 inclus. L'unique méthode permettant de récupérer une couleur pour un
  * index donné est colorForIndex().
  */
-public interface Palette {
+public interface Palette extends Serializable {
 
 	/**
 	 * Récupère la couleur de la palette pour un index donné

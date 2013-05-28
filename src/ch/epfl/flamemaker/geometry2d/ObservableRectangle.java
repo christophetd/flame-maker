@@ -14,7 +14,7 @@ import java.util.Set;
  * Le rectangle est caractérisé par son centre ({@link Point Point}), sa largeur
  * et sa hauteur (double).
  */
-public class ObservableRectangle {
+public class ObservableRectangle{
 	/**
 	 * Le centre du rectangle
 	 */

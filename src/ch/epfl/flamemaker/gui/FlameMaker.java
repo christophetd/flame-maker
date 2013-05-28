@@ -5,6 +5,7 @@
 
 package ch.epfl.flamemaker.gui;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -18,7 +19,15 @@ public class FlameMaker {
 		
 	    javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
-	            	new FlameMakerGUI().start();
+	            	try {
+	            		new FlameMakerGUI().start();
+	            	}
+	            	catch(RuntimeException e){
+	            		JOptionPane.showMessageDialog(null,
+	            			    "Une erreur s'est produite dans flame maker. \n"+e.getMessage(),
+	            			    "Erreur dans le programme",
+	            			    JOptionPane.ERROR_MESSAGE);
+	            	}
 	            }
 	    });
 	}
