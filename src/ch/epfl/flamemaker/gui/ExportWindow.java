@@ -114,7 +114,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		// Panel du choix de format
 		JPanel formatPanel = new JPanel();
 		formatPanel.setLayout(new BoxLayout(formatPanel, BoxLayout.LINE_AXIS));
-		final JComboBox<String> formatsList = new JComboBox<String>(ExportWindow.AVAILABLE_FORMATS);
+		final JComboBox formatsList = new JComboBox(ExportWindow.AVAILABLE_FORMATS);
 		formatsList.setMaximumSize(new Dimension(1000, formatsList.getPreferredSize().height));
 		formatPanel.add(new JLabel("Format : "));
 		formatPanel.add(formatsList);

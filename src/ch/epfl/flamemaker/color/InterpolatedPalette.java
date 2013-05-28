@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class InterpolatedPalette implements Palette {
 
+	private static final long serialVersionUID = -78786374427341248L;
+	
 	// Liste des couleurs réparties uniformément entre 0 et 1 dans l'ordre de
 	// cette liste.
 	private List<Color> m_colors;

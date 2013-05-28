@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class RandomPalette implements Palette {
 
+	private static final long serialVersionUID = 268387362724464089L;
+	
 	// Palette sous-jacente gérant l'interpolation des couleurs aléatoires
 	private final InterpolatedPalette m_palette;
 

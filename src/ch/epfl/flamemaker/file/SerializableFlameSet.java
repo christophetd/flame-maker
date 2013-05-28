@@ -8,20 +8,21 @@ import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
-import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 public class SerializableFlameSet implements Serializable {
 	
+	private static final long serialVersionUID = 6762950268081380270L;
+
 	private ArrayList<FlameTransformation> m_transformationsList = new ArrayList<FlameTransformation>();
 
-	/** Couleur de fond */
+	
 	private Color m_backgroundColor;
-	/** Palette de couleur pour le dessin */
+	
 	private Palette m_palette;
-	/** Rectangle source pour le calcul */
+	
 	private Rectangle m_frame;
-	/** densité de calcul */
+	
 	private int m_density;
 	
 	public SerializableFlameSet(FlameSet set) {

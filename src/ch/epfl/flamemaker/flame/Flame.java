@@ -262,6 +262,8 @@ public class Flame {
 	 */
 	public final static class Builder implements Serializable {
 				
+		private static final long serialVersionUID = 3041256224666572613L;
+
 		/* La liste des bâtisseurs pour les transformations de la fractale Flame
 		 * qui sera construite */
 		private List<FlameTransformation.Builder> m_transformationsBuilders;

@@ -10,9 +10,10 @@ import java.io.Serializable;
 /**
  * Classe modélisant une transformation affine
  */
-@SuppressWarnings("serial")
 public class AffineTransformation implements Transformation, Serializable {
 
+	private static final long serialVersionUID = -5363643596770047270L;
+	
 	/**
 	 * La transformation identité
 	 */

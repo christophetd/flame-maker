@@ -13,6 +13,9 @@ import java.io.Serializable;
  * et sa hauteur (double).
  */
 public class Rectangle implements Serializable {
+
+	private static final long serialVersionUID = 2381189565705109086L;
+
 	/**
 	 * Le centre du rectangle
 	 */

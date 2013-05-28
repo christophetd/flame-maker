@@ -18,6 +18,8 @@ import java.io.Serializable;
  */
 public class Color implements Serializable{
 
+	private static final long serialVersionUID = -6328161796643969451L;
+	
 	final public static Color 	BLACK = new Color(0, 0, 0), 
 			WHITE = new Color(1, 1, 1), 
 			RED = new Color(1, 0, 0), 
