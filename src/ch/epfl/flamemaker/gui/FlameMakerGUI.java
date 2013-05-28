@@ -29,41 +29,98 @@ import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
+/**
+ *	Classe modélisant la fenêtre de l'interface graphique.
+ */
 public class FlameMakerGUI {
 
-	/*
-	 * Contient toutes les informations sur la flame courante et ses
-	 * informations d'affichage
+	
+	/**
+	 * Le builder de la fractale
 	 */
 	private ObservableFlameBuilder m_builder;
+	
+	/**
+	 *	La couleur de fond à utiliser 
+	 */
 	private Color m_backgroundColor = Color.BLACK;
+	
+	
+	/**
+	 * La palette à utiliser 
+	 */
 	private Palette m_palette;
+	
+	/**
+	 * Le cadre de dessin à utiliser
+	 */
 	private Rectangle m_frame;
+	
+	/**
+	 * La densité à utiliser
+	 */
 	private int m_density = 50;
+	
 
+	/**
+	 *	L'attribut observable représentant l'id de la transformation 
+	 *actuellement sélectionnée
+	 */
 	private int m_selectedTransformationId;
+	
+	
+	/**
+	 * Les observateurs de l'id de la transformation
+	 * actuellement sélectionée.
+	 * @see FlameMakerGUI.Listener
+	 */
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 
+	
+	/**
+	 * Le composant d'affichage des composantes affines des transformations;
+	 * Celui-ci est final et initialisé par le constructeur afin de pouvoir être 
+	 * utilisé dans une instance d'une classe anonyme et utilisé à plusieurs
+	 * endroits du code.
+	 * @see AffineTransformationsComponent
+	 */
 	private final AffineTransformationsComponent m_affineTransformationComponent;
+	
+	/**
+	 * Le composant de modification des transformations affines.
+	 * Final et initialisé dans le constructeur pour les mêmes raisons 
+	 * que le composant d'affichage des composantes affines.
+	 */
 	private final AffineModificationComponent m_affineModificationComponent;
+	
+	/**
+	 * Le panneau d'édition des transformations. 
+	 * Contient les composants d'édition des composantes affines et
+	 * de modification des poids des variations. 
+	 * Final et initialisé dans le constructeur pour les mêmes 
+	 * raisons que plus haut.
+	 */
 	private final TransformationsEditPanel m_transformationsEditPanel;
+	
+	
+	/**
+	 * Le composant de modification des poids des variations.
+	 * Final et initialisé dans le constructeur pour les mêmes 
+	 * raisons que plus haut. 
+	 */
 	private final WeightsModificationComponent m_weightsModificationComponent;
 	
+	/**
+	 * Le constructeur de la classe modélisant le GUI. 
+	 * Appelé pour lancer ce dernier.
+	 */
 	public FlameMakerGUI() {
 		m_frame = new Rectangle(new Point(-0.25, 0), 5, 4);
 		m_palette = new InterpolatedPalette(Arrays.asList(Color.RED,
 				Color.GREEN, Color.BLUE));
 
-		/* Configure la fractale "shark fin" */
-		m_builder = new ObservableFlameBuilder(new Flame(Arrays.asList(
-				new FlameTransformation(new AffineTransformation(-0.4113504,
-						-0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
-						new double[] { 1, 0.1, 0, 0, 0, 0 }),
-						new FlameTransformation(new AffineTransformation(-0.3957339, 0,
-								-1.6, 0, -0.3957337, 0.2), new double[] { 0, 0, 0, 0,
-							0.8, 1 }), new FlameTransformation(
-									new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169,
-											0.9), new double[] { 1, 0, 0, 0, 0, 0 }))));
+		// Configure la fractale "shark fin"
+		m_builder = buildSharkFin();
 		
 		m_affineTransformationComponent = new AffineTransformationsComponent(m_builder, m_frame);
 		m_affineModificationComponent = new AffineModificationComponent(m_builder);
@@ -71,7 +128,37 @@ public class FlameMakerGUI {
 		m_weightsModificationComponent = new WeightsModificationComponent(m_builder);
 	}
 	
+	/**
+	 * Utilisée par le constructeur pour initialiser la fractale SharkFin
+	 * @return {@link ObservableFlameBuilder} Le builder de cette fractale
+	 */
+	private ObservableFlameBuilder buildSharkFin() {
+		return 
+			new ObservableFlameBuilder(new Flame(Arrays.asList(
+				new FlameTransformation(
+						new AffineTransformation(
+								-0.4113504,	-0.7124804, -0.4, 0.7124795, -0.4113508, 0.8
+						),
+						new double[] { 1, 0.1, 0, 0, 0, 0 }),
+				new FlameTransformation(
+						new AffineTransformation(
+								-0.3957339, 0, -1.6, 0, -0.3957337, 0.2), 
+								new double[] { 0, 0, 0, 0, 0.8, 1 }
+						), 
+				new FlameTransformation(
+						new AffineTransformation(
+								0.4810169, 0, 1, 0, 0.4810169, 0.9), 
+								new double[] { 1, 0, 0, 0, 0, 0 }
+						)
+				)
+		));
+	}
 	
+	
+	/**
+	 * Initialise et affiche la fenêtre principale
+	 * du GUI à l'écran.
+	 */
 	public void start() {
 		final JFrame window = new JFrame("FlameMaker");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,6 +190,28 @@ public class FlameMakerGUI {
 	}
 
 
+	/**
+	 * Crée et remplit le panneau supérieur.
+	 * @return Le panneau supérieur
+	 */
+	private JPanel buildUpperPanel() {
+		JPanel upperPanel = new JPanel();
+	
+		JPanel transformationsPreviewPanel = buildTransformationsPreviewPanel(); 
+		JPanel fractalPanel = buildFractalePanel();
+	
+		upperPanel.setLayout(new GridLayout(1, 2));
+		upperPanel.add(transformationsPreviewPanel);
+		upperPanel.add(fractalPanel);
+	
+		return upperPanel;
+	}
+
+
+	/**
+	 * Crée et remplit le panneau de visualisation des composantes affines des transformations
+	 * @return Le panneau de visualisation des composantes affines des transformations
+	 */
 	private JPanel buildTransformationsPreviewPanel() {
 		JPanel transformationsPreviewPanel = new JPanel();
 
@@ -117,19 +226,10 @@ public class FlameMakerGUI {
 		return transformationsPreviewPanel;
 	}
 
-	private JPanel buildUpperPanel() {
-		JPanel upperPanel = new JPanel();
-
-		JPanel transformationsPreviewPanel = buildTransformationsPreviewPanel(); 
-		JPanel fractalPanel = buildFractalePanel();
-
-		upperPanel.setLayout(new GridLayout(1, 2));
-		upperPanel.add(transformationsPreviewPanel);
-		upperPanel.add(fractalPanel);
-
-		return upperPanel;
-	}
-
+	/**
+	 * Crée et remplit le panneau de prévisualisation de la fractale.
+	 * @return Le panneau de prévisualisation de la fractale.
+	 */
 	private JPanel buildFractalePanel() {
 		JPanel fractalPanel = new JPanel();
 
@@ -143,16 +243,20 @@ public class FlameMakerGUI {
 		return fractalPanel;
 	}
 
+	/**
+	 * Crée et remplit le panneau inférieur
+	 * @return Le panneau inférieur
+	 */
 	private JPanel buildLowerPanel() {
 		JPanel lowerPanel = new JPanel();
-		final FlameMakerGUI that = this;
+		final FlameMakerGUI self = this;
 		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
 
 		m_transformationsEditPanel.addListener(new TransformationsEditPanel.Listener(){
 
 			@Override
 			public void onTransformationSelected(int transfoId) {
-				that.setSelectedTransformationId(transfoId);
+				self.setSelectedTransformationId(transfoId);
 			}
 
 		});
@@ -165,6 +269,10 @@ public class FlameMakerGUI {
 		return lowerPanel;
 	}
 
+	/**
+	 * Crée et construit le panneau de modification des transformations affines
+	 * @return Le panneau de modification des transformations affines
+	 */
 	private JPanel buildSelectedTransformationEditPanel() {
 		JPanel selectedTransformationEditPanel = new JPanel();
 
@@ -187,15 +295,15 @@ public class FlameMakerGUI {
 
 
 	/**
-	 * Gets the currently selected transformation id
+	 * @return L'id de la transformations actuellement sélectionnée
 	 */
 	public int getSelectedTransformationId(){
 		return m_selectedTransformationId;
 	}
 
 	/**
-	 * Sets the currently selected transformation id
-	 * @param id of the transformation
+	 * Modifie l'id de la transformation actuellement sélectionée
+	 * @param l'id de la transformation
 	 */
 	public void setSelectedTransformationId(int id){
 
@@ -208,11 +316,11 @@ public class FlameMakerGUI {
 	}
 
 	/**
-	 * Adds a listener notified when a global GUI value change (ie.
-	 * selectedTransformationId)
-	 * 
+	 * Ajoute un observateur qui sera notifié lorsqu'une
+	 * nouvelle transformation est sélectionnée
+	 *	 * 
 	 * @param l
-	 *            listener to add
+	 *           L'observateur à ajouter
 	 * @see #removeListener
 	 */
 	public void addListener(Listener l) {
@@ -220,10 +328,10 @@ public class FlameMakerGUI {
 	}
 
 	/**
-	 * Removes a listener.
+	 * Supprime un observateur
 	 * 
 	 * @param l
-	 *            listener to remove
+	 *            L'observateur à supprimer
 	 * @see #addListener
 	 */
 	public void removeListener(Listener l) {
@@ -231,7 +339,8 @@ public class FlameMakerGUI {
 	}
 
 	/**
-	 * Interface for GUI listeners.
+	 * L'interface que les classes des objets désirant écouter
+	 * la transformation actuellement sélectionée doivent implémenter.
 	 */
 	public interface Listener {
 		public void onSelectedTransformationIdChange(int id);
