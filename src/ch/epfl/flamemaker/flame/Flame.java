@@ -22,6 +22,8 @@ public class Flame {
 	 * Contient la liste des transformations caractérisant la fractale
 	 */
 	final private List<FlameTransformation> m_transforms;
+	
+	final private double[] m_colorIndexes;
 
 	/**
 	 * Construit une nouvelle fractale à partir d'une liste de transformation la
@@ -32,6 +34,11 @@ public class Flame {
 	 */
 	public Flame(List<FlameTransformation> transforms) {
 		m_transforms = new ArrayList<FlameTransformation>(transforms);
+		
+		m_colorIndexes = new double[m_transforms.size()];
+		for(int i = 0 ; i < transforms.size() ; i++){
+			m_colorIndexes[i] = getColorIndex(i);
+		}
 	}
 
 	/**
@@ -71,7 +78,7 @@ public class Flame {
 		for (int i = 0; i < k; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
-			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
+			lastColor = (lastColor + m_colorIndexes[transformationNum]) / 2.0;
 		}
 
 		// Iterations accumulées pour le rendu
@@ -79,9 +86,10 @@ public class Flame {
 		for (int i = 0; i < m; i++) {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
-			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
-
-			builder.hit(point, lastColor);
+			lastColor = (lastColor + m_colorIndexes[transformationNum]) / 2.0;
+			
+			if(frame.contains(point))
+				builder.hit(point, lastColor);
 		}
 
 		// On construit l'accumulateur
@@ -192,7 +200,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public double variationWeight(int index, Variation variation) {
+		public double variationWeight(int index, Variations variation) {
 			checkIndex(index);
 
 			return m_transformationsBuilders.get(index).weight(
@@ -213,7 +221,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public void setVariationWeight(int index, Variation variation,
+		public void setVariationWeight(int index, Variations variation,
 				double newWeight) {
 
 			checkIndex(index);

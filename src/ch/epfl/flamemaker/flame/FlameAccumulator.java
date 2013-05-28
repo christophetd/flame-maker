@@ -192,11 +192,9 @@ public class FlameAccumulator {
 			int x = (int) Math.floor(coord.x());
 			int y = (int) Math.floor(coord.y());
 
-			if (x >= 0 && x < m_grid.length && y >= 0 && y < m_grid[0].length) {
-				m_colors[x][y] = (colorIndex + m_colors[x][y] * m_grid[x][y])
-						/ (m_grid[x][y] + 1);
-				m_grid[x][y]++;
-			}
+			m_colors[x][y] = (colorIndex + m_colors[x][y] * m_grid[x][y])
+					/ (m_grid[x][y] + 1);
+			m_grid[x][y]++;
 		}
 
 		/**

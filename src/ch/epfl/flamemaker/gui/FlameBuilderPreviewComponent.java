@@ -67,7 +67,7 @@ Listener {
 	}
 
 	/**
-	 * Méthode appellée pour rafraichir le dessin
+	 * Méthode appelée pour rafraîchir le dessin
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
