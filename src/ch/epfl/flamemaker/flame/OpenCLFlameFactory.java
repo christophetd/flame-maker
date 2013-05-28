@@ -279,8 +279,8 @@ class OpenCLFlameFactory extends FlameFactory {
 					ret[offset+j] = (float) coeffs[j];
 				}
 				
-				// Color index à l'indice 6
-				ret[offset+6] = (float) getColorIndex(i);
+				// On met le color index à l'offset 6. La caméra n'a pas de colorIndex, on met un 0 à la place
+				ret[offset+6] = (i != transforms.size() - 1) ? (float) getColorIndex(i) : 0;
 				
 				// Remplissage des poids des variations (indices 7 à 12)
 				double[] weights = trns.weights();

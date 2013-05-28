@@ -29,6 +29,9 @@ public class Flame {
 	//Contient la liste des transformations caractérisant la fractale
 	final private List<FlameTransformation> m_transforms;
 	
+	// Cache pour les index de couleur.
+	private final double[] m_colorIndexes;
+	
 	// Observateurs écoutant cette fractale
 	private List<Listener> m_listeners = new ArrayList<Listener>();
 	
@@ -37,6 +40,8 @@ public class Flame {
 	
 	// Processus de calcul
 	private Thread m_worker;
+	
+	
 
 	/**
 	 * Construit une nouvelle fractale à partir d'une liste de transformation la
@@ -49,6 +54,10 @@ public class Flame {
 	 */
 	public Flame(List<FlameTransformation> transforms){ 
 		m_transforms = transforms;
+		m_colorIndexes = new double[transforms.size()];
+		for(int i = 0 ; i < m_colorIndexes.length ; i++){
+			m_colorIndexes[i] = makeColorIndex(i);
+		}
 	}
 	
 	/**
@@ -159,14 +168,7 @@ public class Flame {
 		return new ArrayList<FlameTransformation>(m_transforms);
 	}
 
-	/**
-	 * @param index
-	 *            L'index de la transformation de laquelle on désire avoir
-	 *            l'index de couleur
-	 * @return L'index de couleur associé à la transformation
-	 */
-	protected final double getColorIndex(int index) {
-	
+	private final double makeColorIndex(int index){
 		if (index >= 2) {
 			double denominateur = Math.pow(2,
 					Math.ceil(Math.log(index) / Math.log(2)));
@@ -175,6 +177,16 @@ public class Flame {
 		} else {
 			return index;
 		}
+	}
+	
+	/**
+	 * @param index
+	 *            L'index de la transformation de laquelle on désire avoir
+	 *            l'index de couleur
+	 * @return L'index de couleur associé à la transformation
+	 */
+	protected final double getColorIndex(int index) {
+		return m_colorIndexes[index];
 	}
 
 	
@@ -262,6 +274,11 @@ public class Flame {
 	 */
 	public final static class Builder implements Serializable {
 				
+		/**
+		 * serial id
+		 */
+		private static final long serialVersionUID = 3041256224666572613L;
+
 		/* La liste des bâtisseurs pour les transformations de la fractale Flame
 		 * qui sera construite */
 		private List<FlameTransformation.Builder> m_transformationsBuilders;
