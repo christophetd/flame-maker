@@ -24,7 +24,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
-import ch.epfl.flamemaker.flame.Variation;
+import ch.epfl.flamemaker.flame.Variations;
 
 /**
  * Classe représentant le composant de modification des poids des variations
@@ -71,7 +71,7 @@ public class WeightsModificationComponent extends JComponent {
 		 */
 		ArrayList<ParallelGroup> verticalGroups = new ArrayList<ParallelGroup>();
 		ParallelGroup currentGroup;
-		for (int i = 0; i < Variation.ALL_VARIATIONS.size(); i++) {
+		for (int i = 0; i < Variations.values().length ; i++) {
 			currentGroup = weightsGroup.createParallelGroup();
 			verticalGroups.add(currentGroup);
 			H.addGroup(currentGroup);
@@ -87,8 +87,8 @@ public class WeightsModificationComponent extends JComponent {
 		 * On crée les champs de texte et les étiquettes associées.
 		 */
 		int h = 0, v = 0;
-		for (Variation variation : Variation.ALL_VARIATIONS) {
-			final JLabel label = new JLabel(variation.name());
+		for (Variations variation : Variations.values()) {
+			final JLabel label = new JLabel(variation.printableName());
 			final JFormattedTextField formattedTextField = buildFormattedTextField();
 			formattedTextField.setInputVerifier(new WeightInputVerifier());
 			fields.add(formattedTextField);
@@ -109,9 +109,9 @@ public class WeightsModificationComponent extends JComponent {
 
 							double newWeight = ((Number) formattedTextField
 									.getValue()).doubleValue();
-							Variation concernedVariation = null;
-							for (Variation v : Variation.ALL_VARIATIONS) {
-								if (v.name().equals(label.getText())) {
+							Variations concernedVariation = null;
+							for (Variations v : Variations.values()) {
+								if (v.printableName().equals(label.getText())) {
 									concernedVariation = v;
 								}
 							}
