@@ -42,9 +42,14 @@ import ch.epfl.flamemaker.flame.FlameUtils;
 public class ExportWindow extends JFrame implements Flame.Listener {
 
 	/**
-	 *	La densité maximale que l'utilisateur puisse renseigner. 
+	 *	La densité maximale que l'utilisateur peut renseigner. 
 	 */
 	private static final int MAX_DENSITY_VALUE = 1000;
+	
+	/**
+	 * La taille maximale que l'utilisateur peut renseigner.
+	 */
+	private static final int MAX_SIZE = 99999;
 	
 	/**
 	 * Les formats d'exportation disponibles.
@@ -119,11 +124,11 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		dimensionPanel.setLayout(new BoxLayout(dimensionPanel, BoxLayout.LINE_AXIS));
 		dimensionPanel.add(new JLabel("Dimensions (px) : "));
 		final JFormattedTextField widthField = buildFormattedTextField();
-		widthField.setInputVerifier(new PositiveInputVerifier());
-		widthField.setMaximumSize(new Dimension(1000, widthField.getPreferredSize().height));
+		widthField.setInputVerifier(new MaxIntInputVerifier(MAX_SIZE));
+		widthField.setMaximumSize(new Dimension(60, widthField.getPreferredSize().height));
 		final JFormattedTextField heightField = buildFormattedTextField();
-		heightField.setMaximumSize(new Dimension(1000, heightField.getPreferredSize().height));
-		heightField.setInputVerifier(new PositiveInputVerifier());
+		heightField.setMaximumSize(new Dimension(60, heightField.getPreferredSize().height));
+		heightField.setInputVerifier(new MaxIntInputVerifier(MAX_SIZE));
 		dimensionPanel.add(widthField);
 		dimensionPanel.add(new JLabel(" x "));
 		dimensionPanel.add(heightField);
@@ -131,12 +136,12 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		// Panel du choix de la densité
 		JPanel densityPanel = new JPanel();
 		densityPanel.setLayout(new BoxLayout(densityPanel, BoxLayout.LINE_AXIS));
-		JLabel densityLabel = new JLabel("Densité (détails de l'image, "+MAX_DENSITY_VALUE+" maximum) : ");
+		JLabel densityLabel = new JLabel("Densité :");
 		final JFormattedTextField densityField = buildFormattedTextField();
-		densityField.setInputVerifier(new PositiveInputVerifier());
-		densityField.setMaximumSize(new Dimension(1000, densityField.getPreferredSize().height));
+		densityField.setInputVerifier(new MaxIntInputVerifier(MAX_DENSITY_VALUE));
+		densityField.setMaximumSize(new Dimension(50, densityField.getPreferredSize().height));
 		densityField.setValue(50);
-		densityField.setToolTipText("Si vous spécifiez une densité de plus de 50, le temps de rendu risque d'être plus long");
+		densityField.setToolTipText("Si vous spécifiez une densité de plus de 50, le temps de rendu sera plus long");
 		densityPanel.add(densityLabel);
 		densityPanel.add(densityField);
 		
@@ -275,8 +280,8 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see ch.epfl.flamemaker.flame.Flame.Listener#onComputeDone(ch.epfl.flamemaker.flame.FlameAccumulator)
+	/*
+	 * voir Flame.Listener#onComputeDone
 	 */
 	@Override
 	public void onComputeDone(FlameAccumulator accumulator) {
@@ -339,8 +344,13 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 	 *	Classe modélisant un vérificateur pour les JFormattedTextField dont
 	 *	la valeur doit être un entier strictement positif.
 	 */
-	private class PositiveInputVerifier extends InputVerifier {
-
+	private class MaxIntInputVerifier extends InputVerifier {
+		private int max;
+		
+		public MaxIntInputVerifier(int maxValue){
+			this.max = maxValue;
+		}
+		
 		@Override
 		public boolean verify(JComponent input) {
 			JFormattedTextField tf = (JFormattedTextField) input;
@@ -358,8 +368,10 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 				 * traduire les nombres (remplacer les "." par des ",")... Le
 				 * champ est valide si la valeur est strictement positive
 				 */
-				if (value.doubleValue() <= 0) {
+				if (value.doubleValue() <= 0){
 					tf.setValue(tf.getValue());
+				} else if (value.doubleValue() > max) {
+					tf.setValue(max);
 				} else {
 					tf.setValue(value);
 				}
