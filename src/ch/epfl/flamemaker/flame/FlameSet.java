@@ -5,15 +5,18 @@
 
 package ch.epfl.flamemaker.flame;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
+import ch.epfl.flamemaker.file.SerializableFlameSet;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
+import ch.epfl.flamemaker.geometry2d.Transformation;
 
 /**
  * Structure de donnée partagée par tous les éléments de l'UI qui en ont besoin. 
@@ -42,7 +45,6 @@ public class FlameSet {
 	private ObservableRectangle m_frame;
 	/** densité de calcul */
 	private int m_density;
-	
 	
 	// Ensemble des observateurs
 	private Set<Listener> m_listeners = new HashSet<Listener>();
@@ -97,6 +99,16 @@ public class FlameSet {
 		m_palette = preset.palette();
 		m_frame.set(preset.frame());
 		m_flameBuilder.set(new Flame(preset.transformations()));
+		
+		notifyListeners();
+	}
+	
+	public void importDataFrom(SerializableFlameSet other) {
+		m_palette = other.getPalette();
+		m_frame.set(other.getFrame());
+		m_density = other.getDensity();
+		m_backgroundColor = other.getBackgroundColor();
+		m_flameBuilder.set(new Flame(other.getTransformationsList()));
 		
 		notifyListeners();
 	}

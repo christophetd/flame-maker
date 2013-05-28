@@ -39,9 +39,9 @@ public class FlameTransformation implements Transformation, Serializable {
 	 */
 	public FlameTransformation(AffineTransformation affineTransformation,
 			double[] variationWeight) {
-		if (variationWeight.length != Variation.ALL_VARIATIONS.size()) {
+		if (variationWeight.length != Variations.values().length) {
 			throw new IllegalArgumentException(
-					"variationWeight must have length "+Variation.ALL_VARIATIONS.size());
+					"variationWeight must have length "+Variations.values().length);
 		}
 
 		m_affineTransfo = affineTransformation;
@@ -59,9 +59,9 @@ public class FlameTransformation implements Transformation, Serializable {
 		// On applique la transformation affine au point
 		p = m_affineTransfo.transformPoint(p);
 		
-		for (int i = 0; i < Variation.ALL_VARIATIONS.size(); i++) {
+		for (int i = 0; i < Variations.values().length ; i++) {
 			if (m_weight[i] != 0) {
-				tmp = Variation.ALL_VARIATIONS.get(i).transformPoint(p);
+				tmp = Variations.values()[i].transformPoint(p);
 				result = new Point(result.x() + m_weight[i] * tmp.x(), result.y()
 						+ m_weight[i] * tmp.y());
 			}
@@ -80,9 +80,9 @@ public class FlameTransformation implements Transformation, Serializable {
 	 * @throws IllegalArgumentException
 	 *             Si la variation a un index invalide
 	 */
-	public double weight(Variation variation) {
+	public double weight(Variations variation) {
 		int index = variation.index();
-		if (index > 0 || index < m_weight.length) {
+		if (index < 0 || index >= m_weight.length) {
 			throw new IllegalArgumentException("invalid index given");
 		}
 		return m_weight[index];

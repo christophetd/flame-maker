@@ -5,12 +5,14 @@
 
 package ch.epfl.flamemaker.geometry2d;
 
+import java.io.Serializable;
+
 /**
  * Classe non mutable représentant un rectangle dans l'espace à deux dimensions.<br />
  * Le rectangle est caractérisé par son centre ({@link Point Point}), sa largeur
  * et sa hauteur (double).
  */
-public class Rectangle {
+public class Rectangle implements Serializable {
 	/**
 	 * Le centre du rectangle
 	 */

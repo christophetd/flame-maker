@@ -52,6 +52,9 @@ class ThreadFlameFactory extends FlameFactory {
 		//Retiens si il y a une erreur dans les workers
 		private String m_error;
 		
+		//Garde le cadre en mémoire pour les workers
+		private Rectangle m_frame;
+		
 		// Progression totale tous processus confondus
 		private int totalProgress = 0;
 		
@@ -67,7 +70,7 @@ class ThreadFlameFactory extends FlameFactory {
 				throw new FlameComputeException("Le nombre total de points à calculer est trop grand !");
 			
 			m_error = "";
-			 
+			m_frame = frame;
 			//On informe que le calcul à commencé
 			triggerComputeProgress(0);
 			
@@ -173,7 +176,8 @@ class ThreadFlameFactory extends FlameFactory {
 					point = transformations.get(transformationNum).transformPoint(point);
 					lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
 					
-					m_builder.hit(point, lastColor);
+					if(m_frame.contains(point))
+						m_builder.hit(point, lastColor);
 					
 					// On signale la classe englobante de l'avancement
 					if(i >= (progress + PROGRESS_DEFINITION)*progressStep){

@@ -18,7 +18,7 @@ import java.util.List;
  * à la méthode {@link #createFlame(List) }
  *
  */
-public abstract class FlameFactory{
+public abstract class FlameFactory {
 	
 	/**
 	 * Liste des stratégies disponibles pour le rendu de la fractale triée par ordre de compatibilité

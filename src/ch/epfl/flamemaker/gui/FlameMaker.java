@@ -22,10 +22,10 @@ public class FlameMaker {
 	            	try {
 	            		new FlameMakerGUI().start();
 	            	}
-	            	catch(RuntimeException e) {
+	            	catch(RuntimeException e){
 	            		JOptionPane.showMessageDialog(null,
-	            			    e.getMessage(),
-	            			    "Erreur",
+	            			    "Une erreur s'est produite dans flame maker. \n"+e.getMessage(),
+	            			    "Erreur dans le programme",
 	            			    JOptionPane.ERROR_MESSAGE);
 	            	}
 	            }

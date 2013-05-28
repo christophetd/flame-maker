@@ -5,6 +5,7 @@
 
 package ch.epfl.flamemaker.flame;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -259,7 +260,7 @@ public class Flame {
 	/**
 	 * Classe modélisant un bâtisseur pour une fractale Flame
 	 */
-	public final static class Builder {
+	public final static class Builder implements Serializable {
 				
 		/* La liste des bâtisseurs pour les transformations de la fractale Flame
 		 * qui sera construite */
@@ -378,7 +379,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public double getVariationWeight(int index, Variation variation) {
+		public double getVariationWeight(int index, Variations variation) {
 			checkIndex(index);
 			
 			return m_transformationsBuilders.get(index).weight(variation.index());
@@ -423,7 +424,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public void setVariationWeight(int index, Variation variation,
+		public void setVariationWeight(int index, Variations variation,
 				double newWeight) {
 	
 			checkIndex(index);
