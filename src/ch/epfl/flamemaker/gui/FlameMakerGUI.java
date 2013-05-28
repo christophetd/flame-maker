@@ -174,55 +174,62 @@ public class FlameMakerGUI implements FlameSet.Listener {
 
 	
 	/**
-	 * Gets the currently selected transformation id
+	 * @return L'id de la transformations actuellement sélectionnée
 	 */
 	public int getSelectedTransformationId(){
 		return m_selectedTransformationId;
 	}
-	
+
 	/**
-	 * Sets the currently selected transformation id
-	 * @param id of the transformation
+	 * Modifie l'id de la transformation actuellement sélectionée
+	 * @param l'id de la transformation
 	 */
 	public void setSelectedTransformationId(int id){
-		
 		m_selectedTransformationId = id;
 
-		Iterator<Listener> it = m_listeners.iterator();
-		while(it.hasNext()){
-			it.next().onSelectedTransformationIdChange(id);
+		for(Listener l: m_listeners) {
+			l.onSelectedTransformationIdChange(id);
 		}
 	}
-	
+
 	/**
-	 * Adds a listener notified when a global GUI value change (ie. selectedTransformationId)
-	 * @param l listener to add
+	 * Ajoute un observateur qui sera notifié lorsqu'une
+	 * nouvelle transformation est sélectionnée
+	 *	 * 
+	 * @param l
+	 *           L'observateur à ajouter
 	 * @see #removeListener
 	 */
-	public void addListener(Listener l){
+	public void addListener(Listener l) {
 		m_listeners.add(l);
 	}
-	
+
 	/**
-	 * Removes a listener.
-	 * @param l listener to remove
+	 * Supprime un observateur
+	 * 
+	 * @param l
+	 *            L'observateur à supprimer
 	 * @see #addListener
 	 */
-	public void removeListener(Listener l){
+	public void removeListener(Listener l) {
 		m_listeners.remove(l);
 	}
-	
+
 	/**
-	 *	Interface for GUI listeners.
+	 * L'interface que les classes des objets désirant écouter
+	 * la transformation actuellement sélectionée doivent implémenter.
 	 */
-	public interface Listener{
+	public interface Listener {
 		public void onSelectedTransformationIdChange(int id);
 	}
 
+	/* 
+	 * @see ch.epfl.flamemaker.flame.FlameSet.Listener#onSetChanged(ch.epfl.flamemaker.flame.FlameSet)
+	 */
 	@Override
 	public void onSetChanged(FlameSet set) {
+		// Lorsqu'un nouveau preset est chargé, 
+		// on sélectionne la première transformation de la liste
 		setSelectedTransformationId(0);
 	}
-	
-	
 }
