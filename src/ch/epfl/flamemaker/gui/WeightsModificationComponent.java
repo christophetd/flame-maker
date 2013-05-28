@@ -24,7 +24,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
-import ch.epfl.flamemaker.flame.Variation;
+import ch.epfl.flamemaker.flame.Variations;
 
 @SuppressWarnings("serial")
 public class WeightsModificationComponent extends JComponent {
@@ -49,7 +49,7 @@ public class WeightsModificationComponent extends JComponent {
 		// Autant de groupes verticaux que de variations, 2 lignes
 		ArrayList<ParallelGroup> verticalGroups = new ArrayList<ParallelGroup>();
 		ParallelGroup currentGroup;
-		for (int i = 0; i < Variation.ALL_VARIATIONS.size(); i++) {
+		for (int i = 0; i < Variations.values().length ; i++) {
 			currentGroup = weightsGroup.createParallelGroup();
 			verticalGroups.add(currentGroup);
 			H.addGroup(currentGroup);
@@ -61,11 +61,14 @@ public class WeightsModificationComponent extends JComponent {
 			V.addGroup(currentGroup);
 		}
 		int h = 0, v = 0;
-		for (Variation variation : Variation.ALL_VARIATIONS) {
-			final JLabel label = new JLabel(variation.name());
+		for (Variations variation : Variations.values()) {
+			final JLabel label = new JLabel(variation.printableName());
 			final JFormattedTextField formattedTextField = buildFormattedTextField();
 			formattedTextField.setInputVerifier(new WeightInputVerifier());
 			fields.add(formattedTextField);
+			
+			// Crée une copie finale pour l'utilisation dans le listener
+			final Variations fVariation = variation;
 			
 			formattedTextField.addPropertyChangeListener("value",
 					new PropertyChangeListener() {
@@ -74,18 +77,11 @@ public class WeightsModificationComponent extends JComponent {
 				public void propertyChange(PropertyChangeEvent evt) {
 					double newWeight = ((Number) formattedTextField
 							.getValue()).doubleValue();
-					Variation concernedVariation = null;
-					for (Variation v : Variation.ALL_VARIATIONS) {
-						if (v.name().equals(label.getText())) {
-							concernedVariation = v;
-						}
-					}
 
-					if (concernedVariation != null 
-							&& flameBuilder.getTransformation(selectedTransformationIndex).weight(concernedVariation) != newWeight ) {
+					if (flameBuilder.getTransformation(selectedTransformationIndex).weight(fVariation) != newWeight ) {
 						flameBuilder.setVariationWeight(
 								selectedTransformationIndex,
-								concernedVariation, newWeight);
+								fVariation, newWeight);
 					}
 				}
 			});

@@ -193,7 +193,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public double variationWeight(int index, Variation variation) {
+		public double variationWeight(int index, Variations variation) {
 			checkIndex(index);
 
 			return m_transformationsBuilders.get(index).weight(
@@ -214,7 +214,7 @@ public class Flame {
 		 * @throws IllegalArgumentException
 		 *             Si l'index n'est pas valide
 		 */
-		public void setVariationWeight(int index, Variation variation,
+		public void setVariationWeight(int index, Variations variation,
 				double newWeight) {
 
 			checkIndex(index);
