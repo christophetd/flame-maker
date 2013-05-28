@@ -93,6 +93,8 @@ public class WeightsModificationComponent extends JComponent {
 			formattedTextField.setInputVerifier(new WeightInputVerifier());
 			fields.add(formattedTextField);
 
+			final Variations fVariation = variation;
+			
 			// On ajoute un eventListener pour écouter lorsque la valeur du
 			// champ de texte change
 			formattedTextField.addPropertyChangeListener("value",
@@ -109,18 +111,11 @@ public class WeightsModificationComponent extends JComponent {
 
 							double newWeight = ((Number) formattedTextField
 									.getValue()).doubleValue();
-							Variations concernedVariation = null;
-							for (Variations v : Variations.values()) {
-								if (v.printableName().equals(label.getText())) {
-									concernedVariation = v;
-								}
-							}
 
-							if (concernedVariation != null
-									&& flameBuilder.getTransformation(selectedTransformationIndex).weight(concernedVariation) != newWeight ) {
+							if (flameBuilder.getTransformation(selectedTransformationIndex).weight(fVariation) != newWeight ) {
 								flameBuilder.setVariationWeight(
 										selectedTransformationIndex,
-										concernedVariation, newWeight);
+										fVariation, newWeight);
 							}
 						}
 					});
