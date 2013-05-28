@@ -82,7 +82,7 @@ public class FlameTransformation implements Transformation, Serializable {
 	 */
 	public double weight(Variation variation) {
 		int index = variation.index();
-		if (index > 0 || index < m_weight.length) {
+		if (index < 0 || index >= m_weight.length) {
 			throw new IllegalArgumentException("invalid index given");
 		}
 		return m_weight[index];

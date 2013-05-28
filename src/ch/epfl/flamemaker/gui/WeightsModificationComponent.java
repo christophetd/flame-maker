@@ -116,7 +116,8 @@ public class WeightsModificationComponent extends JComponent {
 								}
 							}
 
-							if (concernedVariation != null) {
+							if (concernedVariation != null
+									&& flameBuilder.getTransformation(selectedTransformationIndex).weight(concernedVariation) != newWeight ) {
 								flameBuilder.setVariationWeight(
 										selectedTransformationIndex,
 										concernedVariation, newWeight);
