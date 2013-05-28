@@ -39,80 +39,74 @@ public class FlameMakerGUI {
 	 * Le builder de la fractale
 	 */
 	private ObservableFlameBuilder m_builder;
-	
+
 	/**
-	 *	La couleur de fond à utiliser 
+	 * La couleur de fond à utiliser
 	 */
 	private Color m_backgroundColor = Color.BLACK;
-	
-	
+
 	/**
-	 * La palette à utiliser 
+	 * La palette à utiliser
 	 */
 	private Palette m_palette;
-	
+
 	/**
 	 * Le cadre de dessin à utiliser
 	 */
 	private Rectangle m_frame;
-	
+
 	/**
 	 * La densité à utiliser
 	 */
 	private int m_density = 50;
-	
 
 	/**
-	 *	L'attribut observable représentant l'id de la transformation 
-	 *actuellement sélectionnée
+	 * L'attribut observable représentant l'id de la transformation actuellement
+	 * sélectionnée
 	 */
 	private int m_selectedTransformationId;
-	
-	
+
 	/**
-	 * Les observateurs de l'id de la transformation
-	 * actuellement sélectionée.
+	 * Les observateurs de l'id de la transformation actuellement sélectionée.
+	 * 
 	 * @see FlameMakerGUI.Listener
 	 */
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 
-	
 	/**
 	 * Le composant d'affichage des composantes affines des transformations;
-	 * Celui-ci est final et initialisé par le constructeur afin de pouvoir être 
+	 * Celui-ci est final et initialisé par le constructeur afin de pouvoir être
 	 * utilisé dans une instance d'une classe anonyme et utilisé à plusieurs
 	 * endroits du code.
+	 * 
 	 * @see AffineTransformationsComponent
 	 */
 	private final AffineTransformationsComponent m_affineTransformationComponent;
-	
+
 	/**
-	 * Le composant de modification des transformations affines.
-	 * Final et initialisé dans le constructeur pour les mêmes raisons 
-	 * que le composant d'affichage des composantes affines.
+	 * Le composant de modification des transformations affines. Final et
+	 * initialisé dans le constructeur pour les mêmes raisons que le composant
+	 * d'affichage des composantes affines.
 	 */
 	private final AffineModificationComponent m_affineModificationComponent;
-	
+
 	/**
-	 * Le panneau d'édition des transformations. 
-	 * Contient les composants d'édition des composantes affines et
-	 * de modification des poids des variations. 
-	 * Final et initialisé dans le constructeur pour les mêmes 
+	 * Le panneau d'édition des transformations. Contient les composants
+	 * d'édition des composantes affines et de modification des poids des
+	 * variations. Final et initialisé dans le constructeur pour les mêmes
 	 * raisons que plus haut.
 	 */
 	private final TransformationsEditPanel m_transformationsEditPanel;
-	
-	
+
 	/**
-	 * Le composant de modification des poids des variations.
-	 * Final et initialisé dans le constructeur pour les mêmes 
-	 * raisons que plus haut. 
+	 * Le composant de modification des poids des variations. Final et
+	 * initialisé dans le constructeur pour les mêmes raisons que plus haut.
 	 */
 	private final WeightsModificationComponent m_weightsModificationComponent;
-	
+
 	/**
-	 * Le constructeur de la classe modélisant le GUI. 
-	 * Appelé pour lancer ce dernier.
+	 * Le constructeur de la classe modélisant le GUI. Appelé pour lancer ce
+	 * dernier.
 	 */
 	public FlameMakerGUI() {
 		m_frame = new Rectangle(new Point(-0.25, 0), 5, 4);
@@ -209,8 +203,11 @@ public class FlameMakerGUI {
 
 
 	/**
-	 * Crée et remplit le panneau de visualisation des composantes affines des transformations
-	 * @return Le panneau de visualisation des composantes affines des transformations
+	 * Crée et remplit le panneau de visualisation des composantes affines des
+	 * transformations
+	 * 
+	 * @return Le panneau de visualisation des composantes affines des
+	 *         transformations
 	 */
 	private JPanel buildTransformationsPreviewPanel() {
 		JPanel transformationsPreviewPanel = new JPanel();
@@ -228,6 +225,7 @@ public class FlameMakerGUI {
 
 	/**
 	 * Crée et remplit le panneau de prévisualisation de la fractale.
+	 * 
 	 * @return Le panneau de prévisualisation de la fractale.
 	 */
 	private JPanel buildFractalePanel() {
@@ -245,6 +243,7 @@ public class FlameMakerGUI {
 
 	/**
 	 * Crée et remplit le panneau inférieur
+	 * 
 	 * @return Le panneau inférieur
 	 */
 	private JPanel buildLowerPanel() {
@@ -271,6 +270,7 @@ public class FlameMakerGUI {
 
 	/**
 	 * Crée et construit le panneau de modification des transformations affines
+	 * 
 	 * @return Le panneau de modification des transformations affines
 	 */
 	private JPanel buildSelectedTransformationEditPanel() {
@@ -303,7 +303,9 @@ public class FlameMakerGUI {
 
 	/**
 	 * Modifie l'id de la transformation actuellement sélectionée
-	 * @param l'id de la transformation
+	 * 
+	 * @param id
+	 *            l'id de la transformation
 	 */
 	public void setSelectedTransformationId(int id){
 
@@ -316,11 +318,11 @@ public class FlameMakerGUI {
 	}
 
 	/**
-	 * Ajoute un observateur qui sera notifié lorsqu'une
-	 * nouvelle transformation est sélectionnée
-	 *	 * 
+	 * Ajoute un observateur qui sera notifié lorsqu'une nouvelle transformation
+	 * est sélectionnée 
+	 * 
 	 * @param l
-	 *           L'observateur à ajouter
+	 *            L'observateur à ajouter
 	 * @see #removeListener
 	 */
 	public void addListener(Listener l) {
