@@ -30,7 +30,7 @@ import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 /**
- *	Classe modélisant la fenêtre de l'interface graphique.
+ *	Classe modélisant la fenêtre principale de l'interface graphique.
  */
 public class FlameMakerGUI {
 
