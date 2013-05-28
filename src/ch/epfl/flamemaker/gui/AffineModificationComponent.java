@@ -361,7 +361,6 @@ public class AffineModificationComponent extends JComponent {
 	 * 
 	 * @return
 	 */
-	/* TODO : faire une classe utils ? (méthode dupliquée) */
 	private JFormattedTextField buildFormattedTextField() {
 		final JFormattedTextField field = new JFormattedTextField(
 				new DecimalFormat("#0.##"));
