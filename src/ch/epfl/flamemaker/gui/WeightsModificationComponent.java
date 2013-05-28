@@ -66,6 +66,7 @@ public class WeightsModificationComponent extends JComponent {
 			final JFormattedTextField formattedTextField = buildFormattedTextField();
 			formattedTextField.setInputVerifier(new WeightInputVerifier());
 			fields.add(formattedTextField);
+			
 			formattedTextField.addPropertyChangeListener("value",
 					new PropertyChangeListener() {
 
@@ -80,7 +81,9 @@ public class WeightsModificationComponent extends JComponent {
 						}
 					}
 
-					if (concernedVariation != null) {
+					if (selectedTransformationIndex != -1 
+							&& concernedVariation != null 
+							&& flameBuilder.getTransformation(selectedTransformationIndex).weight(concernedVariation) != newWeight ) {
 						flameBuilder.setVariationWeight(
 								selectedTransformationIndex,
 								concernedVariation, newWeight);
@@ -171,7 +174,7 @@ public class WeightsModificationComponent extends JComponent {
 				 * traduire les nombres (remplacer les "." par des ",")... Le
 				 * champ est valide si le poids est compris entre 0 et 1
 				 */
-				if (value.doubleValue() < 0 || value.doubleValue() > 1) {
+				if ((value.doubleValue() < 0 || value.doubleValue() > 1)) {
 					tf.setValue(tf.getValue());
 				} else {
 					tf.setValue(value);
