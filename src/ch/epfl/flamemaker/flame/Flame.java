@@ -80,8 +80,9 @@ public class Flame {
 			transformationNum = randomizer.nextInt(size);
 			point = m_transforms.get(transformationNum).transformPoint(point);
 			lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
-
-			builder.hit(point, lastColor);
+			
+			if(frame.contains(point))
+				builder.hit(point, lastColor);
 		}
 
 		// On construit l'accumulateur
