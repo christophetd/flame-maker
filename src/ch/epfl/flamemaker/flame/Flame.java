@@ -273,7 +273,7 @@ public class Flame {
 	 * Classe modélisant un bâtisseur pour une fractale Flame
 	 */
 	public final static class Builder implements Serializable {
-				
+		
 		/**
 		 * serial id
 		 */

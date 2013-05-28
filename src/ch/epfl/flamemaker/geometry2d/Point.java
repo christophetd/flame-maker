@@ -16,6 +16,8 @@ import java.io.Serializable;
  */
 public class Point implements Serializable {
 
+	private static final long serialVersionUID = 1706114006554622456L;
+
 	/**
 	 * L'origine du repère, définie comme le point de coordonnées cartésiennes
 	 * (0;0)

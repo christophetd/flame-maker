@@ -5,7 +5,6 @@
 
 package ch.epfl.flamemaker.flame;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +15,6 @@ import ch.epfl.flamemaker.file.SerializableFlameSet;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
-import ch.epfl.flamemaker.geometry2d.Transformation;
 
 /**
  * Structure de donnée partagée par tous les éléments de l'UI qui en ont besoin. 
