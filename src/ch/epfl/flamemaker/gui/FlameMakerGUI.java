@@ -6,6 +6,7 @@
 package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,6 +44,11 @@ public class FlameMakerGUI {
 	private int m_selectedTransformationId;
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 
+	private final AffineTransformationsComponent m_affineTransformationComponent;
+	private final AffineModificationComponent m_affineModificationComponent;
+	private final TransformationsEditPanel m_transformationsEditPanel;
+	private final WeightsModificationComponent m_weightsModificationComponent;
+	
 	public FlameMakerGUI() {
 		m_frame = new Rectangle(new Point(-0.25, 0), 5, 4);
 		m_palette = new InterpolatedPalette(Arrays.asList(Color.RED,
@@ -58,123 +64,145 @@ public class FlameMakerGUI {
 							0.8, 1 }), new FlameTransformation(
 									new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169,
 											0.9), new double[] { 1, 0, 0, 0, 0, 0 }))));
+		
+		m_affineTransformationComponent = new AffineTransformationsComponent(m_builder, m_frame);
+		m_affineModificationComponent = new AffineModificationComponent(m_builder);
+		m_transformationsEditPanel = new TransformationsEditPanel(m_builder);
+		m_weightsModificationComponent = new WeightsModificationComponent(m_builder);
 	}
-
+	
+	
 	public void start() {
-		final FlameMakerGUI self = this;
-
 		final JFrame window = new JFrame("FlameMaker");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		window.getContentPane().setLayout(new BorderLayout());
+		Container contentPane = window.getContentPane();
+		contentPane.setLayout(new BorderLayout());
 
-		JPanel upperPanel = new JPanel(), lowerPanel = new JPanel(), transformationsPreviewPanel = new JPanel(), selectedTransformationEditPanel = new JPanel(), fractalPanel = new JPanel();
+		JPanel upperPanel = buildUpperPanel();
+		JPanel lowerPanel = buildLowerPanel();
 
-		final AffineTransformationsComponent affineTransformationComponent = new AffineTransformationsComponent(
-				m_builder, m_frame);
-
-		/* Upper panel */
-		window.getContentPane().add(upperPanel, BorderLayout.CENTER);
-		upperPanel.setLayout(new GridLayout(1, 2));
-		upperPanel.add(transformationsPreviewPanel);
-		upperPanel.add(fractalPanel);
-
-		transformationsPreviewPanel.setLayout(new BorderLayout());
-		transformationsPreviewPanel.setBorder(BorderFactory
-				.createTitledBorder("Transformations affines"));
-
-		fractalPanel.setLayout(new BorderLayout());
-		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
-
-		transformationsPreviewPanel.add(affineTransformationComponent,
-				BorderLayout.CENTER);
-		fractalPanel.add(new FlameBuilderPreviewComponent(m_builder,
-				m_backgroundColor, m_palette, m_frame, m_density),
-				BorderLayout.CENTER);
-
-		/* Lower panel */
-		window.getContentPane().add(lowerPanel, BorderLayout.PAGE_END);
-		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
-
-		final TransformationsEditPanel transformationsEditPanel = new TransformationsEditPanel(
-				m_builder);
-		// Panneau d'édition des transformations
-		lowerPanel.add(transformationsEditPanel);
-
-		/* TODO : rassembler du code dupliqué (ici et un peu plus bas) */
-		transformationsEditPanel
-		.addListener(new TransformationsEditPanel.Listener() {
-
-			@Override
-			public void onTransformationSelected(int transfoId) {
-				self.setSelectedTransformationId(transfoId);
-			}
-
-		});
-
-		/* ---- Paneau d'édition de la transformation sélectionnée ---- */
-
-		lowerPanel.add(selectedTransformationEditPanel);
-		selectedTransformationEditPanel.setLayout(new BoxLayout(
-				selectedTransformationEditPanel, BoxLayout.PAGE_AXIS));
-		selectedTransformationEditPanel.setBorder(BorderFactory
-				.createTitledBorder("Transformation courante"));
-
-		final AffineModificationComponent affineModificationComponent = new AffineModificationComponent(
-				m_builder);
-		affineModificationComponent.setSelectedTransformationIndex(0);
-		affineTransformationComponent.highlightedTransformationIndex(0);
-
-		selectedTransformationEditPanel.add(affineModificationComponent);
-
-		selectedTransformationEditPanel.add(new JSeparator());
-
-		final WeightsModificationComponent weightsModificationComponent = new WeightsModificationComponent(
-				m_builder);
-		weightsModificationComponent.setSelectedTransformationIndex(0);
-		selectedTransformationEditPanel.add(weightsModificationComponent);
-
-		this.addListener(new Listener() {
-
-			@Override
-			public void onSelectedTransformationIdChange(int id) {
-				affineTransformationComponent
-				.highlightedTransformationIndex(id);
-				affineModificationComponent.setSelectedTransformationIndex(id);
-				transformationsEditPanel.setSelectedTransformationIndex(id);
-				weightsModificationComponent.setSelectedTransformationIndex(id);
-			}
-
-		});
-
-		/* -------- */
+		contentPane.add(upperPanel, BorderLayout.CENTER);
+		contentPane.add(lowerPanel, BorderLayout.PAGE_END);
 
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+
+		this.addListener(new Listener(){
+
+			@Override
+			public void onSelectedTransformationIdChange(int id) {
+				m_affineTransformationComponent.highlightedTransformationIndex(id);
+				m_affineModificationComponent.setSelectedTransformationIndex(id);
+				m_transformationsEditPanel.setSelectedTransformationIndex(id);
+				m_weightsModificationComponent.setSelectedTransformationIndex(id);
+			}
+
+		});
 	}
+
+
+	private JPanel buildTransformationsPreviewPanel() {
+		JPanel transformationsPreviewPanel = new JPanel();
+
+		transformationsPreviewPanel.setLayout(new BorderLayout());
+		transformationsPreviewPanel.setBorder(BorderFactory.createTitledBorder("Transformations affines"));
+
+
+		m_affineTransformationComponent.highlightedTransformationIndex(0);
+
+		transformationsPreviewPanel.add(m_affineTransformationComponent, BorderLayout.CENTER);
+
+		return transformationsPreviewPanel;
+	}
+
+	private JPanel buildUpperPanel() {
+		JPanel upperPanel = new JPanel();
+
+		JPanel transformationsPreviewPanel = buildTransformationsPreviewPanel(); 
+		JPanel fractalPanel = buildFractalePanel();
+
+		upperPanel.setLayout(new GridLayout(1, 2));
+		upperPanel.add(transformationsPreviewPanel);
+		upperPanel.add(fractalPanel);
+
+		return upperPanel;
+	}
+
+	private JPanel buildFractalePanel() {
+		JPanel fractalPanel = new JPanel();
+
+		fractalPanel.setLayout(new BorderLayout());
+		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
+
+		fractalPanel.add(new FlameBuilderPreviewComponent(m_builder,
+				m_backgroundColor, m_palette, m_frame, m_density),
+				BorderLayout.CENTER);
+
+		return fractalPanel;
+	}
+
+	private JPanel buildLowerPanel() {
+		JPanel lowerPanel = new JPanel();
+		final FlameMakerGUI that = this;
+		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
+
+		m_transformationsEditPanel.addListener(new TransformationsEditPanel.Listener(){
+
+			@Override
+			public void onTransformationSelected(int transfoId) {
+				that.setSelectedTransformationId(transfoId);
+			}
+
+		});
+
+		JPanel selectedTransformationEditPanel = buildSelectedTransformationEditPanel();
+
+		lowerPanel.add(m_transformationsEditPanel);
+		lowerPanel.add(selectedTransformationEditPanel);
+
+		return lowerPanel;
+	}
+
+	private JPanel buildSelectedTransformationEditPanel() {
+		JPanel selectedTransformationEditPanel = new JPanel();
+
+		selectedTransformationEditPanel.setLayout(new BoxLayout(selectedTransformationEditPanel, BoxLayout.PAGE_AXIS));
+		selectedTransformationEditPanel.setBorder(BorderFactory.createTitledBorder("Transformation courante"));
+
+		m_affineModificationComponent.setSelectedTransformationIndex(0);
+
+		selectedTransformationEditPanel.add(m_affineModificationComponent);
+
+		selectedTransformationEditPanel.add(new JSeparator());
+
+		m_weightsModificationComponent.setSelectedTransformationIndex(0);
+
+		selectedTransformationEditPanel.add(m_weightsModificationComponent);
+
+		return selectedTransformationEditPanel;
+	}
+
+
 
 	/**
 	 * Gets the currently selected transformation id
 	 */
-	public int getSelectedTransformationId() {
+	public int getSelectedTransformationId(){
 		return m_selectedTransformationId;
 	}
 
 	/**
 	 * Sets the currently selected transformation id
-	 * 
-	 * @param id
-	 *            of the transformation
+	 * @param id of the transformation
 	 */
-	public void setSelectedTransformationId(int id) {
-		if (m_selectedTransformationId == id)
-			return;
+	public void setSelectedTransformationId(int id){
 
 		m_selectedTransformationId = id;
 
 		Iterator<Listener> it = m_listeners.iterator();
-		while (it.hasNext()) {
+		while(it.hasNext()){
 			it.next().onSelectedTransformationIdChange(id);
 		}
 	}
