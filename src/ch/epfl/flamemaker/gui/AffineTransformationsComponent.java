@@ -41,26 +41,6 @@ public class AffineTransformationsComponent extends JComponent {
 	
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
-	private static Rectangle makeBoundingBox(Arrow a1, Arrow a2){
-		List<Point> points = Arrays.asList(
-				a1.from(), a1.to(), a1.leftComponent(), a1.rightComponent(),
-				a2.from(), a2.to(), a2.leftComponent(), a2.rightComponent());
-		
-		double minX = Double.MAX_VALUE, maxX = 0, minY = Double.MAX_VALUE, maxY = 0;
-		
-		for(Point p : points){
-			minX = (p.x() < minX) ? p.x() : minX;
-			minY = (p.y() < minY) ? p.y() : minY;
-			maxX = (p.x() > maxX) ? p.x() : maxX;
-			maxY = (p.y() > maxY) ? p.y() : maxY;
-		}
-		
-		double width = maxX - minX;
-		double height = maxY - minY;
-		
-		return new Rectangle(new Point(minX + width/2, minY + height/2), width, height);
-	}
-
 	public AffineTransformationsComponent(FlameSet set) {
 		m_builder = set.getBuilder();
 		m_frame = set.getFrame();
@@ -254,6 +234,26 @@ public class AffineTransformationsComponent extends JComponent {
 		g.setColor(oldColor);
 	}
 	
+	private static Rectangle makeBoundingBox(Arrow a1, Arrow a2){
+		List<Point> points = Arrays.asList(
+				a1.from(), a1.to(), a1.leftComponent(), a1.rightComponent(),
+				a2.from(), a2.to(), a2.leftComponent(), a2.rightComponent());
+		
+		double minX = Double.MAX_VALUE, maxX = 0, minY = Double.MAX_VALUE, maxY = 0;
+		
+		for(Point p : points){
+			minX = (p.x() < minX) ? p.x() : minX;
+			minY = (p.y() < minY) ? p.y() : minY;
+			maxX = (p.x() > maxX) ? p.x() : maxX;
+			maxY = (p.y() > maxY) ? p.y() : maxY;
+		}
+		
+		double width = maxX - minX;
+		double height = maxY - minY;
+		
+		return new Rectangle(new Point(minX + width/2, minY + height/2), width, height);
+	}
+
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension((int) m_frame.width(), (int) m_frame.height());

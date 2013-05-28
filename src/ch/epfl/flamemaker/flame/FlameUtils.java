@@ -7,9 +7,6 @@ package ch.epfl.flamemaker.flame;
 
 import java.awt.image.BufferedImage;
 
-import ch.epfl.flamemaker.color.Color;
-import ch.epfl.flamemaker.color.Palette;
-
 /**
  *	Classe utilitaire
  */

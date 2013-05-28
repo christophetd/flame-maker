@@ -91,7 +91,8 @@ class DefaultFlameFactory extends FlameFactory {
 				point = transformations.get(transformationNum).transformPoint(point);
 				lastColor = (lastColor + getColorIndex(transformationNum)) / 2.0;
 				
-				builder.hit(point, lastColor);
+				if(frame.contains(point))
+					builder.hit(point, lastColor);
 				
 				// Si on a suffisamment avancé, on informe l'extérieur de l'avancement.
 				if(i >= (progress + PROGRESS_DEFINITION)*progressStep){
