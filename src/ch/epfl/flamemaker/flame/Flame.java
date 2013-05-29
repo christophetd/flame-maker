@@ -89,7 +89,9 @@ public class Flame {
 			@Override
 			public void run(){
 				try{
-					FlameAccumulator acc = doCompute(frame, width, height, density);
+					FlameAccumulator acc = (m_transforms.size() != 0)
+							? doCompute(frame, width, height, density)
+							: (new FlameAccumulator.Builder(frame, width, height)).build();
 					// Quand on a fini de calculer :
 					triggerComputeDone(acc);
 				} catch(Exception e){
