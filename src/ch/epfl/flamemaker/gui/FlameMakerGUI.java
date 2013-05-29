@@ -96,7 +96,7 @@ public class FlameMakerGUI {
 	 * variations. Final et initialisé dans le constructeur pour les mêmes
 	 * raisons que plus haut.
 	 */
-	private final TransformationsEditPanel m_transformationsEditPanel;
+	private final TransformationsListPanel m_transformationsEditPanel;
 
 	/**
 	 * Le composant de modification des poids des variations. Final et
@@ -118,7 +118,7 @@ public class FlameMakerGUI {
 		
 		m_affineTransformationComponent = new AffineTransformationsComponent(m_builder, m_frame);
 		m_affineModificationComponent = new AffineModificationComponent(m_builder);
-		m_transformationsEditPanel = new TransformationsEditPanel(m_builder);
+		m_transformationsEditPanel = new TransformationsListPanel(m_builder);
 		m_weightsModificationComponent = new WeightsModificationComponent(m_builder);
 	}
 	
@@ -251,7 +251,7 @@ public class FlameMakerGUI {
 		final FlameMakerGUI self = this;
 		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
 
-		m_transformationsEditPanel.addListener(new TransformationsEditPanel.Listener(){
+		m_transformationsEditPanel.addListener(new TransformationsListPanel.Listener(){
 
 			@Override
 			public void onTransformationSelected(int transfoId) {

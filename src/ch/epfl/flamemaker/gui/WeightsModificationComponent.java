@@ -26,12 +26,29 @@ import javax.swing.SwingUtilities;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Variations;
 
+/**
+ *	Classe représentant le composant de modification
+ *	des poids des variations
+ */
 @SuppressWarnings("serial")
 public class WeightsModificationComponent extends JComponent {
 
+	/**
+	 * Le bâtisseur de fractale
+	 */
 	final private ObservableFlameBuilder flameBuilder;
+	
+	/**
+	 *	La transformation actuellement sélectionnée 
+	 */
 	private int selectedTransformationIndex;
+	
+	
+	/**
+	 *	La liste des champs permettant de modifier les poids 
+	 */
 	final private ArrayList<JFormattedTextField> fields = new ArrayList<JFormattedTextField>();
+
 
 	public WeightsModificationComponent(
 			final ObservableFlameBuilder flameBuilder) {
@@ -46,10 +63,11 @@ public class WeightsModificationComponent extends JComponent {
 		SequentialGroup V = weightsGroup.createSequentialGroup();
 		weightsGroup.setVerticalGroup(V);
 
-		// Autant de groupes verticaux que de variations, 2 lignes
+		// Autant de groupes verticaux que de variations, et 2 lignes
 		ArrayList<ParallelGroup> verticalGroups = new ArrayList<ParallelGroup>();
 		ParallelGroup currentGroup;
-		for (int i = 0; i < Variations.values().length ; i++) {
+		int nbVariations = Variations.values().length;
+		for (int i = 0; i < nbVariations ; i++) {
 			currentGroup = weightsGroup.createParallelGroup();
 			verticalGroups.add(currentGroup);
 			H.addGroup(currentGroup);
@@ -60,24 +78,34 @@ public class WeightsModificationComponent extends JComponent {
 			horizontalGroups.add(currentGroup);
 			V.addGroup(currentGroup);
 		}
+		
 		int h = 0, v = 0;
+		// On parcourt la liste des variations
 		for (Variations variation : Variations.values()) {
+			// On crée le champ de texte et l'étiquette associées
 			final JLabel label = new JLabel(variation.printableName());
 			final JFormattedTextField formattedTextField = buildFormattedTextField();
 			formattedTextField.setInputVerifier(new WeightInputVerifier());
+			
 			fields.add(formattedTextField);
 			
 			// Crée une copie finale pour l'utilisation dans le listener
 			final Variations fVariation = variation;
-			
+		
 			formattedTextField.addPropertyChangeListener("value",
 					new PropertyChangeListener() {
 
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
+					// Lorsque le champ de texte contenant le poids est modifié, on met à jour le bâtisseur
 					double newWeight = ((Number) formattedTextField
 							.getValue()).doubleValue();
 
+					/*
+					*  Le bâtisseur est mis à jour seulement si le poids entré diffère de l'actuel
+					* Cela évite notamment le redessin inutile de la fractale lorsque le composant
+					* de modification des poids est mis à jour quand une nouvelle transformation est sélectionnée
+					*/
 					if (flameBuilder.getTransformation(selectedTransformationIndex).weight(fVariation) != newWeight ) {
 						flameBuilder.setVariationWeight(
 								selectedTransformationIndex,
@@ -92,9 +120,11 @@ public class WeightsModificationComponent extends JComponent {
 			horizontalGroups.get(h).addComponent(formattedTextField);
 			verticalGroups.get(v + 1).addComponent(formattedTextField);
 
+			// On incrémente la colonne de 2 (label + champ de texte ajoutés)
 			v += 2;
-			// Si y'a eu 6 éléments ajoutés => v = 4
-			if (v % 6 == 0) {
+			
+			// Lorsque la moitié des variations a été ajoutée au composant, on change de ligne
+			if (v % nbVariations == 0) {
 				h++;
 				v = 0;
 			}
@@ -104,6 +134,12 @@ public class WeightsModificationComponent extends JComponent {
 
 	}
 
+	/**
+	 * Met à jour le composant lorsqu'une nouvelle transformation
+	 * a été sélectionnée
+	 * 
+	 * @param id	La nouvelle transformation sélectionnée
+	 */
 	public void setSelectedTransformationIndex(int id) {
 		if (id != -1) {
 			this.selectedTransformationIndex = id;
@@ -121,7 +157,10 @@ public class WeightsModificationComponent extends JComponent {
 		}
 	}
 
-	/* TODO : faire une classe utils ? (méthode dupliquée) */
+	/**
+	 * Construit un champ de texte formatté (évite la duplication de code)
+	 * @return	Le champ de texte
+	 */
 	private JFormattedTextField buildFormattedTextField() {
 		final JFormattedTextField field = new JFormattedTextField(
 				new DecimalFormat("#0.##"));

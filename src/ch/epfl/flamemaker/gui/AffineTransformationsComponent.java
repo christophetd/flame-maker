@@ -19,24 +19,54 @@ import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
+/**
+ *	Classe représentant le composant de visualisation
+ *	des composantes affines des transformations
+ */
 @SuppressWarnings("serial")
 public class AffineTransformationsComponent extends JComponent implements
 ObservableFlameBuilder.Listener {
 
+	/**
+	 * Le bâtisseur de fractale
+	 */
 	private ObservableFlameBuilder m_builder;
 
+	/**
+	 * Le cadre de dessin
+	 */
 	private Rectangle m_frame;
 
+	/**
+	 * L'id de la transformation actuellement sélectionnée
+	 */
 	private int m_highlightedTransformationIndex = 0;
 
+	/**
+	 * Construit le composant à partir du
+	 * bâtisseur et du cadre de dessin
+	 * 
+	 * @param builder	Le bâtisseur
+	 * @param frame		Le cadre de dessin
+	 */
 	public AffineTransformationsComponent(ObservableFlameBuilder builder,
 			Rectangle frame) {
 		m_builder = builder;
 		m_frame = frame;
 
+		/*
+		 * On veut écouter le bâtisseur pour être au courant des changements
+		 * (suppression / modification d'une composante affine, par exemple)
+		 */
 		m_builder.addListener(this);
 	}
 
+	/**
+	 * Modifie l'id de la transformation actuellement sélectionnée, 
+	 * et redessine le composant si l'id a effectivement été changé.
+	 * 
+	 * @param index		La nouvelle transformation sélectionnée
+	 */
 	public void highlightedTransformationIndex(int index) {
 		if (index != -1 && index != m_highlightedTransformationIndex) {
 			m_highlightedTransformationIndex = index;
@@ -44,10 +74,18 @@ ObservableFlameBuilder.Listener {
 		}
 	}
 
+	/**
+	 * @return	L'index de la transformation actuellement sélectionnée
+	 */
 	public int highlightedTransformationIndex() {
 		return m_highlightedTransformationIndex;
 	}
 
+	/** 
+	 * Dessine le composant
+	 * 
+	 * @param g 	Le contexte graphique
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		double width = getWidth(), height = getHeight();
@@ -60,17 +98,23 @@ ObservableFlameBuilder.Listener {
 
 		Graphics2D g0 = (Graphics2D) g;
 
-		// On affiche la grille
+		// On dessine la grille
 		printGrid(g0, realFrame);
 
 		// Puis les transformations
 		printTransformations(g0, realFrame);
 	}
 
+	/**
+	 * Dessine la grille, sur laquelle on pourra visualiser les 
+	 * composantes affines des transformations
+	 * 
+	 * @param g		Le contexte graphique
+	 * @param frame Le cadre de dessin
+	 */
 	private void printGrid(Graphics2D g, Rectangle frame) {
 
-		// Ratio pour convertir les coordonnées de la frame vers celles de la
-		// vue
+		// Ratio pour convertir les coordonnées du cadre de dessin vers celles du composant
 		double scaleRatio = getWidth() / frame.width();
 
 		// On récupère la couleur actuelle pour la restaurer après l'affichage
@@ -112,15 +156,23 @@ ObservableFlameBuilder.Listener {
 		g.setColor(oldColor);
 	}
 
+	/**
+	 * Dessine les transformations (celle actuellement sélectionnée en rouge)
+	 * 
+	 * @param g		Le contexte graphique
+	 * @param frame	Le cadre de dessin
+	 */
 	public void printTransformations(Graphics2D g, Rectangle frame) {
 		double scaleRatio = getWidth() / frame.width();
 
-		// On récupère la couleur actuelle pour la restaurer après l'affichage
-		// de la grille
+		// On récupère la couleur actuelle pour la restaurer après l'affichage des transformations
 		Color oldColor = g.getColor();
 
+		// Les transformations sont dessinées en noir
 		g.setColor(Color.black);
 
+		// Transformation permettant de passer d'un point du plan à un point du
+		// système de coordonnées de la grille
 		Transformation gridMapper = AffineTransformation
 				.newScaling(scaleRatio, scaleRatio)
 				.composeWith(new AffineTransformation(1, 0, 0, 0, -1, 0))
@@ -140,19 +192,20 @@ ObservableFlameBuilder.Listener {
 		// est surlignée
 		for (int numTransfo = 0; numTransfo < m_builder.transformationsCount(); numTransfo++) {
 
-			transfo = m_builder.affineTransformation(numTransfo);
-
-			horizontalArrow = new Arrow(horizontalArrowCoordinates[0],
-					horizontalArrowCoordinates[1]);
-			verticalArrow = new Arrow(verticalArrowCoordinates[0],
-					verticalArrowCoordinates[1]);
-
-			horizontalArrow.applyTransformation(transfo).applyTransformation(
-					gridMapper);
-			verticalArrow.applyTransformation(transfo).applyTransformation(
-					gridMapper);
-
 			if (numTransfo != m_highlightedTransformationIndex) {
+				transfo = m_builder.affineTransformation(numTransfo);
+	
+				horizontalArrow = new Arrow(horizontalArrowCoordinates[0],
+						horizontalArrowCoordinates[1]);
+				verticalArrow = new Arrow(verticalArrowCoordinates[0],
+						verticalArrowCoordinates[1]);
+	
+				horizontalArrow.applyTransformation(transfo).applyTransformation(
+						gridMapper);
+				verticalArrow.applyTransformation(transfo).applyTransformation(
+						gridMapper);
+
+			
 				horizontalArrow.draw(g);
 				verticalArrow.draw(g);
 			}
@@ -181,11 +234,19 @@ ObservableFlameBuilder.Listener {
 		g.setColor(oldColor);
 	}
 
+	/**
+	 * @see javax.swing.JComponent#getPreferredSize()
+	 */
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension((int) m_frame.width(), (int) m_frame.height());
 	}
 
+	/**
+	 * Lorsque le bâtisseur est modifié, on redessine le composant
+	 * 
+	 * @see ch.epfl.flamemaker.flame.ObservableFlameBuilder.Listener#onFlameBuilderChange(ch.epfl.flamemaker.flame.ObservableFlameBuilder)
+	 */
 	@Override
 	public void onFlameBuilderChange(ObservableFlameBuilder b) {
 		repaint();

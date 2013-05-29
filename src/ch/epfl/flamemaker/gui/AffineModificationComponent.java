@@ -25,9 +25,16 @@ import javax.swing.SwingUtilities;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
+/**
+ * Classe représentant le composant de modification
+ * des composantes affines des transformations
+ */
 @SuppressWarnings("serial")
 public class AffineModificationComponent extends JComponent {
 
+	/**
+	 * L'id de la transformation actuellement sélectionnée
+	 */
 	private int selectedTransformationIndex;
 
 	public AffineModificationComponent(final ObservableFlameBuilder flameBuilder) {
@@ -36,12 +43,17 @@ public class AffineModificationComponent extends JComponent {
 
 		this.setLayout(affineGroup);
 
-		// Mise en page de l'édition de la partie affine
+		/*
+		 * On crée deux SequentialGroup : un pour les lignes horizontales
+		 * et un pour les colonnes, verticales.
+		 * NOTE : un groupe "horizontal" est en fait vertical et inversement
+		 */
 		SequentialGroup H = affineGroup.createSequentialGroup();
 		affineGroup.setHorizontalGroup(H);
 		SequentialGroup V = affineGroup.createSequentialGroup();
 		affineGroup.setVerticalGroup(V);
 
+		// On crée un groupe horizontal pour chaque colonne qu'on aura
 		ParallelGroup H1 = affineGroup.createParallelGroup();
 		H.addGroup(H1);
 		ParallelGroup H2 = affineGroup.createParallelGroup();
@@ -55,6 +67,7 @@ public class AffineModificationComponent extends JComponent {
 		ParallelGroup H6 = affineGroup.createParallelGroup();
 		H.addGroup(H6);
 
+		// Puis un groupe vertical pour chaque ligne
 		ParallelGroup V1 = affineGroup.createParallelGroup();
 		V.addGroup(V1);
 		ParallelGroup V2 = affineGroup.createParallelGroup();
@@ -69,15 +82,18 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(translationLabel);
 		V1.addComponent(translationLabel);
 
-		final JFormattedTextField translationFactor = buildFormattedTextField();
+		// Le champ de texte pour le facteur de translation
+		final JFormattedTextField translationFactor = buildFormattedTextField(0.1);
 		H2.addComponent(translationFactor);
 		V1.addComponent(translationFactor);
 
+		// Bouton pour une translation vers la gauche
 		JButton translationLeftButton = new JButton("←");
+		
+		// Comportement au clic du bouton
 		translationLeftButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -89,14 +105,17 @@ public class AffineModificationComponent extends JComponent {
 										.composeWith(t));
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H3.addComponent(translationLeftButton);
 		V1.addComponent(translationLeftButton);
 
+		// Bouton pour une translation vers la droite
 		JButton translationRightButton = new JButton("→");
+		
+		// Comportement au clic du bouton
 		translationRightButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -106,14 +125,18 @@ public class AffineModificationComponent extends JComponent {
 								.doubleValue(), 0).composeWith(t));
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H4.addComponent(translationRightButton);
 		V1.addComponent(translationRightButton);
 
+		// Bouton pour une translation vers le haut
 		JButton translationUpButton = new JButton("↑");
+		
+		// Comportement au clic du bouton
 		translationUpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
+				
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -124,14 +147,16 @@ public class AffineModificationComponent extends JComponent {
 								.doubleValue()).composeWith(t));
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H5.addComponent(translationUpButton);
 		V1.addComponent(translationUpButton);
 
+		// Bouton pour une translation vers le bas
 		JButton translationDownButton = new JButton("↓");
 		translationDownButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
+				
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -144,6 +169,7 @@ public class AffineModificationComponent extends JComponent {
 										.composeWith(t));
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H6.addComponent(translationDownButton);
 		V1.addComponent(translationDownButton);
 
@@ -152,15 +178,17 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(rotationLabel);
 		V2.addComponent(rotationLabel);
 
-		final JFormattedTextField rotationFactor = buildFormattedTextField();
+		// Le champ de texte pour le facteur de rotation
+		final JFormattedTextField rotationFactor = buildFormattedTextField(15);
 		H2.addComponent(rotationFactor);
 		V2.addComponent(rotationFactor);
 
+		// Bouton pour une rotation dans le sens trigonométrique
 		JButton rotationPositiveButton = new JButton("↺");
 		rotationPositiveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
+				
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -171,14 +199,15 @@ public class AffineModificationComponent extends JComponent {
 								.doubleValue()).composeWith(t));
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H3.addComponent(rotationPositiveButton);
 		V2.addComponent(rotationPositiveButton);
 
+		// Bouton pour un rotation dans le sens anti-trigonométrique
 		JButton rotationNegativeButton = new JButton("↻");
 		rotationNegativeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -189,6 +218,7 @@ public class AffineModificationComponent extends JComponent {
 								.doubleValue()).composeWith(t));
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H4.addComponent(rotationNegativeButton);
 		V2.addComponent(rotationNegativeButton);
 
@@ -197,17 +227,19 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(dilatationLabel);
 		V3.addComponent(dilatationLabel);
 
-		final JFormattedTextField dilatationFactor = buildFormattedTextField();
+		// Le champ de texte pour le facteur de dilatation
+		final JFormattedTextField dilatationFactor = buildFormattedTextField(1.05);
 		dilatationFactor.setInputVerifier(new DilatationInputVerifier());
 
 		H2.addComponent(dilatationFactor);
 		V3.addComponent(dilatationFactor);
 
+		// Bouton pour une dilatation positive parallèlement à l'axe des abscisses
 		final JButton dilatationHPlusButton = new JButton("+ ↔");
 		dilatationHPlusButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
+				
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -218,14 +250,15 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H3.addComponent(dilatationHPlusButton);
 		V3.addComponent(dilatationHPlusButton);
 
+		// Bouton pour une dilatation négative parallèlement à l'axe des abscisses
 		JButton dilatationHMinusButton = new JButton("- ↔");
 		dilatationHMinusButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Translation d'abord
 				AffineTransformation t = flameBuilder
 						.affineTransformation(selectedTransformationIndex);
 				flameBuilder.setAffineTransformation(
@@ -236,9 +269,11 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H4.addComponent(dilatationHMinusButton);
 		V3.addComponent(dilatationHMinusButton);
 
+		// Bouton pour une dilatation positive parallèlement à l'axe des ordonnées
 		JButton dilatationVPlusButton = new JButton("+ ↕");
 		dilatationVPlusButton.addActionListener(new ActionListener() {
 			@Override
@@ -254,9 +289,11 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H5.addComponent(dilatationVPlusButton);
 		V3.addComponent(dilatationVPlusButton);
 
+		// Bouton pour une dilatation négative parallèlement à l'axe des ordonnées
 		JButton dilatationVMinusButton = new JButton("- ↕");
 		dilatationVMinusButton.addActionListener(new ActionListener() {
 			@Override
@@ -272,6 +309,7 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal et vertical auquel il appartient
 		H6.addComponent(dilatationVMinusButton);
 		V3.addComponent(dilatationVMinusButton);
 
@@ -280,10 +318,12 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(transvectionLabel);
 		V4.addComponent(transvectionLabel);
 
-		final JFormattedTextField transvectionFactor = buildFormattedTextField();
+		// Le champ de texte pour le facteur de transvection
+		final JFormattedTextField transvectionFactor = buildFormattedTextField(0.1);
 		H2.addComponent(transvectionFactor);
 		V4.addComponent(transvectionFactor);
 
+		// Bouton pour une transvection vers la gauche
 		JButton transvectionLeftButton = new JButton("←");
 		transvectionLeftButton.addActionListener(new ActionListener() {
 			@Override
@@ -298,9 +338,11 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal auquel il appartient
 		H3.addComponent(transvectionLeftButton);
 		V4.addComponent(transvectionLeftButton);
 
+		// Bouton pour une transvection vers la droite
 		JButton transvectionRightButton = new JButton("→");
 		transvectionRightButton.addActionListener(new ActionListener() {
 			@Override
@@ -315,6 +357,7 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal auquel il appartient
 		H4.addComponent(transvectionRightButton);
 		V4.addComponent(transvectionRightButton);
 
@@ -335,6 +378,7 @@ public class AffineModificationComponent extends JComponent {
 		H5.addComponent(transvectionUpButton);
 		V4.addComponent(transvectionUpButton);
 
+		// Bouton pour une transvection vers le bas
 		JButton transvectionDownButton = new JButton("↓");
 		transvectionDownButton.addActionListener(new ActionListener() {
 			@Override
@@ -349,22 +393,21 @@ public class AffineModificationComponent extends JComponent {
 
 			}
 		});
+		// On ajoute le bouton aux groupes horizontal auquel il appartient
 		H6.addComponent(transvectionDownButton);
 		V4.addComponent(transvectionDownButton);
-
-		// ← → ↑ ↓ ⟲ ⟳ ↔ ↕
 	}
 
 	/**
-	 * Construit un textField servant à entrer le poids de la modification (
+	 * Construit un champ de texte servant à entrer le poids de la modification (
 	 * Evite la duplication de code sur cette tache répétitive)
 	 * 
-	 * @return
+	 * @return Le champ de texte
 	 */
-	private JFormattedTextField buildFormattedTextField() {
+	private JFormattedTextField buildFormattedTextField(double defaultValue) {
 		final JFormattedTextField field = new JFormattedTextField(
 				new DecimalFormat("#0.##"));
-		field.setValue(1);
+		field.setValue(defaultValue);
 		field.setColumns(3);
 
 		/*
@@ -426,6 +469,11 @@ public class AffineModificationComponent extends JComponent {
 
 	}
 
+	/**
+	 * Modifie l'id de la tranformation actuellement sélectionnée
+	 * 
+	 * @param id	La transformation sélectionnée
+	 */
 	public void setSelectedTransformationIndex(int id) {
 		this.selectedTransformationIndex = id;
 	}
