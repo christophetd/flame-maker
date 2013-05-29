@@ -53,8 +53,7 @@ public class MenuBar {
 	 * @param transformationsListModel
 	 *            Le modèle de la liste des transformations
 	 */
-	public static JMenuBar build(final JFrame window, final FlameSet set,
-			final TransformationsListModel transformationsListModel) {
+	public static JMenuBar build(final JFrame window, final FlameSet set) {
 		
 		final JMenuBar menuBar = new JMenuBar();
 
