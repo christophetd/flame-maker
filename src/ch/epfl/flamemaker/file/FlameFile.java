@@ -34,20 +34,30 @@ public class FlameFile {
 	 * @throws IOException, ClassNotFoundException Si une erreur se produit durant la désérialisation ou la lecture du fichier
 	 * @throws InvalidFlameFileException Si le fichier ouvert est invalide
 	 */
-	public static SerializableFlameSet getSerializableFlameSetFromFile(String filePath) throws IOException, ClassNotFoundException, InvalidFlameFileException {
+	public static SerializableFlameSet getSerializableFlameSetFromFile(String filePath) throws IOException, ClassNotFoundException {
 		if(!(new File(filePath)).exists()) {
 			throw new FileNotFoundException();
 		}
 		
-		FileInputStream inputFile = new FileInputStream(filePath);
-		GZIPInputStream gzip = new GZIPInputStream(inputFile);
-		ObjectInputStream objectInputStream = new ObjectInputStream(gzip);
+		FileInputStream inputFile;
+		GZIPInputStream gzip;
+		ObjectInputStream objectInputStream = null;
+		Object o = null;
 		
-		Object o = objectInputStream.readObject();
+		try {
+			inputFile = new FileInputStream(filePath);
+			gzip = new GZIPInputStream(inputFile);
+			objectInputStream = new ObjectInputStream(gzip);
+			
+			o = objectInputStream.readObject();
+		}
+		finally {
+			if(objectInputStream != null) {
+				objectInputStream.close();
+			}
+		}
 		
-		objectInputStream.close();
-		
-		if(!(o instanceof SerializableFlameSet)) throw new InvalidFlameFileException();
+		if(!(o instanceof SerializableFlameSet) || o == null) throw new IOException();
 		
 		return (SerializableFlameSet) o;
 	}

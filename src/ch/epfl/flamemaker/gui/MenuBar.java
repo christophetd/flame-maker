@@ -25,7 +25,6 @@ import javax.swing.KeyStroke;
 
 import ch.epfl.flamemaker.file.FlameFile;
 import ch.epfl.flamemaker.file.FlameFileFilter;
-import ch.epfl.flamemaker.file.InvalidFlameFileException;
 import ch.epfl.flamemaker.file.SerializableFlameSet;
 import ch.epfl.flamemaker.flame.FlameFactory;
 import ch.epfl.flamemaker.flame.FlameSet;
@@ -216,17 +215,10 @@ public class MenuBar {
 								"Le fichier est introuvable",
 								"Erreur lors de l'ouverture",
 								JOptionPane.ERROR_MESSAGE);
-					} catch (InvalidFlameFileException fex) {
-						JOptionPane
-								.showMessageDialog(
-										window,
-										"Le fichier n'a pas pu être ouvert dans FlameMaker, sûrement parce qu'il est corrompu.",
-										"Erreur lors de l'ouverture",
-										JOptionPane.ERROR_MESSAGE);
+					} catch (IOException ex) {
+						showOpeningFailMessage();
 					} catch (ClassNotFoundException e1) {
-						e1.printStackTrace();
-					} catch(IOException ioex) {
-						ioex.printStackTrace();
+						showOpeningFailMessage();
 					}
 				}
 			}
@@ -285,6 +277,16 @@ public class MenuBar {
 		
 		return menuBar;
 
+	}
+	
+	private static void showOpeningFailMessage() {
+		JOptionPane
+		.showMessageDialog(
+				null,
+				"Le fichier n'a pas pu être ouvert dans FlameMaker, sûrement parce qu'il est corrompu "
+				+"ou que vous ne possédez pas les droits suffisants pour le lire.",
+				"Erreur lors de l'ouverture",
+				JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
