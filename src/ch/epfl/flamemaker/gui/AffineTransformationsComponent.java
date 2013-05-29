@@ -27,18 +27,37 @@ import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 import ch.epfl.flamemaker.geometry2d.Transformation;
 
-//TODO : javadoc
+/**
+ *	Classe représentant le composant de visualisation
+ *	des composantes affines des transformations
+ */
 @SuppressWarnings("serial")
 public class AffineTransformationsComponent extends JComponent {
 	
+	/**
+	 * Le bâtisseur de fractale
+	 */
 	private ObservableFlameBuilder m_builder;
 	
+	/**
+	 * Le cadre de dessin
+	 */
 	private ObservableRectangle m_frame;
 
+
+	/**
+	 * L'id de la transformation actuellement sélectionnée
+	 */
 	private int m_highlightedTransformationIndex = 2;
 	
+	/**
+	 * La liste des bounding boxes
+	 */
 	private List<Rectangle> m_boundingBoxes = new ArrayList<Rectangle>();
 	
+	/**
+	 * La liste des observateurs
+	 */
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
 	public AffineTransformationsComponent(FlameSet set) {
