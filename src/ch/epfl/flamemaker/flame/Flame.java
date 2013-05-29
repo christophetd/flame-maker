@@ -66,11 +66,13 @@ public class Flame {
 		// On récupère une fois pour toutes la taille de la liste de
 		// transformations
 		int size = m_transforms.size();
-
+		
 		// Création du builder
 		FlameAccumulator.Builder builder = new FlameAccumulator.Builder(frame,
 				width, height);
-
+		
+		if (size == 0) return builder.build();
+		
 		// Garde en mémoire la couleur du dernier point accumulé
 		double lastColor = 0;
 
