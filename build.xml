@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="PTI" default="jar" basedir=".">
+
+  <target name="test" description="Run the API Tester">
+    <java classname="APITester" failonerror="true">
+      <classpath>
+	<pathelement location="bin" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="compile" description="Compile source">
+    <mkdir dir="bin" />
+    <javac srcdir="src" includes="**" destdir="bin"
+	   includeantruntime="false" />
+    <copy todir="bin">
+      <fileset dir="src" />
+    </copy>
+  </target>
+
+  <target name="jar" description="Package into JAR" depends="compile,test">
+    <jar destfile="pti.jar" basedir="bin" compress="true" />
+  </target>
+
+  <target name="jar-emergency" description="Package into JAR, even with errors" depends="compile">
+    <jar destfile="pti.jar" basedir="bin" compress="true" />
+  </target>
+</project>
