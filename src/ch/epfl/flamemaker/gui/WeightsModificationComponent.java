@@ -68,13 +68,13 @@ public class WeightsModificationComponent extends JComponent {
 		ParallelGroup currentGroup;
 		int nbVariations = Variation.values().length;
 		for (int i = 0; i < nbVariations ; i++) {
-			currentGroup = weightsGroup.createParallelGroup();
+			currentGroup = weightsGroup.createParallelGroup(GroupLayout.Alignment.TRAILING);
 			verticalGroups.add(currentGroup);
 			H.addGroup(currentGroup);
 		}
 		ArrayList<ParallelGroup> horizontalGroups = new ArrayList<ParallelGroup>();
 		for (int i = 0; i < 2; i++) {
-			currentGroup = weightsGroup.createParallelGroup();
+			currentGroup = weightsGroup.createParallelGroup(GroupLayout.Alignment.BASELINE);
 			horizontalGroups.add(currentGroup);
 			V.addGroup(currentGroup);
 		}
