@@ -131,7 +131,7 @@ public class ObservableFlameBuilder {
 	 * @throws IllegalArgumentException
 	 *             Si l'index n'est pas valide
 	 */
-	public double variationWeight(int index, Variations variation) {
+	public double variationWeight(int index, Variation variation) {
 		return m_builder.variationWeight(index, variation);
 	}
 
@@ -149,7 +149,7 @@ public class ObservableFlameBuilder {
 	 * @throws IllegalArgumentException
 	 *             Si l'index n'est pas valide
 	 */
-	public void setVariationWeight(int index, Variations variation,
+	public void setVariationWeight(int index, Variation variation,
 			double newWeight) {
 
 		m_builder.setVariationWeight(index, variation, newWeight);

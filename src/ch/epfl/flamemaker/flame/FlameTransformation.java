@@ -38,10 +38,10 @@ public class FlameTransformation implements Transformation {
 	 */
 	public FlameTransformation(AffineTransformation affineTransformation,
 			double[] variationWeight) {
-		if (variationWeight.length != Variations.values().length) {
+		if (variationWeight.length != Variation.values().length) {
 			throw new IllegalArgumentException(
 					"variationWeight must have length "
-							+ Variations.values().length);
+							+ Variation.values().length);
 		}
 
 		m_affineTransfo = affineTransformation;
@@ -58,9 +58,9 @@ public class FlameTransformation implements Transformation {
 
 		// On applique la transformation affine au point
 		p = m_affineTransfo.transformPoint(p);
-		for (int i = 0; i < Variations.values().length; i++) {
+		for (int i = 0; i < Variation.values().length; i++) {
 			if (m_weight[i] != 0) {
-				tmp = Variations.values()[i].transformPoint(p);
+				tmp = Variation.values()[i].transformPoint(p);
 				result = new Point(result.x() + m_weight[i] * tmp.x(),
 						result.y() + m_weight[i] * tmp.y());
 			}
@@ -79,7 +79,7 @@ public class FlameTransformation implements Transformation {
 	 * @throws IllegalArgumentException
 	 *             Si la variation a un index invalide
 	 */
-	public double weight(Variations variation) {
+	public double weight(Variation variation) {
 		int index = variation.index();
 		if (index < 0 || index >= m_weight.length) {
 			throw new IllegalArgumentException("invalid index given");

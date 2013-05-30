@@ -11,7 +11,7 @@ import ch.epfl.flamemaker.geometry2d.Transformation;
 /**
  * Classe modélisant une variation
  */
-public enum Variations implements Transformation {
+public enum Variation implements Transformation {
 	LINEAR(0, "Linear"){
 		public Point transformPoint(Point p) {
 			return p;
@@ -68,7 +68,7 @@ public enum Variations implements Transformation {
 	 * @param name
 	 *            Le nom de la variation
 	 */
-	private Variations(int index, String name) {
+	private Variation(int index, String name) {
 		m_index = index;
 		m_name = name;
 	}
