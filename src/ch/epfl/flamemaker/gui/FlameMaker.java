@@ -19,15 +19,15 @@ public class FlameMaker {
 		
 	    javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
-	            	try {
+	            	//try {
 	            		new FlameMakerGUI().start();
-	            	}
-	            	catch(RuntimeException e){
+	            	//}
+	            	/*catch(RuntimeException e){
 	            		JOptionPane.showMessageDialog(null,
 	            			    "Une erreur s'est produite dans flame maker. \n"+e.getMessage(),
 	            			    "Erreur dans le programme",
 	            			    JOptionPane.ERROR_MESSAGE);
-	            	}
+	            	}*/
 	            }
 	    });
 	}

@@ -19,11 +19,11 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameUtils;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
@@ -52,13 +52,13 @@ public class FlamePreviewComponent extends JComponent {
 	
 	private boolean m_preventRecompute;
 	
-	private FlameAccumulator m_accu;
-	
 	private Flame m_flame;
 	
 	private int m_time;
 	
 	private BufferedImage m_image;
+	
+	private final CacheManager m_cache;
 	
 	private int m_lastHeight = 0,
 				m_lastWidth = 0;
@@ -71,8 +71,9 @@ public class FlamePreviewComponent extends JComponent {
 	 * Constructeur, initialise les arguments.
 	 * @param set ensemble des propriétés de la fractale à dessiner
 	 */
-	public FlamePreviewComponent(FlameSet set){
+	public FlamePreviewComponent(FlameSet set, CacheManager cache){
 		
+		m_cache = cache;
 		m_set = set;
 		
 		m_lastFrame = set.getFrame().toRectangle();
@@ -81,6 +82,7 @@ public class FlamePreviewComponent extends JComponent {
 
 			@Override
 			public void onFlameBuilderChange(FlameAnimation.Builder b) {
+				m_cache.clear();
 				recompute();
 			}
 			
@@ -203,10 +205,12 @@ public class FlamePreviewComponent extends JComponent {
 			// Il a fini de modifier la vue
 			if(!m_preventRecompute) {
 				m_dragging = false;
+				m_cache.clear();
 				recompute();
 			}
 		// le composant a été redimentionné
 		} else if(m_lastHeight != this.getHeight() || m_lastWidth != this.getWidth()){
+			m_cache.clear();
 			recompute();
 			if(m_image != null){
 				
@@ -221,20 +225,6 @@ public class FlamePreviewComponent extends JComponent {
 				g.drawImage(m_image, (int)m_drawingRect.left(), (int)m_drawingRect.bottom()
 						, (int)m_drawingRect.width(), (int)m_drawingRect.height(), null);
 			}
-		// Sinon, c'est qu'on a fini un recompute, on génère l'image résultante
-		} else if(m_accu != null){
-			m_lastFrame = m_set.getFrame().toRectangle();
-			
-			synchronized(m_accu){
-				m_image = FlameUtils.generateBufferedImage(m_accu, m_set);
-			}
-			
-			//Et on dessine l'image sur l'objet de type Graphics passé en paramètre
-			g.drawImage(m_image, 0, 0, null);
-			
-			m_drawingRect = new Rectangle(new Point(getWidth()/2, getHeight()/2), getWidth(), getHeight());
-			m_accu = null;
-			
 		} else if(m_displayProgress) {
 			g.setColor(java.awt.Color.BLACK);
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -275,7 +265,6 @@ public class FlamePreviewComponent extends JComponent {
 	 * Cette méthode demande à son tour un nouveau dessin du composant quand le calcul est terminé.
 	 */
 	private void recompute(){
-		
 		// Protege contre des calculs inutiles
 		if(this.getWidth() == 0 || this.getHeight() == 0)
 			return;
@@ -283,6 +272,14 @@ public class FlamePreviewComponent extends JComponent {
 		if(m_flame != null){
 			m_flame.destroy();
 			m_flame = null;
+		}
+		
+		BufferedImage image = m_cache.getFrame(m_time);
+		if(image != null){
+			// This creates a strong reference to the current image which prevents it from GC. Awesome !
+			m_image = image;
+			repaint();
+			return;
 		}
 		
 		
@@ -301,15 +298,15 @@ public class FlamePreviewComponent extends JComponent {
 			
 			@Override
 			public void onComputeDone(FlameAccumulator accumulator) {
-				if(m_accu == null){
-					m_accu = accumulator;
-					m_displayProgress = false;
-				} else {
-					synchronized(m_accu){
-						m_accu = accumulator;
-						m_displayProgress = false;
-					}
-				}
+				m_displayProgress = false;
+				
+				m_lastFrame = m_set.getFrame().toRectangle();
+				
+				m_image = FlameUtils.generateBufferedImage(accumulator, m_set);
+				m_cache.setFrame(m_time, m_image);
+				
+				m_drawingRect = new Rectangle(new Point(getWidth()/2, getHeight()/2), getWidth(), getHeight());
+				
 				repaint();
 			}
 

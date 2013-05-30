@@ -32,7 +32,7 @@ public enum Presets {
 	EMPTY_PRESET(
 			"",
 			new Rectangle(new Point(0, 0), 3, 3),
-			new InterpolatedPalette(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE)),
+			new InterpolatedPalette(Color.RED, Color.GREEN, Color.BLUE),
 			Arrays.asList(
 					new FlameTransformation(
 							new AffineTransformation(1, 0, 0, 0, 1, 0),
@@ -43,7 +43,7 @@ public enum Presets {
 	BAPT_FRACTALE(
 		"Bapt",
 		new Rectangle(new Point(0, 0), 5, 5),
-		new InterpolatedPalette(Arrays.asList(new Color(1,1,1), new Color(0.6, 0.3, 0), new Color(0.1, 0, 0.4))),
+		new InterpolatedPalette(new Color(1,1,1), new Color(0.6, 0.3, 0), new Color(0.1, 0, 0.4)),
 		Arrays.asList(
 				new FlameTransformation(
 						new AffineTransformation(1, -0.3, 0, 1.2, -0.5, 0),
@@ -60,7 +60,7 @@ public enum Presets {
 	FOUGERE_FRACTALE(
 		"Fougère",
 		new Rectangle(new Point(0, 4.5), 6, 10),
-		new InterpolatedPalette(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE)),
+		new InterpolatedPalette(Color.RED, Color.GREEN, Color.BLUE),
 		Arrays.asList(
 				new FlameTransformation(
 						new AffineTransformation(0, 0, 0, 0, 0.16, 0),
@@ -80,7 +80,7 @@ public enum Presets {
 	OEIL_DE_VERRE_FRACTALE(
 		"Oeil de verre",
 		new Rectangle(new Point(0, 0), 15, 15),
-		new InterpolatedPalette(Arrays.asList(new Color(1,1,1), new Color(0.6, 0.3, 0), new Color(0.1, 0, 0.4))),
+		new InterpolatedPalette(new Color(1,1,1), new Color(0.6, 0.3, 0), new Color(0.1, 0, 0.4)),
 		Arrays.asList(
 				new FlameTransformation(
 						new AffineTransformation(0.99, 0, 0, 0, 0.99, 0),
@@ -94,7 +94,7 @@ public enum Presets {
 	SHARKFIN_FRACTALE(
 		"Shark fin",
 		new Rectangle(new Point(-0.25, 0), 5, 4),
-		new InterpolatedPalette(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE)),
+		new InterpolatedPalette(Color.RED, Color.GREEN, Color.BLUE),
 		Arrays.asList(
 				new FlameTransformation(
 						new AffineTransformation(-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
@@ -111,7 +111,7 @@ public enum Presets {
 	SIERPINSKI_FRACTALE(
 		"Sierpinski",
 		new Rectangle(new Point(0.5, 0.5), 1, 1),
-		new InterpolatedPalette(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE)),
+		new InterpolatedPalette(Color.RED, Color.GREEN, Color.BLUE),
 		Arrays.asList(
 				new FlameTransformation(
 						new AffineTransformation(0.5, 0, 0, 0, 0.5, 0),
@@ -128,7 +128,7 @@ public enum Presets {
 	TURBULENCE_FRACTALE(
 		"Turbulence",
 		new Rectangle(new Point(0.1, 0.1), 3, 3),
-		new InterpolatedPalette(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE)),
+		new InterpolatedPalette(Color.RED, Color.GREEN, Color.BLUE),
 		Arrays.asList(
 				new FlameTransformation(
 						new AffineTransformation(0.7124807, -0.4113509, -0.3, 0.4113513, 0.7124808, -0.7),

@@ -97,6 +97,10 @@ public class FlameTransformation implements Transformation, Serializable {
 		return m_weight.clone();
 	}
 	
+	public double weight(int index){
+		return m_weight[index];
+	}
+	
 	/**
 	 * @return La composante affine de la transformation
 	 * @see ch.epfl/flamemaker.flame.OpenCLStrategy

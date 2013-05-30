@@ -42,6 +42,8 @@ public class WeightsModificationComponent extends JComponent {
 	 * La transformation actuellement sélectionnée
 	 */
 	private int selectedTransformationIndex;
+	
+	private int m_time;
 
 	/**
 	 * La liste des champs de texte contenant les poids des variations
@@ -113,10 +115,10 @@ public class WeightsModificationComponent extends JComponent {
 							double newWeight = ((Number) formattedTextField
 									.getValue()).doubleValue();
 
-							if (flameBuilder.getTransformation(selectedTransformationIndex).weight(fVariation) != newWeight ) {
+							if (flameBuilder.getTransformation(selectedTransformationIndex).get(m_time).weight(fVariation) != newWeight ) {
 								flameBuilder.setVariationWeight(
 										selectedTransformationIndex,
-										fVariation, newWeight);
+										fVariation, newWeight, m_time);
 							}
 						}
 					});
@@ -156,21 +158,28 @@ public class WeightsModificationComponent extends JComponent {
 	 */
 	public void setSelectedTransformationIndex(int id) {
 		if (id != -1) {
-			this.selectedTransformationIndex = id;
-
-			/*
-			 * On récupère le tableau des poids de la nouvelle transformation,
-			 * et on remplit nos champs de texte avec
-			 */
-			double[] newWeights = flameBuilder.getTransformation(id).weights();
-			int i = 0;
-			for (double weight : newWeights) {
-				fields.get(i).setValue(weight);
-				i++;
-			}
+			selectedTransformationIndex = id;
+			refreshValues();
 		}
 	}
-
+	
+	public void setTime(int time){
+		m_time = time;
+		refreshValues();
+	}
+	
+	private void refreshValues(){
+		/*
+		 * On récupère le tableau des poids de la nouvelle transformation,
+		 * et on remplit nos champs de texte avec
+		 */
+		double[] newWeights = flameBuilder.getTransformation(selectedTransformationIndex).get(m_time).weights();
+		int i = 0;
+		for (double weight : newWeights) {
+			fields.get(i).setValue(weight);
+			i++;
+		}
+	}
 	/**
 	 * Crée un champ de texte formatté, évite la duplication de code.
 	 * 

@@ -114,6 +114,7 @@ public class AffineTransformationsComponent extends JComponent {
 	
 	public void setTime(int time){
 		m_time = time;
+		repaint();
 	}
 	
 	@Override

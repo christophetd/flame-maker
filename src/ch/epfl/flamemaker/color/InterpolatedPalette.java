@@ -5,6 +5,7 @@
 
 package ch.epfl.flamemaker.color;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,11 +33,17 @@ public class InterpolatedPalette implements Palette {
 	 * @throws IllegalArgumentException
 	 *             quand la liste contient moins de deux couleurs.
 	 */
-	public InterpolatedPalette(List<Color> colors) {
+	public InterpolatedPalette(Color... colors) {
+		
+		this(Arrays.asList(colors));
+	}
+	
+	public InterpolatedPalette(List<Color> colors){
 		if (colors.size() < 2) {
 			throw new IllegalArgumentException(
 					"Une palette interpolante doit avoir au moins 2 couleurs");
 		}
+		
 		m_colors = colors;
 	}
 

@@ -58,7 +58,7 @@ public class Animation<T extends Animable<E>, E>
 		if(last != null)
 			return last.get().get();
 		
-		return null;
+		throw new IllegalStateException("Animation does not contain any keyframe");
 	}
 	
 	public static class KeyFrame<T extends Animable<E>, E> {
@@ -80,7 +80,7 @@ public class Animation<T extends Animable<E>, E>
 		}
 		
 		public E interpolate(KeyFrame<T, E> other, int time){
-			return m_data.interpolate(other.m_data, other.m_time - m_time, time - other.m_time);
+			return m_data.interpolate(other.m_data, (double)(time - m_time)/(other.m_time - m_time));
 		}
 	}
 }

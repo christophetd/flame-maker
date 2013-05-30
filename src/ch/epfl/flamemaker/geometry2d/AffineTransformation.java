@@ -42,6 +42,17 @@ public class AffineTransformation implements Transformation, Serializable {
 		m_e = e;
 		m_f = f;
 	}
+	
+	public AffineTransformation(double[] coeffs){
+		if(coeffs.length != 6)
+			throw new IllegalArgumentException("Coeff matrix must have 6 elements");
+		m_a = coeffs[0];
+		m_b = coeffs[1];
+		m_c = coeffs[2];
+		m_d = coeffs[3];
+		m_e = coeffs[4];
+		m_f = coeffs[5];
+	}
 
 	/**
 	 * Crée une transformation affine à partir de la transformation passée en

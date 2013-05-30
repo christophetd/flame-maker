@@ -28,7 +28,16 @@ public class FlameAnimation {
 	}
 	
 	public final Flame getFlame(int time){
-		return null; // TODO
+		
+		List<FlameTransformation> transformations = new ArrayList<FlameTransformation>(m_transforms.size());
+		
+		for(TransformationAnimation t : m_transforms){
+			transformations.add(t.get(time));
+		}
+		
+		Flame.Builder builder = new Flame.Builder(new Flame(transformations), m_factory);
+		
+		return builder.build();
 	}
 	
 	public void computeFrame(int frame){
@@ -41,7 +50,7 @@ public class FlameAnimation {
 	
 	public static class Builder{
 		
-		private int m_duration;
+		private int m_duration = 168;
 		
 		private List<TransformationAnimation> m_transformations = new ArrayList<TransformationAnimation>();
 		
@@ -92,6 +101,10 @@ public class FlameAnimation {
 			return m_transformations.get(id);
 		}
 		
+		public void addTransformation(TransformationAnimation transformation) {
+			m_transformations.add(new TransformationAnimation(transformation));
+		}
+		
 		public AffineTransformation affineTransformation(int id, int time){
 			return m_transformations.get(id).get(time).affineTransformation();
 		}
@@ -122,13 +135,12 @@ public class FlameAnimation {
 			return m_transformations.get(index).get(time).weight(variation.index());
 		}
 		
-		public void setVariationWeight(int index, Variations variation,
-				double newWeight) {
-	
-			checkIndex(index);
+		public void setVariationWeight(int id, Variations variation, double newWeight, int time) {
+			FlameTransformation.Builder builder = new FlameTransformation.Builder(m_transformations.get(id).get(time));
 			
-			m_transformations.get(index)
-					.setWeight(variation.index(), newWeight);
+			builder.setWeight(variation.index(), newWeight);
+			
+			m_transformations.get(id).set(new AnimableTransformation(builder.build()), time);
 			
 			notifyListeners();
 		}

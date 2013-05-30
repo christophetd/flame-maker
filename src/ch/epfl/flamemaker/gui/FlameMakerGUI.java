@@ -22,17 +22,20 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.Timer;
 
 import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
-import ch.epfl.flamemaker.flame.Presets;
 
 public class FlameMakerGUI implements FlameSet.Listener {
 
 	/**
 	 * Contient toutes les informations sur la fractale courante et ses informations d'affichage
 	 */
-	private FlameSet m_set = new FlameSet();
+	private final FlameSet m_set = new FlameSet();
+	
+	private final CacheManager m_cache;
 	
 	/**
 	 * L'attribut observable représentant l'id de la transformation actuellement
@@ -79,18 +82,34 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	
 	private final FlamePreviewComponent m_previewComponent;
 	
+	private final Timer m_playTimer;
+	
+	private final JButton m_playButton;
+	
 	/**
 	 * Le constructeur de la classe modélisant le GUI. Appelé pour lancer ce
 	 * dernier.
 	 */
 	public FlameMakerGUI() {
+		m_playTimer = new Timer((int) (1000/FlameAnimation.FRAME_RATE), new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if(m_time >= m_set.getBuilder().getDuration()){
+					stop();
+				} else if(m_cache.available(m_time)){
+					setTime(m_time+1);
+				}
+			}
+		});
+		m_playButton = new JButton("Play");
+		
+		m_cache = new CacheManager(m_set.getBuilder());
 		m_set.addListener(this);
 		
 		m_affineTransformationComponent = new AffineTransformationsComponent(m_set);
 		m_affineModificationComponent = new AffineModificationComponent(m_set.getBuilder());
-		m_timelineComponent = new TimelineComponent(m_set.getBuilder());
+		m_timelineComponent = new TimelineComponent(m_set.getBuilder(), m_cache);
 		m_weightsModificationComponent = new WeightsModificationComponent(m_set.getBuilder());
-		m_previewComponent = new FlamePreviewComponent(m_set);
+		m_previewComponent = new FlamePreviewComponent(m_set, m_cache);
 	}
 	
 	
@@ -134,6 +153,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 				m_timelineComponent.setTime(time);
 				m_affineTransformationComponent.setTime(time);
 				m_affineModificationComponent.setTime(time);
+				m_weightsModificationComponent.setTime(time);
 			}
 			
 		});
@@ -229,19 +249,34 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		JPanel topControls = new JPanel();
 		topControls.setLayout(new BoxLayout(topControls, BoxLayout.LINE_AXIS));
 		
-		JButton prevFrameButton = new JButton("<");
-		JButton nextFrameButton = new JButton(">");
+		final JButton prevFrameButton = new JButton("<");
+		final JButton nextFrameButton = new JButton(">");
 		
-
 		topControls.add(new JButton("add transfo."));
 		topControls.add(Box.createRigidArea(new Dimension(50, 0)));
 		topControls.add(prevFrameButton);
-		topControls.add(new JButton("Play"));
+		topControls.add(m_playButton);
 		topControls.add(nextFrameButton);
+		
+		m_playButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(m_playTimer.isRunning()){
+					stop();
+				}
+				else{
+					play();
+				}
+			}
+			
+		});
+		
 		nextFrameButton.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				stop();
 				if(m_time < m_set.getBuilder().getDuration())
 					setTime(m_time+1);
 			}
@@ -252,6 +287,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				stop();
 				if(m_time > 0)
 					setTime(m_time-1);
 			}
@@ -297,8 +333,6 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		
 		selectedTransformationEditPanel.add(new JSeparator());
 		
-		m_weightsModificationComponent.setSelectedTransformationIndex(0);
-		
 		selectedTransformationEditPanel.add(m_weightsModificationComponent);
 		
 		return selectedTransformationEditPanel;
@@ -335,6 +369,16 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		for(Listener l: m_listeners) {
 			l.onTimeChange(time);
 		}
+	}
+	
+	public void play(){
+		m_playTimer.start();
+		m_playButton.setText("Pause");
+	}
+	
+	public void stop(){
+		m_playTimer.stop();
+		m_playButton.setText("Play");
 	}
 
 	/**

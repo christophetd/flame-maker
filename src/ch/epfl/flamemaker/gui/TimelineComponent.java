@@ -15,13 +15,16 @@ import java.util.TreeSet;
 
 import javax.swing.JComponent;
 
+import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
 
 public class TimelineComponent extends JComponent{
 
 	private static final long serialVersionUID = 1347861945789465193L;
 
-	private FlameAnimation.Builder m_anim;
+	private final FlameAnimation.Builder m_anim;
+	
+	private final CacheManager m_cache;
 	
 	private int m_time;
 	
@@ -30,10 +33,21 @@ public class TimelineComponent extends JComponent{
 	// User interaction variables
 	private boolean m_draggingCursor;
 	
-	public TimelineComponent(FlameAnimation.Builder anim) {
+	public TimelineComponent(FlameAnimation.Builder anim, CacheManager cache) {
 		m_anim = anim;
+		m_cache = cache;
+		
 		setPreferredSize(new Dimension(500, 200));
 		createBehaviour();
+		
+		m_cache.addListener(new CacheManager.Listener(){
+
+			@Override
+			public void onCacheChange(CacheManager cache) {
+				repaint();
+			}
+			
+		});
 	}
 	
 	@Override
@@ -46,16 +60,25 @@ public class TimelineComponent extends JComponent{
 		
 		double duration = m_anim.getDuration() / FlameAnimation.FRAME_RATE;
 		double blockLength = getWidth() / duration;
+		double unitLength = (double)getWidth()/m_anim.getDuration();
 		
-		g0.setColor(Color.BLACK);
+		g0.setColor(new Color(200, 200, 200));
+		g0.fillRect(0, 0, this.getWidth(), 20);
 		
-		
-		for(int i = 0 ; i < duration ; i++){
-			g0.draw( new Line2D.Double(blockLength * i, 0, blockLength * i, 20));
+		g0.setColor(Color.GREEN);
+		boolean[] cacheState = m_cache.getAvailabilityMap();
+		for(int i = 0 ; i < cacheState.length ; i++){
+			if(cacheState[i]){
+				g0.fillRect((int)(i*unitLength), 17, (int)Math.ceil(unitLength), 3);
+			}
 		}
 		
+		g0.setColor(Color.BLACK);
+		for(int i = 0 ; i < duration ; i++){
+			g0.draw( new Line2D.Double(blockLength * i, 0, blockLength * i, 12));
+		}
 		for(int i = 0 ; i < 4*duration ; i++){
-			g0.draw( new Line2D.Double(blockLength/4 * i, 0, blockLength/4 * i, 10));
+			g0.draw( new Line2D.Double(blockLength/4 * i, 0, blockLength/4 * i, 6));
 		}
 		
 		
