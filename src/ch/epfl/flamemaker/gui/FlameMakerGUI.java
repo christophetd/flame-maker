@@ -105,7 +105,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		contentPane.add(upperPanel, BorderLayout.CENTER);
 		contentPane.add(lowerPanel, BorderLayout.PAGE_END);
 		
-		JMenuBar menu = MenuBar.build(window, m_set, m_transformationsEditPanel.getListModel());
+		JMenuBar menu = MenuBar.build(window, m_set);
 		window.setJMenuBar(menu);
 		
 		window.pack();

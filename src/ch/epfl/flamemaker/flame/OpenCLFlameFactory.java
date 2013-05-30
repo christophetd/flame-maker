@@ -80,11 +80,10 @@ class OpenCLFlameFactory extends FlameFactory {
 		// Lis et compile le code du kernel
         String src = "";
 		try {
-			src = IOUtils.readText(FlameFactory.class.getClassLoader().getResource("renderer.cl"));
+			src = IOUtils.readText(FlameFactory.class.getClassLoader().getResource("ch/epfl/flamemaker/resource/renderer.cl"));
 		} catch (Exception e) {
 			System.err.println();
-			throw new RuntimeException("Impossible de charger le fichier du kernel de rendu OpenCL.\n"
-					+"Vérifiez que le fichier bin\\renderer.cl existe, il disparaît parfois quand l'IDE rafraîchit le dossier bin/");
+			throw new RuntimeException("Impossible de charger le fichier du kernel de rendu OpenCL.");
 		}
 		program = context.createProgram(src);
         // Récupération du kernel
