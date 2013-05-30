@@ -54,7 +54,7 @@ public class AffineModificationComponent extends JComponent {
 		affineGroup.setVerticalGroup(V);
 
 		// On crée un groupe horizontal pour chaque colonne qu'on aura
-		ParallelGroup H1 = affineGroup.createParallelGroup();
+		ParallelGroup H1 = affineGroup.createParallelGroup(GroupLayout.Alignment.TRAILING);
 		H.addGroup(H1);
 		ParallelGroup H2 = affineGroup.createParallelGroup();
 		H.addGroup(H2);
@@ -68,13 +68,13 @@ public class AffineModificationComponent extends JComponent {
 		H.addGroup(H6);
 
 		// Puis un groupe vertical pour chaque ligne
-		ParallelGroup V1 = affineGroup.createParallelGroup();
+		ParallelGroup V1 = affineGroup.createParallelGroup(GroupLayout.Alignment.BASELINE);
 		V.addGroup(V1);
-		ParallelGroup V2 = affineGroup.createParallelGroup();
+		ParallelGroup V2 = affineGroup.createParallelGroup(GroupLayout.Alignment.BASELINE);
 		V.addGroup(V2);
-		ParallelGroup V3 = affineGroup.createParallelGroup();
+		ParallelGroup V3 = affineGroup.createParallelGroup(GroupLayout.Alignment.BASELINE);
 		V.addGroup(V3);
-		ParallelGroup V4 = affineGroup.createParallelGroup();
+		ParallelGroup V4 = affineGroup.createParallelGroup(GroupLayout.Alignment.BASELINE);
 		V.addGroup(V4);
 
 		// Ligne "translation"

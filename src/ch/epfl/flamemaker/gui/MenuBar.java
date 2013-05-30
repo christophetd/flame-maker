@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
@@ -28,8 +27,6 @@ import ch.epfl.flamemaker.file.FlameFileFilter;
 import ch.epfl.flamemaker.file.SerializableFlameSet;
 import ch.epfl.flamemaker.flame.FlameFactory;
 import ch.epfl.flamemaker.flame.FlameSet;
-import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Presets;
 
 /**
