@@ -25,6 +25,61 @@ public class AffineTransformation implements Transformation, Serializable {
 	final private double m_a, m_b, m_c, m_d, m_e, m_f;
 
 	/**
+	 * @param dx
+	 *            La composante horizontale de la translation
+	 * @param dy
+	 *            La composante verticale de la translation
+	 * @return Une translation de composante horizontale <i>dx</i> et de
+	 *         composante verticale <i>dy</i>
+	 */
+	public static AffineTransformation newTranslation(double dx, double dy) {
+		return new AffineTransformation(1, 0, dx, 0, 1, dy);
+	}
+
+	/**
+	 * @param teta
+	 *            L'angle de la rotation
+	 * @return Une rotation d'angle <i>teta</i>
+	 */
+	public static AffineTransformation newRotation(double teta) {
+		return new AffineTransformation(Math.cos(teta), -Math.sin(teta), 0,
+				Math.sin(teta), Math.cos(teta), 0);
+	}
+
+	/**
+	 * @param sx
+	 *            Facteur de dilatation horizontal
+	 * @param sy
+	 *            Facteur de dilatation vertical
+	 * @return Une dilatation de facteur horizontal <i>sx</i> et de facteur
+	 *         vertical <i>sy</i>
+	 */
+	public static AffineTransformation newScaling(double sx, double sy) {
+		return new AffineTransformation(sx, 0, 0, 0, sy, 0);
+	}
+
+	/**
+	 * @param sx
+	 *            Facteur de transvection horizontal
+	 * @return Une transvection de facteur <i>sx</i> parallèlement à l'axe des
+	 *         abscisses
+	 */
+	public static AffineTransformation newShearX(double sx) {
+		return new AffineTransformation(1, sx, 0, 0, 1, 0);
+	}
+
+	/**
+	 * @param sy
+	 *            Facteur de transvection horizontal
+	 * @return Une transvection de facteur <i>sy</i> parallèlement à l'axe des
+	 *         ordonnées
+	 */
+	public static AffineTransformation newShearY(double sy) {
+		return new AffineTransformation(1, 0, 0, sy, 1, 0);
+	}
+	
+
+	/**
 	 * Crée une transformation affine à partir des valeurs des deux premières
 	 * lignes de sa matrice homogène
 	 * 
@@ -92,59 +147,5 @@ public class AffineTransformation implements Transformation, Serializable {
 	 */
 	public double translationY() {
 		return m_f;
-	}
-
-	/**
-	 * @param dx
-	 *            La composante horizontale de la translation
-	 * @param dy
-	 *            La composante verticale de la translation
-	 * @return Une translation de composante horizontale <i>dx</i> et de
-	 *         composante verticale <i>dy</i>
-	 */
-	public static AffineTransformation newTranslation(double dx, double dy) {
-		return new AffineTransformation(1, 0, dx, 0, 1, dy);
-	}
-
-	/**
-	 * @param teta
-	 *            L'angle de la rotation
-	 * @return Une rotation d'angle <i>teta</i>
-	 */
-	public static AffineTransformation newRotation(double teta) {
-		return new AffineTransformation(Math.cos(teta), -Math.sin(teta), 0,
-				Math.sin(teta), Math.cos(teta), 0);
-	}
-
-	/**
-	 * @param sx
-	 *            Facteur de dilatation horizontal
-	 * @param sy
-	 *            Facteur de dilatation vertical
-	 * @return Une dilatation de facteur horizontal <i>sx</i> et de facteur
-	 *         vertical <i>sy</i>
-	 */
-	public static AffineTransformation newScaling(double sx, double sy) {
-		return new AffineTransformation(sx, 0, 0, 0, sy, 0);
-	}
-
-	/**
-	 * @param sx
-	 *            Facteur de transvection horizontal
-	 * @return Une transvection de facteur <i>sx</i> parallèlement à l'axe des
-	 *         abscisses
-	 */
-	public static AffineTransformation newShearX(double sx) {
-		return new AffineTransformation(1, sx, 0, 0, 1, 0);
-	}
-
-	/**
-	 * @param sy
-	 *            Facteur de transvection horizontal
-	 * @return Une transvection de facteur <i>sy</i> parallèlement à l'axe des
-	 *         ordonnées
-	 */
-	public static AffineTransformation newShearY(double sy) {
-		return new AffineTransformation(1, 0, 0, sy, 1, 0);
 	}
 }
