@@ -7,11 +7,15 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,8 +23,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
+import ch.epfl.flamemaker.FlameSet;
 import ch.epfl.flamemaker.anim.FlameAnimation;
-import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.Presets;
 
 public class FlameMakerGUI implements FlameSet.Listener {
@@ -28,10 +32,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	/**
 	 * Contient toutes les informations sur la fractale courante et ses informations d'affichage
 	 */
-	private FlameSet m_set = new FlameSet(Presets.SHARKFIN_FRACTALE);
-	
-	
-	private FlameAnimation m_anim = new FlameAnimation();
+	private FlameSet m_set = new FlameSet();
 	
 	/**
 	 * L'attribut observable représentant l'id de la transformation actuellement
@@ -68,13 +69,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	 */
 	private final AffineModificationComponent m_affineModificationComponent;
 
-	/**
-	 * Le panneau d'édition des transformations. Contient les composants
-	 * d'édition des composantes affines et de modification des poids des
-	 * variations. Final et initialisé dans le constructeur pour les mêmes
-	 * raisons que plus haut.
-	 */
-	private final TransformationsEditPanel m_transformationsEditPanel;
+	private final TimelineComponent m_timelineComponent;
 
 	/**
 	 * Le composant de modification des poids des variations. Final et
@@ -82,21 +77,20 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	 */
 	private final WeightsModificationComponent m_weightsModificationComponent;
 	
-	private final TimelineComponent m_timelineComponent;
+	private final FlamePreviewComponent m_previewComponent;
 	
 	/**
 	 * Le constructeur de la classe modélisant le GUI. Appelé pour lancer ce
 	 * dernier.
 	 */
 	public FlameMakerGUI() {
-		m_set = new FlameSet(Presets.SHARKFIN_FRACTALE);
 		m_set.addListener(this);
 		
 		m_affineTransformationComponent = new AffineTransformationsComponent(m_set);
 		m_affineModificationComponent = new AffineModificationComponent(m_set.getBuilder());
-		m_transformationsEditPanel = new TransformationsEditPanel(m_set.getBuilder());
+		m_timelineComponent = new TimelineComponent(m_set.getBuilder());
 		m_weightsModificationComponent = new WeightsModificationComponent(m_set.getBuilder());
-		m_timelineComponent = new TimelineComponent(m_anim);
+		m_previewComponent = new FlamePreviewComponent(m_set);
 	}
 	
 	
@@ -109,17 +103,15 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		Container contentPane = window.getContentPane();
-		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
+		contentPane.setLayout(new BorderLayout());
 		
 		JPanel upperPanel = buildUpperPanel();
 		JPanel lowerPanel = buildLowerPanel();
-		JPanel animPanel  = buildAnimPanel();
 		
-		contentPane.add(upperPanel);
-		contentPane.add(animPanel);
-		contentPane.add(lowerPanel);
+		contentPane.add(upperPanel, BorderLayout.CENTER);
+		contentPane.add(lowerPanel, BorderLayout.PAGE_END);
 		
-		JMenuBar menu = MenuBar.build(window, m_set, m_transformationsEditPanel.getListModel());
+		JMenuBar menu = MenuBar.build(window, m_set);
 		window.setJMenuBar(menu);
 		
 		window.pack();
@@ -132,13 +124,16 @@ public class FlameMakerGUI implements FlameSet.Listener {
 			public void onSelectedTransformationIdChange(int id) {
 				m_affineTransformationComponent.highlightedTransformationIndex(id);
 				m_affineModificationComponent.setSelectedTransformationIndex(id);
-				m_transformationsEditPanel.setSelectedTransformationIndex(id);
+				m_timelineComponent.setSelectedTransformationIndex(id);
 				m_weightsModificationComponent.setSelectedTransformationIndex(id);
 			}
 
 			@Override
 			public void onTimeChange(int time) {
+				m_previewComponent.setTime(time);
 				m_timelineComponent.setTime(time);
+				m_affineTransformationComponent.setTime(time);
+				m_affineModificationComponent.setTime(time);
 			}
 			
 		});
@@ -200,19 +195,25 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	private JPanel buildLowerPanel() {
 		JPanel lowerPanel = new JPanel();
 		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
+		
+		
 	
-		m_transformationsEditPanel.addListener(new TransformationsEditPanel.Listener(){
+		m_timelineComponent.addListener(new TimelineComponent.Listener(){
 	
 			@Override
 			public void onTransformationSelected(int transfoId) {
 				setSelectedTransformationId(transfoId);
 			}
 			
+			@Override
+			public void onTimeChange(int time) {
+				setTime(time);
+			}
 		});
 		
 		JPanel selectedTransformationEditPanel = buildSelectedTransformationEditPanel();
 		
-		lowerPanel.add(m_transformationsEditPanel);
+		lowerPanel.add(buildAnimPanel());
 		lowerPanel.add(selectedTransformationEditPanel);
 		
 		return lowerPanel;
@@ -223,26 +224,42 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	 */
 	private JPanel buildAnimPanel() {
 		JPanel animPanel = new JPanel();
-		animPanel.setLayout(new BoxLayout(animPanel, BoxLayout.LINE_AXIS));
+		animPanel.setLayout(new BorderLayout());
 		
-		JPanel controls = new JPanel();
-		controls.setLayout(new BoxLayout(controls, BoxLayout.LINE_AXIS));
+		JPanel topControls = new JPanel();
+		topControls.setLayout(new BoxLayout(topControls, BoxLayout.LINE_AXIS));
 		
-		controls.add(new JButton("<"));
-		controls.add(new JButton("Play"));
-		controls.add(new JButton(">"));
+		JButton prevFrameButton = new JButton("<");
+		JButton nextFrameButton = new JButton(">");
 		
-		animPanel.add(controls);
-		animPanel.add(m_timelineComponent);
-		
-		m_timelineComponent.addListener(new TimelineComponent.Listener(){
+
+		topControls.add(new JButton("add transfo."));
+		topControls.add(Box.createRigidArea(new Dimension(50, 0)));
+		topControls.add(prevFrameButton);
+		topControls.add(new JButton("Play"));
+		topControls.add(nextFrameButton);
+		nextFrameButton.addActionListener(new ActionListener(){
 
 			@Override
-			public void onTimeChange(int time) {
-				setTime(time);
+			public void actionPerformed(ActionEvent arg0) {
+				if(m_time < m_set.getBuilder().getDuration())
+					setTime(m_time+1);
 			}
 			
 		});
+		
+		prevFrameButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(m_time > 0)
+					setTime(m_time-1);
+			}
+			
+		});
+		
+		animPanel.add(topControls, BorderLayout.PAGE_START);
+		animPanel.add(m_timelineComponent, BorderLayout.CENTER);
 		
 		return animPanel;
 	}
@@ -258,7 +275,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		fractalPanel.setLayout(new BorderLayout());
 		fractalPanel.setBorder(BorderFactory.createTitledBorder("Fractale"));
 		
-		fractalPanel.add(new FlameBuilderPreviewComponent(m_set), BorderLayout.CENTER);
+		fractalPanel.add(m_previewComponent, BorderLayout.CENTER);
 		
 		return fractalPanel;
 	}
@@ -311,6 +328,8 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	}
 	
 	public void setTime(int time){
+		if(time == m_time) return;
+		
 		m_time = time;
 
 		for(Listener l: m_listeners) {

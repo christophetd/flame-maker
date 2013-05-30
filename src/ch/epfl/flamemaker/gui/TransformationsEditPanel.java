@@ -6,114 +6,43 @@
 package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import ch.epfl.flamemaker.Config;
-import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
-import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 @SuppressWarnings("serial")
 public class TransformationsEditPanel extends JPanel {
 
 	private List<Listener> m_listeners = new LinkedList<Listener>();
 	
-	private TransformationsListModel m_listModel;
+	private int m_time;
 	
 	JList m_transformationsList;
 	
-	public TransformationsEditPanel(final ObservableFlameBuilder flameBuilder){
-		JPanel transformationsEditButtons = new JPanel();
-		
+	public TransformationsEditPanel(final FlameAnimation.Builder animBuilder){
 		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createTitledBorder("Transformations"));
 		
-		m_listModel = new TransformationsListModel(flameBuilder);
-		
-		m_transformationsList = new JList(m_listModel);
-		
-		m_transformationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		m_transformationsList.setVisibleRowCount(5);
-		m_transformationsList.addListSelectionListener(new ListSelectionListener(){
-			@Override
-			public void valueChanged(ListSelectionEvent evt) {
-				notifyTransformationSelected(m_transformationsList.getSelectedIndex());
-			}
-		});
-		
-		JScrollPane transformationsPane = new JScrollPane(m_transformationsList);
-		
-		this.add(transformationsPane, BorderLayout.CENTER);
-		this.add(transformationsEditButtons, BorderLayout.PAGE_END);
-		
-		transformationsEditButtons.setLayout(new GridLayout(1, 2));
-
-		// Bouton 'supprimer'
-		final JButton deleteTransformationButton = new JButton("Supprimer");
-		deleteTransformationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int selectedIndex = m_transformationsList.getSelectedIndex();
-
-				if(selectedIndex != -1) {
-					m_listModel.removeTransformation(selectedIndex);
-					m_transformationsList.setSelectedIndex(Math.max(0, --selectedIndex));
-				}
-				if(flameBuilder.transformationsCount() == 1) {
-					deleteTransformationButton.setEnabled(false);
-				}
-			}
-		});
-		
-		JButton addTransformationButton = new JButton("Ajouter");
-		transformationsEditButtons.add(addTransformationButton);
-		transformationsEditButtons.add(deleteTransformationButton);
-		
-		addTransformationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(m_listModel.getSize() >= Config.MAX_TRANSFO_COUNT){
-					JOptionPane.showMessageDialog(null, "Nombre maximum de transformations atteint");
-				} else {
-					m_listModel.addTransformation(new FlameTransformation(
-							AffineTransformation.IDENTITY, 
-							new double[]{1, 0, 0, 0, 0, 0}						
-					));
-					
-					int newHighlightedIndex = flameBuilder.transformationsCount()-1;
-					
-					notifyTransformationSelected(newHighlightedIndex);
-					
-					if(!deleteTransformationButton.isEnabled() && flameBuilder.transformationsCount() > 1) {
-						deleteTransformationButton.setEnabled(true);
-					}
-				}
-			}
-		});
-		
-		m_transformationsList.setSelectedIndex(0);
+		this.add(new TimelineComponent(animBuilder), BorderLayout.CENTER);
 	}
 	
-	public TransformationsListModel getListModel(){
-		return m_listModel;
-	}
+	//private JPanel makeRow(){
+		
+	//}
 	
 	public void setSelectedTransformationIndex(int id) {
 		m_transformationsList.setSelectedIndex(id);
+	}
+	
+	public void setTime(int time){
+		m_time = time;
 	}
 	
 	
@@ -133,5 +62,6 @@ public class TransformationsEditPanel extends JPanel {
 	
 	public interface Listener {
 		public void onTransformationSelected(int transfoId);
+		public void onTimeChange(int time);
 	}
 }

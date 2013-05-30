@@ -21,7 +21,7 @@ import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 @SuppressWarnings("serial")
@@ -29,7 +29,9 @@ public class AffineModificationComponent extends JComponent {
 
 	private int selectedTransformationIndex;
 	
-	public AffineModificationComponent(final ObservableFlameBuilder flameBuilder){
+	private int m_time;
+	
+	public AffineModificationComponent(final FlameAnimation.Builder flameBuilder){
 		
 		GroupLayout affineGroup = new GroupLayout(this);
 		
@@ -78,11 +80,11 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
-					AffineTransformation.newTranslation(-1*((Number) translationFactor.getValue()).doubleValue(), 0)
+						AffineTransformation.newTranslation(-1*((Number) translationFactor.getValue()).doubleValue(), 0)
 						.composeWith(t)
-				);
+					, m_time);
 			}	
 		});
 		H3.addComponent(translationLeftButton);
@@ -93,11 +95,11 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
-					AffineTransformation.newTranslation(((Number) translationFactor.getValue()).doubleValue(), 0)
+						AffineTransformation.newTranslation(((Number) translationFactor.getValue()).doubleValue(), 0)
 						.composeWith(t)
-				);
+						, m_time);
 			}	
 		});
 		H4.addComponent(translationRightButton);
@@ -108,11 +110,11 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
-					AffineTransformation.newTranslation(0, ((Number) translationFactor.getValue()).doubleValue())
+						AffineTransformation.newTranslation(0, ((Number) translationFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 			}	
 		});
 		H5.addComponent(translationUpButton);
@@ -123,11 +125,11 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
-					AffineTransformation.newTranslation(0, -1 * ((Number) translationFactor.getValue()).doubleValue())
+						AffineTransformation.newTranslation(0, -1 * ((Number) translationFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 			}	
 		});
 		H6.addComponent(translationDownButton);
@@ -148,12 +150,12 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
-					AffineTransformation
+						AffineTransformation
 						.newRotation((Math.PI/180) * ((Number) rotationFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 			}	
 		});
 		H3.addComponent(rotationPositiveButton);
@@ -164,12 +166,12 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newRotation(-(Math.PI/180) * ((Number) rotationFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 			}	
 		});
 		H4.addComponent(rotationNegativeButton);
@@ -192,12 +194,12 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newScaling(((Number) dilatationFactor.getValue()).doubleValue(), 1)
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -209,12 +211,12 @@ public class AffineModificationComponent extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Translation d'abord
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newScaling(1/((Number) dilatationFactor.getValue()).doubleValue(), 1)
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -225,12 +227,12 @@ public class AffineModificationComponent extends JComponent {
 		dilatationVPlusButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newScaling(1, ((Number) dilatationFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -241,12 +243,12 @@ public class AffineModificationComponent extends JComponent {
 		dilatationVMinusButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newScaling(1, 1/((Number) dilatationFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -267,12 +269,12 @@ public class AffineModificationComponent extends JComponent {
 		transvectionLeftButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newShearX(-((Number)transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -283,12 +285,12 @@ public class AffineModificationComponent extends JComponent {
 		transvectionRightButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newShearX(((Number) transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -299,12 +301,12 @@ public class AffineModificationComponent extends JComponent {
 		transvectionUpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newShearY(((Number) transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -315,12 +317,12 @@ public class AffineModificationComponent extends JComponent {
 		transvectionDownButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex);
+				AffineTransformation t = flameBuilder.affineTransformation(selectedTransformationIndex, m_time);
 				flameBuilder.setAffineTransformation(selectedTransformationIndex, 
 					AffineTransformation
 						.newShearY(-((Number) transvectionFactor.getValue()).doubleValue())
 						.composeWith(t)
-				);
+						, m_time);
 				
 			}	
 		});
@@ -402,5 +404,9 @@ public class AffineModificationComponent extends JComponent {
 
 	public void setSelectedTransformationIndex(int id) {
 		this.selectedTransformationIndex = id;		
+	}
+	
+	public void setTime(int time){
+		m_time = time;
 	}
 }

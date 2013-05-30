@@ -15,6 +15,8 @@ import java.io.ObjectOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import ch.epfl.flamemaker.SerializableFlameSet;
+
 /**
  *	Classe permettant d'enregistrer ou de récupérer d'un fichier une
  *	liste de transformations FlameTransformation

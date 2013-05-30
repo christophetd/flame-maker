@@ -18,9 +18,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
+import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameUtils;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
@@ -31,7 +32,7 @@ import ch.epfl.flamemaker.geometry2d.Rectangle;
  * Ce component dessine la fractale définie par les paramètres du GUI
  */
 @SuppressWarnings("serial")
-public class FlameBuilderPreviewComponent extends JComponent {
+public class FlamePreviewComponent extends JComponent {
 	
 	static public final double ZOOM_FACTOR = 1.1;
 	
@@ -49,11 +50,13 @@ public class FlameBuilderPreviewComponent extends JComponent {
 	
 	private FlameSet m_set;
 	
-	private Flame m_flame;
-	
 	private boolean m_preventRecompute;
 	
 	private FlameAccumulator m_accu;
+	
+	private Flame m_flame;
+	
+	private int m_time;
 	
 	private BufferedImage m_image;
 	
@@ -68,16 +71,16 @@ public class FlameBuilderPreviewComponent extends JComponent {
 	 * Constructeur, initialise les arguments.
 	 * @param set ensemble des propriétés de la fractale à dessiner
 	 */
-	public FlameBuilderPreviewComponent(FlameSet set){
+	public FlamePreviewComponent(FlameSet set){
 		
 		m_set = set;
 		
 		m_lastFrame = set.getFrame().toRectangle();
 		
-		set.getBuilder().addListener(new ObservableFlameBuilder.Listener(){
+		set.getBuilder().addListener(new FlameAnimation.Builder.Listener(){
 
 			@Override
-			public void onFlameBuilderChange(ObservableFlameBuilder b) {
+			public void onFlameBuilderChange(FlameAnimation.Builder b) {
 				recompute();
 			}
 			
@@ -284,7 +287,7 @@ public class FlameBuilderPreviewComponent extends JComponent {
 		
 		
 		// On peut maintenant calculer la fractale avec les paramètres de taille
-		m_flame = m_set.getBuilder().build();
+		m_flame = m_set.getBuilder().build().getFlame(m_time);
 		m_flame.addListener(new Flame.Listener() {
 			
 			@Override
@@ -333,5 +336,10 @@ public class FlameBuilderPreviewComponent extends JComponent {
 	@Override
 	public Dimension getPreferredSize(){
 		return new Dimension(200, 100);
+	}
+	
+	public void setTime(int time){
+		m_time = time;
+		recompute();
 	}
 }

@@ -1,7 +1,15 @@
 package ch.epfl.flamemaker.anim;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import ch.epfl.flamemaker.flame.Flame;
+import ch.epfl.flamemaker.flame.FlameFactory;
+import ch.epfl.flamemaker.flame.FlameTransformation;
+import ch.epfl.flamemaker.flame.Variations;
+import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 public class FlameAnimation {
 	
@@ -9,17 +17,146 @@ public class FlameAnimation {
 	
 	private final int m_duration;
 	
-	private final List<KeyFrame> m_frames = new ArrayList<KeyFrame>();
+	private final List<TransformationAnimation> m_transforms;
 	
-	public FlameAnimation(){
-		m_duration = 240;
+	private final FlameFactory m_factory;
+	
+	public FlameAnimation(List<TransformationAnimation> transforms, FlameFactory factory, int duration){
+		m_duration = duration;
+		m_transforms = new ArrayList<TransformationAnimation>(transforms);
+		m_factory = factory;
 	}
 	
-	public final void computeFrame(int frameNb) {
-		
+	public final Flame getFlame(int time){
+		return null; // TODO
+	}
+	
+	public void computeFrame(int frame){
+		//TODO
 	}
 	
 	public int getDuration(){
 		return m_duration;
+	}
+	
+	public static class Builder{
+		
+		private int m_duration;
+		
+		private List<TransformationAnimation> m_transformations = new ArrayList<TransformationAnimation>();
+		
+		private Set<Listener> m_listeners = new HashSet<Listener>();
+		
+		private FlameFactory m_factory;
+		
+		public Builder(FlameAnimation source, FlameFactory factory){
+			for(TransformationAnimation transformation : source.m_transforms) {
+				m_transformations.add(new TransformationAnimation(transformation));
+			}
+			
+			m_factory = factory;
+		}
+		
+		public Builder(FlameAnimation source){
+			for(TransformationAnimation transformation : source.m_transforms) {
+				m_transformations.add(new TransformationAnimation(transformation));
+			}
+			
+			for(FlameFactory f : FlameFactory.ALL_FACTORIES){
+				if(f.isSupported()){
+					m_factory = f;
+					m_factory.enable();
+					break;
+				}
+			}
+		}
+		
+		public void setDuration(int duration){
+			m_duration = duration;
+			notifyListeners();
+		}
+		
+		public int getDuration(){
+			return m_duration;
+		}
+		
+		public FlameAnimation build(){
+			return new FlameAnimation(m_transformations, m_factory, m_duration);
+		}
+		
+		public int transformationsCount(){
+			return m_transformations.size();
+		}
+		
+		public TransformationAnimation getTransformation(int id){
+			return m_transformations.get(id);
+		}
+		
+		public AffineTransformation affineTransformation(int id, int time){
+			return m_transformations.get(id).get(time).affineTransformation();
+		}
+		
+		public void setAffineTransformation(int id, AffineTransformation trns, int time){
+			FlameTransformation.Builder builder = new FlameTransformation.Builder(m_transformations.get(id).get(time));
+			
+			builder.setAffineTransformation(trns);
+			
+			m_transformations.get(id).set(new AnimableTransformation(builder.build()), time);
+			
+			notifyListeners();
+		}
+		
+		public FlameFactory getComputeStrategy(){
+			return m_factory;
+		}
+		
+		public void setComputeStrategy(FlameFactory factory){
+			m_factory = factory;
+			
+			notifyListeners();
+		}
+		
+		public double getVariationWeight(int index, Variations variation, int time) {
+			checkIndex(index);
+			
+			return m_transformations.get(index).get(time).weight(variation.index());
+		}
+		
+		public void setVariationWeight(int index, Variations variation,
+				double newWeight) {
+	
+			checkIndex(index);
+			
+			m_transformations.get(index)
+					.setWeight(variation.index(), newWeight);
+			
+			notifyListeners();
+		}
+		
+		private void notifyListeners(){
+			for(Listener l : m_listeners){
+				l.onFlameBuilderChange(this);
+			}
+		}
+		
+		private void checkIndex(int index) {
+			if (index < 0 || index >= m_transformations.size()) {
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		
+		
+		public void addListener(Listener l){
+			m_listeners.add(l);
+		}
+		
+		public void removeListener(Listener l){
+			m_listeners.add(l);
+		}
+		
+		public interface Listener{
+			public void onFlameBuilderChange(Builder b);
+		}
 	}
 }

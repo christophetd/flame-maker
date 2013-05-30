@@ -3,15 +3,17 @@
  * @author Christophe Tafani-Dereeper <Sciper : 223529>
  */
 
-package ch.epfl.flamemaker.flame;
+package ch.epfl.flamemaker;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import ch.epfl.flamemaker.anim.FlameAnimation;
+import ch.epfl.flamemaker.anim.TransformationAnimation;
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.file.SerializableFlameSet;
+import ch.epfl.flamemaker.flame.Presets;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
@@ -34,7 +36,7 @@ public class FlameSet {
 	// Attributs correspondant à l'ensemble des éléments pour la génération et le dessin d'une fractale
 	
 	/** constructeur de fractale */
-	private ObservableFlameBuilder m_flameBuilder;
+	private FlameAnimation.Builder m_flameBuilder;
 	/** Couleur de fond */
 	private Color m_backgroundColor;
 	/** Palette de couleur pour le dessin */
@@ -50,22 +52,22 @@ public class FlameSet {
 	/** Construit un set par défaut */
 	public FlameSet(){
 		m_frame = new ObservableRectangle(new Rectangle(new Point(0,0), 5,5));
-		m_flameBuilder = new ObservableFlameBuilder(new Flame(new ArrayList<FlameTransformation>()));
+		m_flameBuilder = new FlameAnimation.Builder(new FlameAnimation(new ArrayList<TransformationAnimation>(), null, 240));
 		m_backgroundColor = Color.BLACK;
 		m_density = DEFAULT_DENSITY;
 	}
 	
 	/** Construit un set selon le preset fourni en argument */
-	public FlameSet(Presets preset){
+	/*public FlameSet(Presets preset){
 		m_frame = new ObservableRectangle(preset.frame());
-		m_flameBuilder = new ObservableFlameBuilder(new Flame(preset.transformations()));
+		m_flameBuilder = new FlameAnimation.Builder(new FlameAnimation(preset.transformations()));
 		m_palette = preset.palette();
 		m_backgroundColor = Color.BLACK;
 		m_density = DEFAULT_DENSITY;
-	}
+	}*/
 	
 	/** @return constructeur de flame observable associé au set */
-	public ObservableFlameBuilder getBuilder(){
+	public FlameAnimation.Builder getBuilder(){
 		return m_flameBuilder;
 	}
 	
@@ -93,7 +95,7 @@ public class FlameSet {
 	 * Charge un preset dans le set sélectionné et informe les observateur d'une modification du set.
 	 * @param preset préréglage à charger.
 	 */
-	public void loadPreset(Presets preset){
+	/*public void loadPreset(Presets preset){
 		m_palette = preset.palette();
 		m_frame.set(preset.frame());
 		m_flameBuilder.set(new Flame(preset.transformations()));
@@ -109,7 +111,7 @@ public class FlameSet {
 		m_flameBuilder.set(new Flame(other.getTransformationsList()));
 		
 		notifyListeners();
-	}
+	}*/
 	
 	/**
 	 * Ajoute un observateur au set.

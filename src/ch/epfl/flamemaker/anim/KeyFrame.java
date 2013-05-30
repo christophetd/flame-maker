@@ -12,9 +12,12 @@ public class KeyFrame {
 	private final List<FlameTransformation> m_transformations;
 	private final Palette m_colorPalette;
 	
-	public KeyFrame(Rectangle viewport, List<FlameTransformation> transformations, Palette colorPalette){
+	private final int m_position;
+	
+	public KeyFrame(Rectangle viewport, List<FlameTransformation> transformations, Palette colorPalette, int position){
 		m_viewport = viewport;
 		m_transformations = transformations;
 		m_colorPalette = colorPalette;
+		m_position = position;
 	}
 }

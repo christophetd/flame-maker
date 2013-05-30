@@ -1,20 +1,20 @@
-package ch.epfl.flamemaker.file;
+package ch.epfl.flamemaker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import ch.epfl.flamemaker.anim.TransformationAnimation;
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
-import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameTransformation;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.geometry2d.Rectangle;
 
 public class SerializableFlameSet implements Serializable {
 	
 	private static final long serialVersionUID = 6762950268081380270L;
 
-	private ArrayList<FlameTransformation> m_transformationsList = new ArrayList<FlameTransformation>();
+	private ArrayList<TransformationAnimation> m_transformationsList = new ArrayList<TransformationAnimation>();
 
 	
 	private Color m_backgroundColor;
@@ -33,13 +33,13 @@ public class SerializableFlameSet implements Serializable {
 		buildTransformationsList(set.getBuilder());
 	}
 	
-	private void buildTransformationsList(ObservableFlameBuilder builder) {
+	private void buildTransformationsList(FlameAnimation.Builder builder) {
 		for(int i = 0; i < builder.transformationsCount(); i++) {
 			m_transformationsList.add(builder.getTransformation(i));
 		}
 	}
 	
-	public ArrayList<FlameTransformation> getTransformationsList() {
+	public ArrayList<TransformationAnimation> getTransformationsList() {
 		return m_transformationsList;
 	}
 

@@ -19,8 +19,8 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import ch.epfl.flamemaker.flame.FlameSet;
-import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
+import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 import ch.epfl.flamemaker.geometry2d.ObservableRectangle;
 import ch.epfl.flamemaker.geometry2d.Point;
@@ -31,7 +31,7 @@ import ch.epfl.flamemaker.geometry2d.Transformation;
 @SuppressWarnings("serial")
 public class AffineTransformationsComponent extends JComponent {
 	
-	private ObservableFlameBuilder m_builder;
+	private FlameAnimation.Builder m_builder;
 	
 	private ObservableRectangle m_frame;
 
@@ -40,6 +40,8 @@ public class AffineTransformationsComponent extends JComponent {
 	private List<Rectangle> m_boundingBoxes = new ArrayList<Rectangle>();
 	
 	private List<Listener> m_listeners = new LinkedList<Listener>();
+	
+	private int m_time;
 	
 	public AffineTransformationsComponent(FlameSet set) {
 		m_builder = set.getBuilder();
@@ -52,10 +54,10 @@ public class AffineTransformationsComponent extends JComponent {
 			}
 		});
 		
-		m_builder.addListener(new ObservableFlameBuilder.Listener(){
+		m_builder.addListener(new FlameAnimation.Builder.Listener(){
 
 			@Override
-			public void onFlameBuilderChange(ObservableFlameBuilder b) {
+			public void onFlameBuilderChange(FlameAnimation.Builder b) {
 				repaint();
 			}
 			
@@ -108,6 +110,10 @@ public class AffineTransformationsComponent extends JComponent {
 	
 	public int highlightedTransformationIndex() {
 		return m_highlightedTransformationIndex;
+	}
+	
+	public void setTime(int time){
+		m_time = time;
 	}
 	
 	@Override
@@ -191,7 +197,7 @@ public class AffineTransformationsComponent extends JComponent {
 		// On commence par dessiner toutes les transformations, sauf celle qui est surlignée
 		for(int numTransfo = 0; numTransfo < m_builder.transformationsCount(); numTransfo++) {
 			
-			transfo = m_builder.affineTransformation(numTransfo);
+			transfo = m_builder.affineTransformation(numTransfo, m_time);
 
 			horizontalArrow = new Arrow(horizontalArrowCoordinates[0], horizontalArrowCoordinates[1]);
 			verticalArrow = new Arrow(verticalArrowCoordinates[0], verticalArrowCoordinates[1]);
@@ -217,7 +223,7 @@ public class AffineTransformationsComponent extends JComponent {
 			 * s'affiche au dessus des autres s'il y a un chevauchement) */
 			g.setColor(Color.red);
 
-			transfo = m_builder.affineTransformation(m_highlightedTransformationIndex);
+			transfo = m_builder.affineTransformation(m_highlightedTransformationIndex, m_time);
 			horizontalArrow = new Arrow(horizontalArrowCoordinates[0], horizontalArrowCoordinates[1]);
 			verticalArrow = new Arrow(verticalArrowCoordinates[0], verticalArrowCoordinates[1]);
 			

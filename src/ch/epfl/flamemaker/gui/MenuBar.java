@@ -22,12 +22,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
+import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.SerializableFlameSet;
 import ch.epfl.flamemaker.file.FlameFile;
 import ch.epfl.flamemaker.file.FlameFileFilter;
 import ch.epfl.flamemaker.file.InvalidFlameFileException;
-import ch.epfl.flamemaker.file.SerializableFlameSet;
 import ch.epfl.flamemaker.flame.FlameFactory;
-import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.Presets;
 
 /**
@@ -48,11 +48,8 @@ public class MenuBar {
 	 *            l'occurrence, la fenêtre principale du GUI)
 	 * @param set
 	 *            Le FlameSet contenant les informations de la fractale
-	 * @param transformationsListModel
-	 *            Le modèle de la liste des transformations
 	 */
-	public static JMenuBar build(final JFrame window, final FlameSet set,
-			final TransformationsListModel transformationsListModel) {
+	public static JMenuBar build(final JFrame window, final FlameSet set) {
 		
 		final JMenuBar menuBar = new JMenuBar();
 
@@ -68,7 +65,8 @@ public class MenuBar {
 
 		// On remplit le sous-menu de "Nouveau à partir d'un modèle" avec les
 		// fractales pré-définies existantes
-		for (final Presets p : Presets.values()) {
+		// TODO : reenable this
+		/*for (final Presets p : Presets.values()) {
 			JMenuItem item = new JMenuItem(p.displayableName());
 			newFromMenuItem.add(item);
 			item.addActionListener(new ActionListener() {
@@ -78,7 +76,7 @@ public class MenuBar {
 					set.loadPreset(p);
 				}
 			});
-		}
+		}*/
 
 		fileMenu.add(openMenuItem);
 		fileMenu.add(newMenuItem);
@@ -153,13 +151,14 @@ public class MenuBar {
 
 		// Lorsque l'utilisateur sélectionne le menu "Fichir > Nouveau", on remplace la
 		// fractale existante par une nouvelle, vide
-		newMenuItem.addActionListener(new ActionListener() {
+		// TODO : re-enable this
+		/*newMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				set.loadPreset(Presets.EMPTY_PRESET);
 			}
 
-		});
+		});*/
 		
 		// Affiche quelques informations à propos du programme
 		aboutMenuItem.addActionListener(new ActionListener() {
@@ -191,7 +190,8 @@ public class MenuBar {
 					try {
 						SerializableFlameSet newSet = FlameFile
 								.getSerializableFlameSetFromFile(filePath);
-						set.importDataFrom(newSet);
+						// TODO : re-enable this
+						// set.importDataFrom(newSet);
 
 //						set.setAll(newSet);
 //						// Une fois la liste des transformations récupérée, on supprime

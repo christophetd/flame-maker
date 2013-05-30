@@ -32,10 +32,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.file.FlameFileFilter;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
-import ch.epfl.flamemaker.flame.FlameSet;
 import ch.epfl.flamemaker.flame.FlameUtils;
 
 @SuppressWarnings("serial")
@@ -201,7 +202,7 @@ public class ExportWindow extends JFrame implements Flame.Listener {
 					
 					// On construit l'objet Flame et on s'enregistre comme 
 					// observateur, pour être notifié de l'avancement du calcul
-					final Flame flame = set.getBuilder().build();
+					final Flame flame = set.getBuilder().build().getFlame(0);
 					flame.addListener(flameListener);
 					
 					// Au clic du bouton d'annulation, on annule l'exportation

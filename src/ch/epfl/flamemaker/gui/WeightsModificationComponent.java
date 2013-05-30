@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 
+import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.flame.ObservableFlameBuilder;
 import ch.epfl.flamemaker.flame.Variations;
 
@@ -35,7 +36,7 @@ public class WeightsModificationComponent extends JComponent {
 	/**
 	 * Le bâtisseur de la fractale
 	 */
-	final private ObservableFlameBuilder flameBuilder;
+	final private FlameAnimation.Builder flameBuilder;
 
 	/**
 	 * La transformation actuellement sélectionnée
@@ -54,7 +55,7 @@ public class WeightsModificationComponent extends JComponent {
 	 *            Le bâtisseur de la fractale
 	 */
 	public WeightsModificationComponent(
-			final ObservableFlameBuilder flameBuilder) {
+			final FlameAnimation.Builder flameBuilder) {
 		this.flameBuilder = flameBuilder;
 
 		GroupLayout weightsGroup = new GroupLayout(this);

@@ -187,7 +187,7 @@ public class FlameTransformation implements Transformation, Serializable {
 		 * Vérifie si l'index passé en paramètre est valide pour le tableau des poids
 		 * @param index L'index à vérifier
 		 */
-		public void checkWeightIndex(int index) {
+		private void checkWeightIndex(int index) {
 			if(index < 0 || index >= m_weights.length) {
 				throw new IllegalArgumentException();
 			}

@@ -2,6 +2,7 @@ package ch.epfl.flamemaker.gui;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -20,7 +21,7 @@ public class TimelineComponent extends JComponent{
 
 	private static final long serialVersionUID = 1347861945789465193L;
 
-	private FlameAnimation m_anim;
+	private FlameAnimation.Builder m_anim;
 	
 	private int m_time;
 	
@@ -29,9 +30,9 @@ public class TimelineComponent extends JComponent{
 	// User interaction variables
 	private boolean m_draggingCursor;
 	
-	public TimelineComponent(FlameAnimation anim) {
+	public TimelineComponent(FlameAnimation.Builder anim) {
 		m_anim = anim;
-		
+		setPreferredSize(new Dimension(500, 200));
 		createBehaviour();
 	}
 	
@@ -50,20 +51,21 @@ public class TimelineComponent extends JComponent{
 		
 		
 		for(int i = 0 ; i < duration ; i++){
-			g0.draw( new Line2D.Double(blockLength * i, getHeight()/2, blockLength * i, getHeight()));
+			g0.draw( new Line2D.Double(blockLength * i, 0, blockLength * i, 20));
 		}
 		
 		for(int i = 0 ; i < 4*duration ; i++){
-			g0.draw( new Line2D.Double(blockLength/4 * i, 3*getHeight()/4, blockLength/4 * i, getHeight()));
+			g0.draw( new Line2D.Double(blockLength/4 * i, 0, blockLength/4 * i, 10));
 		}
 		
-		// Draws the cursor
 		
+		// Draws a dummy keyframe
+		//drawKeyFrame(g0, getWidth()/9);
+		
+		// Draws the cursor
 		double cursorPos = (double)m_time/m_anim.getDuration() * getWidth();
 		g0.setColor(Color.RED);
 		g0.draw( new Line2D.Double(cursorPos, 0, cursorPos, getHeight()));
-		
-		drawKeyFrame(g0, getWidth()/9);
 	}
 	
 	private void drawKeyFrame(final Graphics2D g0, double x){
@@ -79,6 +81,10 @@ public class TimelineComponent extends JComponent{
 	public void setTime(int time){
 		m_time = time;
 		repaint();
+	}
+	
+	public void setSelectedTransformationIndex(int id){
+		
 	}
 	
 	private void changeTime(int t){
@@ -163,5 +169,6 @@ public class TimelineComponent extends JComponent{
 	
 	public interface Listener{
 		public void onTimeChange(int time);
+		public void onTransformationSelected(int id);
 	}
 }
