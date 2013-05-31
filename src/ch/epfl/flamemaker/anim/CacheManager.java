@@ -1,7 +1,6 @@
 package ch.epfl.flamemaker.anim;
 
 import java.awt.image.BufferedImage;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +12,6 @@ import ch.epfl.flamemaker.anim.FlameAnimation.Builder;
 public class CacheManager {
 	
 	private FlameAnimation.Builder m_flameBuilder;
-	
-	private ReferenceQueue<BufferedImage> m_queue = new ReferenceQueue<BufferedImage>();
 	
 	private Map<Integer, SoftReference<BufferedImage>> m_cache;
 	
@@ -30,21 +27,6 @@ public class CacheManager {
 				clear();
 			}
 		});
-	}
-	
-	public boolean[] getAvailabilityMap(){
-		boolean[] out = new boolean[m_flameBuilder.getDuration()+1];
-		
-		for(int i = 0 ; i < out.length ; i++){
-			SoftReference<BufferedImage> ref = m_cache.get(i);
-			if(ref != null){
-				out[i] = (ref.get() != null);
-			} else {
-				out[i] = false;
-			}
-		}
-		
-		return out;
 	}
 	
 	public boolean available(int frame){

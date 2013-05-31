@@ -2,7 +2,9 @@ package ch.epfl.flamemaker.anim;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import ch.epfl.flamemaker.flame.Flame;
@@ -17,13 +19,13 @@ public class FlameAnimation {
 	
 	private final int m_duration;
 	
-	private final List<TransformationAnimation> m_transforms;
+	private final List<Animation<FlameTransformation>> m_transforms;
 	
 	private final FlameFactory m_factory;
 	
-	public FlameAnimation(List<TransformationAnimation> transforms, FlameFactory factory, int duration){
+	public FlameAnimation(List<Animation<FlameTransformation>> transforms, FlameFactory factory, int duration){
 		m_duration = duration;
-		m_transforms = new ArrayList<TransformationAnimation>(transforms);
+		m_transforms = new ArrayList<Animation<FlameTransformation>>(transforms);
 		m_factory = factory;
 	}
 	
@@ -31,7 +33,7 @@ public class FlameAnimation {
 		
 		List<FlameTransformation> transformations = new ArrayList<FlameTransformation>(m_transforms.size());
 		
-		for(TransformationAnimation t : m_transforms){
+		for(Animation<FlameTransformation> t : m_transforms){
 			transformations.add(t.get(time));
 		}
 		
@@ -40,35 +42,39 @@ public class FlameAnimation {
 		return builder.build();
 	}
 	
-	public void computeFrame(int frame){
-		//TODO
-	}
-	
 	public int getDuration(){
 		return m_duration;
+	}
+	
+	public int transformationsCount(){
+		return m_transforms.size();
+	}
+	
+	public Animation<FlameTransformation> getTransformation(int id){
+		return m_transforms.get(id);
 	}
 	
 	public static class Builder{
 		
 		private int m_duration = 168;
 		
-		private List<TransformationAnimation> m_transformations = new ArrayList<TransformationAnimation>();
+		private List<Animation<FlameTransformation>> m_transformations = new ArrayList<Animation<FlameTransformation>>();
 		
 		private Set<Listener> m_listeners = new HashSet<Listener>();
 		
 		private FlameFactory m_factory;
 		
 		public Builder(FlameAnimation source, FlameFactory factory){
-			for(TransformationAnimation transformation : source.m_transforms) {
-				m_transformations.add(new TransformationAnimation(transformation));
+			for(Animation<FlameTransformation> transformation : source.m_transforms) {
+				m_transformations.add(new Animation<FlameTransformation>(transformation));
 			}
 			
 			m_factory = factory;
 		}
 		
 		public Builder(FlameAnimation source){
-			for(TransformationAnimation transformation : source.m_transforms) {
-				m_transformations.add(new TransformationAnimation(transformation));
+			for(Animation<FlameTransformation> transformation : source.m_transforms) {
+				m_transformations.add(new Animation<FlameTransformation>(transformation));
 			}
 			
 			for(FlameFactory f : FlameFactory.ALL_FACTORIES){
@@ -97,12 +103,18 @@ public class FlameAnimation {
 			return m_transformations.size();
 		}
 		
-		public TransformationAnimation getTransformation(int id){
+		public Animation<FlameTransformation> getTransformation(int id){
 			return m_transformations.get(id);
 		}
 		
-		public void addTransformation(TransformationAnimation transformation) {
-			m_transformations.add(new TransformationAnimation(transformation));
+		public void addTransformation(Animation<FlameTransformation> transformation) {
+			m_transformations.add(new Animation<FlameTransformation>(transformation));
+			notifyListeners();
+		}
+		
+		public void setTransformation(int id, Animation<FlameTransformation> transformation){
+			m_transformations.set(id, transformation);
+			notifyListeners();
 		}
 		
 		public AffineTransformation affineTransformation(int id, int time){
@@ -110,11 +122,13 @@ public class FlameAnimation {
 		}
 		
 		public void setAffineTransformation(int id, AffineTransformation trns, int time){
-			FlameTransformation.Builder builder = new FlameTransformation.Builder(m_transformations.get(id).get(time));
 			
+			Animation.Builder<FlameTransformation> animBuilder = new Animation.Builder<FlameTransformation>(m_transformations.get(id));
+			FlameTransformation.Builder builder = new FlameTransformation.Builder(animBuilder.get(time));
 			builder.setAffineTransformation(trns);
+			animBuilder.set(new AnimableTransformation(builder.build()), time);
 			
-			m_transformations.get(id).set(new AnimableTransformation(builder.build()), time);
+			m_transformations.set(id, animBuilder.build());
 			
 			notifyListeners();
 		}
@@ -136,11 +150,12 @@ public class FlameAnimation {
 		}
 		
 		public void setVariationWeight(int id, Variations variation, double newWeight, int time) {
-			FlameTransformation.Builder builder = new FlameTransformation.Builder(m_transformations.get(id).get(time));
-			
+			Animation.Builder<FlameTransformation> animBuilder = new Animation.Builder<FlameTransformation>(m_transformations.get(id));
+			FlameTransformation.Builder builder = new FlameTransformation.Builder(animBuilder.get(time));
 			builder.setWeight(variation.index(), newWeight);
+			animBuilder.set(new AnimableTransformation(builder.build()), time);
 			
-			m_transformations.get(id).set(new AnimableTransformation(builder.build()), time);
+			m_transformations.set(id, animBuilder.build());
 			
 			notifyListeners();
 		}

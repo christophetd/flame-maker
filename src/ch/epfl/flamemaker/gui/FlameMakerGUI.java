@@ -251,8 +251,10 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		
 		final JButton prevFrameButton = new JButton("<");
 		final JButton nextFrameButton = new JButton(">");
+		final JButton delKeyframe = new JButton("-");
 		
 		topControls.add(new JButton("add transfo."));
+		topControls.add(delKeyframe);
 		topControls.add(Box.createRigidArea(new Dimension(50, 0)));
 		topControls.add(prevFrameButton);
 		topControls.add(m_playButton);
@@ -270,6 +272,14 @@ public class FlameMakerGUI implements FlameSet.Listener {
 				}
 			}
 			
+		});
+		
+		delKeyframe.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				m_timelineComponent.deleteKeyframe();
+			}
 		});
 		
 		nextFrameButton.addActionListener(new ActionListener(){

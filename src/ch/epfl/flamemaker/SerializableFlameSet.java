@@ -3,7 +3,7 @@ package ch.epfl.flamemaker;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import ch.epfl.flamemaker.anim.TransformationAnimation;
+import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.Palette;
@@ -14,7 +14,7 @@ public class SerializableFlameSet implements Serializable {
 	
 	private static final long serialVersionUID = 6762950268081380270L;
 
-	private ArrayList<TransformationAnimation> m_transformationsList = new ArrayList<TransformationAnimation>();
+	private ArrayList<Animation<FlameTransformation>> m_transformationsList = new ArrayList<Animation<FlameTransformation>>();
 
 	
 	private Color m_backgroundColor;
@@ -39,7 +39,7 @@ public class SerializableFlameSet implements Serializable {
 		}
 	}
 	
-	public ArrayList<TransformationAnimation> getTransformationsList() {
+	public ArrayList<Animation<FlameTransformation>> getTransformationsList() {
 		return m_transformationsList;
 	}
 

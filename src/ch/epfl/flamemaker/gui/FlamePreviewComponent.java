@@ -54,7 +54,10 @@ public class FlamePreviewComponent extends JComponent {
 	
 	private Flame m_flame;
 	
-	private int m_time;
+	private Integer m_time;
+	
+	// Keeps track of the time at which last compute was started
+	private int m_lastTime;
 	
 	private BufferedImage m_image;
 	
@@ -75,6 +78,7 @@ public class FlamePreviewComponent extends JComponent {
 		
 		m_cache = cache;
 		m_set = set;
+		m_time = 0;
 		
 		m_lastFrame = set.getFrame().toRectangle();
 		
@@ -278,11 +282,13 @@ public class FlamePreviewComponent extends JComponent {
 		if(image != null){
 			// This creates a strong reference to the current image which prevents it from GC. Awesome !
 			m_image = image;
+			m_displayProgress = false; // just in case
 			repaint();
 			return;
 		}
 		
 		
+		m_lastTime = m_time;
 		// On peut maintenant calculer la fractale avec les paramètres de taille
 		m_flame = m_set.getBuilder().build().getFlame(m_time);
 		m_flame.addListener(new Flame.Listener() {
@@ -298,16 +304,20 @@ public class FlamePreviewComponent extends JComponent {
 			
 			@Override
 			public void onComputeDone(FlameAccumulator accumulator) {
-				m_displayProgress = false;
-				
-				m_lastFrame = m_set.getFrame().toRectangle();
-				
-				m_image = FlameUtils.generateBufferedImage(accumulator, m_set);
-				m_cache.setFrame(m_time, m_image);
-				
-				m_drawingRect = new Rectangle(new Point(getWidth()/2, getHeight()/2), getWidth(), getHeight());
-				
-				repaint();
+				synchronized(m_time){
+					if(m_lastTime != m_time) return; // This end of compute comes too late
+					
+					m_displayProgress = false;
+					
+					m_lastFrame = m_set.getFrame().toRectangle();
+					
+					m_image = FlameUtils.generateBufferedImage(accumulator, m_set);
+					m_cache.setFrame(m_time, m_image);
+					
+					m_drawingRect = new Rectangle(new Point(getWidth()/2, getHeight()/2), getWidth(), getHeight());
+					
+					repaint();
+				}
 			}
 
 			@Override
@@ -336,7 +346,9 @@ public class FlamePreviewComponent extends JComponent {
 	}
 	
 	public void setTime(int time){
-		m_time = time;
-		recompute();
+		synchronized(m_time){
+			m_time = time;
+			recompute();
+		}
 	}
 }

@@ -15,26 +15,52 @@ import java.util.TreeSet;
 
 import javax.swing.JComponent;
 
+import ch.epfl.flamemaker.anim.AnimableTransformation;
+import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
+import ch.epfl.flamemaker.flame.FlameTransformation;
 
 public class TimelineComponent extends JComponent{
 
 	private static final long serialVersionUID = 1347861945789465193L;
 
-	private final FlameAnimation.Builder m_anim;
+	private final FlameAnimation.Builder m_animBuilder;
 	
 	private final CacheManager m_cache;
 	
 	private int m_time;
 	
+	private int m_selectedTransformationId;
+	
+	private int m_selectedKeyframeTime = -1;
+	private int m_selectedKeyframeTID  = -1; // Transfo id of selected key frame
+	
 	private Set<Listener> m_listeners = new TreeSet<Listener>();
+	
+	private double m_unitLength;
 	
 	// User interaction variables
 	private boolean m_draggingCursor;
+	private boolean m_draggingKeyframe;
 	
-	public TimelineComponent(FlameAnimation.Builder anim, CacheManager cache) {
-		m_anim = anim;
+	// Drawing properties :
+	private final static int HEADER_HEIGHT 		= 20;
+	private final static int BIG_GRADU_HEIGHT 	= 12;
+	private final static int SMALL_GRADU_HEIGHT = 6;
+	private final static int TRANSFORM_HEIGHT	= 25;
+	private final static int KEYFRAME_RADIUS	= 6;
+	
+	private final static Color TRANSFO_COLOR_EVEN 	= new Color(165, 165, 165);
+	private final static Color TRANSFO_COLOR_ODD 	= new Color(180, 180, 180);
+	private final static Color TRANSFO_SEL_COLOR	= new Color(160, 160, 200);
+	private final static Color BACKGROUND_COLOR		= new Color(130, 130, 130);
+	private final static Color KEYFRAME_FILL_COLOR	= Color.YELLOW;
+	private final static Color KEYFRAME_STROKE_COLOR= Color.BLACK;
+	private final static Color KEYFRAME_DRAG_COLOR	= new Color(255, 125, 0);
+	
+	public TimelineComponent(FlameAnimation.Builder builder, CacheManager cache) {
+		m_animBuilder = builder;
 		m_cache = cache;
 		
 		setPreferredSize(new Dimension(500, 200));
@@ -53,52 +79,79 @@ public class TimelineComponent extends JComponent{
 	@Override
 	protected void paintComponent(final Graphics g){
 		
-		Graphics2D g0 = (Graphics2D) g;
+		// Build the animation first
+		FlameAnimation anim = m_animBuilder.build();
 		
-		g0.setColor(new Color(180, 180, 180));
+		Graphics2D g0 = (Graphics2D) g;
+		m_unitLength = (double)getWidth()/anim.getDuration();
+		
+		g0.setColor(BACKGROUND_COLOR);
 		g0.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
-		double duration = m_anim.getDuration() / FlameAnimation.FRAME_RATE;
+		double duration = anim.getDuration() / FlameAnimation.FRAME_RATE;
 		double blockLength = getWidth() / duration;
-		double unitLength = (double)getWidth()/m_anim.getDuration();
 		
 		g0.setColor(new Color(200, 200, 200));
-		g0.fillRect(0, 0, this.getWidth(), 20);
+		g0.fillRect(0, 0, this.getWidth(), HEADER_HEIGHT);
 		
 		g0.setColor(Color.GREEN);
-		boolean[] cacheState = m_cache.getAvailabilityMap();
-		for(int i = 0 ; i < cacheState.length ; i++){
-			if(cacheState[i]){
-				g0.fillRect((int)(i*unitLength), 17, (int)Math.ceil(unitLength), 3);
+		for(int i = 0 ; i < anim.getDuration() ; i++){
+			if(m_cache.available(i)){
+				g0.fillRect((int)(i*m_unitLength), 17, (int)Math.ceil(m_unitLength), 3);
 			}
 		}
 		
 		g0.setColor(Color.BLACK);
 		for(int i = 0 ; i < duration ; i++){
-			g0.draw( new Line2D.Double(blockLength * i, 0, blockLength * i, 12));
+			g0.draw( new Line2D.Double(blockLength * i, 0, blockLength * i, BIG_GRADU_HEIGHT));
 		}
 		for(int i = 0 ; i < 4*duration ; i++){
-			g0.draw( new Line2D.Double(blockLength/4 * i, 0, blockLength/4 * i, 6));
+			g0.draw( new Line2D.Double(blockLength/4 * i, 0, blockLength/4 * i, SMALL_GRADU_HEIGHT));
 		}
 		
-		
-		// Draws a dummy keyframe
-		//drawKeyFrame(g0, getWidth()/9);
+		// Draws the animations
+		for(int i = 0 ; i < anim.transformationsCount() ; i++){
+			drawTransform(g0, i, anim.getTransformation(i));
+		}
 		
 		// Draws the cursor
-		double cursorPos = (double)m_time/m_anim.getDuration() * getWidth();
+		double cursorPos = (double)m_time/anim.getDuration() * getWidth();
 		g0.setColor(Color.RED);
 		g0.draw( new Line2D.Double(cursorPos, 0, cursorPos, getHeight()));
 	}
 	
-	private void drawKeyFrame(final Graphics2D g0, double x){
+	private void drawKeyFrame(final Graphics2D g0, int time, int transfoId, Color baseColor){
+		double x = time* m_unitLength;
+		double y = HEADER_HEIGHT + TRANSFORM_HEIGHT*transfoId + TRANSFORM_HEIGHT/2 - KEYFRAME_RADIUS;
 		
-		double y = getHeight()/2;
-		double r = 2*getHeight()/5;
+		g0.setColor(baseColor);
+		g0.fill( new Ellipse2D.Double(x - KEYFRAME_RADIUS, y, KEYFRAME_RADIUS*2, KEYFRAME_RADIUS*2));
 		
-		g0.setColor(Color.YELLOW);
+		if(time == m_time){
+			g0.setColor(KEYFRAME_STROKE_COLOR);
+			g0.draw( new Ellipse2D.Double(x - KEYFRAME_RADIUS, y, KEYFRAME_RADIUS*2, KEYFRAME_RADIUS*2));
+		}
+	}
+	
+	private void drawTransform(final Graphics2D g0, int id, Animation<FlameTransformation> transfo){
 		
-		g0.fill( new Ellipse2D.Double(x - r/2, y - r/2, r, r));
+		// Fills the strip background
+		if(m_selectedTransformationId == id){
+			g0.setColor(TRANSFO_SEL_COLOR);
+		} else {
+			g0.setColor((id % 2 == 0 ) ? TRANSFO_COLOR_EVEN : TRANSFO_COLOR_ODD);
+		}
+		g0.fillRect(0, HEADER_HEIGHT + TRANSFORM_HEIGHT*id, getWidth(), TRANSFORM_HEIGHT);
+		
+		// Draws keyframes
+		for(Animation.KeyFrame<FlameTransformation> k : transfo.keyFrames()){
+			drawKeyFrame(g0, k.time(), id, KEYFRAME_FILL_COLOR);
+		}
+		
+		// Draws the dragged keyframe last so that it is on top
+		if(m_selectedKeyframeTID == id && m_selectedKeyframeTime != -1){
+			drawKeyFrame(g0, m_selectedKeyframeTime, id, KEYFRAME_DRAG_COLOR);
+		}
 	}
 	
 	public void setTime(int time){
@@ -107,12 +160,13 @@ public class TimelineComponent extends JComponent{
 	}
 	
 	public void setSelectedTransformationIndex(int id){
-		
+		m_selectedTransformationId = id;
+		repaint();
 	}
 	
 	private void changeTime(int t){
 		if(t < 0) t = 0;
-		if(t > m_anim.getDuration()) t = m_anim.getDuration();
+		if(t > m_animBuilder.getDuration()) t = m_animBuilder.getDuration();
 		
 		m_time = t;
 		for(Listener l : m_listeners){
@@ -123,20 +177,36 @@ public class TimelineComponent extends JComponent{
 	
 	private void createBehaviour(){
 		
-		m_draggingCursor = false;
-		
-		
 		addMouseMotionListener(new MouseMotionListener(){
 			@Override
 			public void mouseDragged(MouseEvent evt) {
 				if(m_draggingCursor){
-					changeTime((int)((double)evt.getX()/getWidth() * m_anim.getDuration()));
+					changeTime((int)((double)evt.getX()/getWidth() * m_animBuilder.getDuration()));
+				} else if(m_draggingKeyframe){
+					int newTime = (int)((double)evt.getX()/getWidth() * m_animBuilder.getDuration());
+					if(newTime < 0 || newTime > m_animBuilder.getDuration()) return;
+					
+					Animation.Builder<FlameTransformation> tr = 
+							new Animation.Builder<FlameTransformation>(m_animBuilder.getTransformation(m_selectedTransformationId));
+					
+					Animation.KeyFrame<FlameTransformation> key = getKeyframeForTime(tr, m_selectedKeyframeTime);
+					//Checks if there's already a key at this place
+					Animation.KeyFrame<FlameTransformation> curKey = getKeyframeForTime(tr, newTime);
+					
+					if(key != null && curKey == null){
+						tr.remove(m_selectedKeyframeTime);
+						tr.set(key.get(), newTime);
+						m_selectedKeyframeTime = newTime;
+						m_selectedKeyframeTID  = m_selectedTransformationId;
+						
+						m_animBuilder.setTransformation(m_selectedTransformationId, tr.build());
+					}
 				}
 			}
 
 			@Override
 			public void mouseMoved(MouseEvent evt) {
-				if(hoverCursor(evt.getX())){
+				if(evt.getY() < HEADER_HEIGHT){
 					setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
 				} else {
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -147,7 +217,21 @@ public class TimelineComponent extends JComponent{
 		addMouseListener(new MouseListener(){
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void mouseClicked(MouseEvent evt) {
+				if(evt.getClickCount() == 2){ // Double click
+					if(selectAnim(evt.getX(), evt.getY())){
+						Animation.Builder<FlameTransformation> tr = 
+								new Animation.Builder<FlameTransformation>(m_animBuilder.getTransformation(m_selectedTransformationId));
+						int time = (int)((double)evt.getX()/getWidth() * m_animBuilder.getDuration());
+						
+						if(getKeyframeForTime(tr, time) == null){
+							tr.set(new AnimableTransformation(tr.get(time)), time); // Sets a key at time t with current config
+							m_animBuilder.setTransformation(m_selectedTransformationId, tr.build());
+							m_selectedKeyframeTime = m_time;
+							m_selectedKeyframeTID  = m_selectedTransformationId;
+						}
+					}
+				}
 			}
 
 			@Override
@@ -160,26 +244,102 @@ public class TimelineComponent extends JComponent{
 
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				if(hoverCursor(evt.getX())){
-					m_draggingCursor = true;
-				} else {
-					changeTime((int)((double)evt.getX()/getWidth() * m_anim.getDuration()));
+				// Clicks on the header
+				if(evt.getY() < HEADER_HEIGHT){
+					changeTime((int)((double)evt.getX()/getWidth() * m_animBuilder.getDuration()));
 					setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
 					m_draggingCursor = true;
+				// Clicks on keyframe
+				} else if(selectKeyframe(evt.getX(), evt.getY())){
+					m_draggingKeyframe = true;
+					changeTime(m_selectedKeyframeTime);
+				// Clicks on animation
+				} else {
+					selectAnim(evt.getX(), evt.getY());
+					changeTime((int)((double)evt.getX()/getWidth() * m_animBuilder.getDuration()));
 				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
 				m_draggingCursor = false;
+				m_draggingKeyframe = false;
 			}
 			
 		});
 	}
 	
-	private boolean hoverCursor(int x){
-		double cursorPos = (double)m_time/m_anim.getDuration() * getWidth();
-		return x < cursorPos + 2 && x > cursorPos - 2;
+	private boolean selectAnim(int x, int y){
+		if(y < HEADER_HEIGHT) return false;
+		
+		int selId = (y - HEADER_HEIGHT)/TRANSFORM_HEIGHT;
+		
+		if(selId < m_animBuilder.transformationsCount()){
+			notifyTransformationSelected(selId);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean selectKeyframe(int x, int y){
+		
+		int selectedTransform = -1;
+		
+		for(int i = 0 ; i < m_animBuilder.transformationsCount() ; i++){
+			
+			for(Animation.KeyFrame<FlameTransformation> k : m_animBuilder.getTransformation(i).keyFrames()){
+				if(Math.abs(x - k.time()*m_unitLength) < KEYFRAME_RADIUS 
+						&& Math.abs(y - (HEADER_HEIGHT + TRANSFORM_HEIGHT*i +TRANSFORM_HEIGHT/2)) < KEYFRAME_RADIUS){
+					m_selectedKeyframeTime = k.time();
+					m_selectedKeyframeTID = i;
+					selectedTransform = i;
+				}
+			}
+			
+		}
+		
+		if(selectedTransform != -1){
+			notifyTransformationSelected(selectedTransform);
+			
+			return true;
+		}
+		return false;
+	}
+	
+	private Animation.KeyFrame<FlameTransformation> getKeyframeForTime(Animation.Builder<FlameTransformation> tr, int time){
+		
+		Animation.KeyFrame<FlameTransformation> key = null;
+		for(Animation.KeyFrame<FlameTransformation> k : tr.keyFrames()){
+			if(k.time() == time){
+				key = k;
+				break;
+			}
+		}
+		return key;
+	}
+	
+	private void notifyTransformationSelected(int id){
+		for(Listener l : m_listeners){
+			l.onTransformationSelected(id);
+		}
+	}
+	
+	public void deleteKeyframe(){
+		if(m_selectedKeyframeTime != -1 && m_selectedKeyframeTID != -1){
+			
+			Animation.Builder<FlameTransformation> transfoBuilder = 
+					new Animation.Builder<FlameTransformation>(m_animBuilder.getTransformation(m_selectedKeyframeTID));
+			
+			if(transfoBuilder.getKeyframesCount() <= 1) return;
+			
+			transfoBuilder.remove(m_selectedKeyframeTime);
+			
+			m_animBuilder.setTransformation(m_selectedKeyframeTID, transfoBuilder.build());
+			
+			m_selectedKeyframeTime = -1;
+			m_selectedKeyframeTID  = -1;
+		}
 	}
 	
 	public void addListener(Listener l){

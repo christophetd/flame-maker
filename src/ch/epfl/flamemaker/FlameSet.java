@@ -6,12 +6,13 @@
 package ch.epfl.flamemaker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import ch.epfl.flamemaker.anim.AnimableTransformation;
+import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.FlameAnimation;
-import ch.epfl.flamemaker.anim.TransformationAnimation;
 import ch.epfl.flamemaker.color.Color;
 import ch.epfl.flamemaker.color.InterpolatedPalette;
 import ch.epfl.flamemaker.color.Palette;
@@ -60,28 +61,34 @@ public class FlameSet {
 		m_density = DEFAULT_DENSITY;
 		
 		//Constructs sharkfin preset
-		m_flameBuilder = new FlameAnimation.Builder(new FlameAnimation(new ArrayList<TransformationAnimation>(), null, 240));
+		m_flameBuilder = new FlameAnimation.Builder(new FlameAnimation(new ArrayList<Animation<FlameTransformation>>(), null, 240));
 		
-		TransformationAnimation t0 = new TransformationAnimation(new AnimableTransformation(
-				new AffineTransformation(0.3731078, -0.64624117, 0.4, 0.6462414, 0.3731076, 0.3),
-				new double[] { 1, 0, 0.1, 0, 0, 0 }));
-		t0.set(new AnimableTransformation (
-				new AffineTransformation(-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
-				new double[] { 1, 0.1, 0, 0, 0, 0 }), m_flameBuilder.getDuration());
+		@SuppressWarnings("unchecked")
+		Animation<FlameTransformation> t0 = new Animation<FlameTransformation>(Arrays.asList(
+				new Animation.KeyFrame<FlameTransformation>(0, new AnimableTransformation(
+						new AffineTransformation(0.3731078, -0.64624117, 0.4, 0.6462414, 0.3731076, 0.3),
+					new double[] { 1, 0, 0.1, 0, 0, 0 })),
+				new Animation.KeyFrame<FlameTransformation>(m_flameBuilder.getDuration(), new AnimableTransformation (
+						new AffineTransformation(-0.4113504, -0.7124804, -0.4, 0.7124795, -0.4113508, 0.8),
+						new double[] { 1, 0.1, 0, 0, 0, 0 }))));
 		
-		TransformationAnimation t1 = new TransformationAnimation(new AnimableTransformation(
-				new AffineTransformation(0.0842641, -0.314478, -0.1, 0.314478, 0.0842641, 0.3),
-				new double[] { 1, 0, 0, 0, 0, 0 }));
-		t1.set(new AnimableTransformation (
-				new AffineTransformation(-0.3957339, 0, -1.6, 0, -0.3957337, 0.2), 
-				new double[] { 0, 0, 0, 0, 0.8, 1 }), m_flameBuilder.getDuration());
+		@SuppressWarnings("unchecked")
+		Animation<FlameTransformation> t1 = new Animation<FlameTransformation>(Arrays.asList(
+				new Animation.KeyFrame<FlameTransformation>(0, new AnimableTransformation(
+					new AffineTransformation(0.0842641, -0.314478, -0.1, 0.314478, 0.0842641, 0.3),
+					new double[] { 1, 0, 0, 0, 0, 0 })),
+				new Animation.KeyFrame<FlameTransformation>(m_flameBuilder.getDuration(),
+					new AnimableTransformation(	new AffineTransformation(-0.3957339, 0, -1.6, 0, -0.3957337, 0.2), 
+					new double[] { 0, 0, 0, 0, 0.8, 1 }))));
 
-		TransformationAnimation t2 = new TransformationAnimation(new AnimableTransformation(
+		@SuppressWarnings("unchecked")
+		Animation<FlameTransformation> t2 = new Animation<FlameTransformation>(Arrays.asList(
+				new Animation.KeyFrame<FlameTransformation>(0, new AnimableTransformation(
 				new AffineTransformation(0.7124807, -0.4113509, -0.3, 0.4113513, 0.7124808, -0.7),
-				new double[] { 0.5, 0, 0, 0.4, 0, 0 }));
-		t2.set(new AnimableTransformation (
+				new double[] { 0.5, 0, 0, 0.4, 0, 0 })),
+				new Animation.KeyFrame<FlameTransformation>( m_flameBuilder.getDuration(), new AnimableTransformation (
 				new AffineTransformation(0.4810169, 0, 1, 0, 0.4810169, 0.9), 
-				new double[] { 1, 0, 0, 0, 0, 0 }), m_flameBuilder.getDuration());
+				new double[] { 1, 0, 0, 0, 0, 0 }))));
 	
 		m_flameBuilder.addTransformation(t0);
 		m_flameBuilder.addTransformation(t1);

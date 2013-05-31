@@ -1,51 +1,30 @@
 package ch.epfl.flamemaker.anim;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class Animation<T extends Animable<E>, E>
+public class Animation<E>
 {
-	private final List<KeyFrame<T, E>> m_keyFrames;
+	private final List<KeyFrame<E>> m_keyFrames;
 	
 	public Animation(){
-		m_keyFrames = new LinkedList<KeyFrame<T, E>>();
+		m_keyFrames = new ArrayList<KeyFrame<E>>();
 	}
 	
-	public Animation(Animation<T, E> source){
-		m_keyFrames = new LinkedList<KeyFrame<T, E>>(source.m_keyFrames);
+	public Animation(Animation<E> source){
+		m_keyFrames = new ArrayList<KeyFrame<E>>(source.m_keyFrames);
 	}
 	
-	public final void set(T elem, int time){
-		ListIterator<KeyFrame<T, E>> it = m_keyFrames.listIterator();
-		while(it.hasNext()){
-			KeyFrame<T, E> k = it.next();
-			
-			if(k.time() == time){
-				it.remove();
-				break;
-			} else if(k.time() > time){
-				break;
-			}
-		}
-		it.add(new KeyFrame<T,E>(time, elem));
-	}
-	
-	public final void remove(int time){
-		ListIterator<KeyFrame<T, E>> it = m_keyFrames.listIterator();
-		while(it.hasNext()){
-			KeyFrame<T, E> k = it.next();
-			if(k.time() == time){
-				it.remove();
-				return;
-			}
-		}
+	public Animation(List<KeyFrame<E>> keyFrames){
+		m_keyFrames = new ArrayList<KeyFrame<E>>(keyFrames);
 	}
 	
 	public final E get(int time){
-		KeyFrame<T, E> last = null;
+		KeyFrame<E> last = null;
 		
-		for(KeyFrame<T, E> k : m_keyFrames){
+		for(KeyFrame<E> k : m_keyFrames){
 			if(k.time() > time){
 				if(last != null){
 					return last.interpolate(k, time);
@@ -61,12 +40,20 @@ public class Animation<T extends Animable<E>, E>
 		throw new IllegalStateException("Animation does not contain any keyframe");
 	}
 	
-	public static class KeyFrame<T extends Animable<E>, E> {
+	public List<KeyFrame<E>> keyFrames(){
+		return new ArrayList<KeyFrame<E>>(m_keyFrames);
+	}
+	
+	public int getKeyframesCount(){
+		return m_keyFrames.size();
+	}
+	
+	public static class KeyFrame<E> {
 		private final int m_time;
 		
-		private final T m_data;
+		private final Animable<E> m_data;
 		
-		public KeyFrame(int time, T data){
+		public KeyFrame(int time, Animable<E> data){
 			m_time = time;
 			m_data = data;
 		}
@@ -75,12 +62,68 @@ public class Animation<T extends Animable<E>, E>
 			return m_time;
 		}
 		
-		public T get(){
+		public Animable<E> get(){
 			return m_data;
 		}
 		
-		public E interpolate(KeyFrame<T, E> other, int time){
+		public E interpolate(KeyFrame<E> other, int time){
 			return m_data.interpolate(other.m_data, (double)(time - m_time)/(other.m_time - m_time));
+		}
+	}
+	
+	public static class Builder<E>{
+		private final List<KeyFrame<E>> m_keyFrames;
+		
+		public Builder(){
+			m_keyFrames = new LinkedList<KeyFrame<E>>();
+		}
+		
+		public Builder(Animation<E> source){
+			m_keyFrames = new LinkedList<KeyFrame<E>>(source.m_keyFrames);
+		}
+		
+		public final E get(int time){
+			return build().get(time);
+		}
+		
+		public final void set(Animable<E> elem, int time){
+			
+			ListIterator<KeyFrame<E>> it = m_keyFrames.listIterator();
+			while(it.hasNext()){
+				KeyFrame<E> k = it.next();
+				
+				if(k.time() == time){
+					it.remove();
+					break;
+				} else if(k.time() > time){
+					it.previous();
+					break;
+				}
+			}
+			it.add(new KeyFrame<E>(time, elem));
+		}
+		
+		public final void remove(int time){
+			ListIterator<KeyFrame<E>> it = m_keyFrames.listIterator();
+			while(it.hasNext()){
+				KeyFrame<E> k = it.next();
+				if(k.time() == time){
+					it.remove();
+					return;
+				}
+			}
+		}
+		
+		public List<KeyFrame<E>> keyFrames(){
+			return new ArrayList<KeyFrame<E>>(m_keyFrames);
+		}
+		
+		public int getKeyframesCount(){
+			return m_keyFrames.size();
+		}
+		
+		public Animation<E> build(){
+			return new Animation<E>(m_keyFrames);
 		}
 	}
 }
