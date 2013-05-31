@@ -18,3 +18,6 @@
 *.png
 
 bin/*
+dist/*
+*.zip
+doc/*

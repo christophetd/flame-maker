@@ -46,7 +46,6 @@ public class AffineModificationComponent extends JComponent {
 		/*
 		 * On crée deux SequentialGroup : un pour les lignes horizontales
 		 * et un pour les colonnes, verticales.
-		 * NOTE : un groupe "horizontal" est en fait vertical et inversement
 		 */
 		SequentialGroup H = affineGroup.createSequentialGroup();
 		affineGroup.setHorizontalGroup(H);
