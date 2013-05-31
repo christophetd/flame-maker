@@ -147,6 +147,9 @@ public class AffineTransformationsComponent extends JComponent {
 		printTransformations(g0, realFrame);
 	}
 	
+	/*
+	 * Affiche la grille du plan de la fractale
+	 */
 	private void printGrid(Graphics2D g, Rectangle frame) {
 		
 		// Ratio pour convertir les coordonnées de la frame vers celles de la vue
@@ -187,6 +190,10 @@ public class AffineTransformationsComponent extends JComponent {
 		g.setColor(oldColor);
 	}
 	
+	/*
+	 * Affiche les transformations en noir et la transformation sélectionnée par dessus en rouge.
+	 * Calcule aussi les "bounding boxes" pour la sélection.
+	 */
 	public void printTransformations(Graphics2D g, Rectangle frame) {
 		double scaleRatio = getWidth()/frame.width();
 		
@@ -253,6 +260,9 @@ public class AffineTransformationsComponent extends JComponent {
 		g.setColor(oldColor);
 	}
 	
+	/*
+	 * Crée une une "bounding box" encadrant les deux flèches passées en argument.
+	 */
 	private static Rectangle makeBoundingBox(Arrow a1, Arrow a2){
 		List<Point> points = Arrays.asList(
 				a1.from(), a1.to(), a1.leftComponent(), a1.rightComponent(),
@@ -286,12 +296,20 @@ public class AffineTransformationsComponent extends JComponent {
 		m_listeners.remove(l);
 	}
 	
+	/*
+	 * Informe les observateurs qu'une transformation a été sélectionnée.
+	 */
 	private void notifyTransformationSelected(int id){
 		for(Listener l : m_listeners){
 			l.onTransformationSelected(id);
 		}
 	}
 	
+	/**
+	 * Observateur pour le composant de transformations affines. Permet de savoir
+	 * quand l'utilisateur a sélectionnée une nouvelle transformation grâce à
+	 * {@link #onTransformationSelected()}
+	 */
 	public interface Listener {
 		public void onTransformationSelected(int transfoId);
 	}
