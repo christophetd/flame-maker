@@ -112,6 +112,11 @@ public class FlameAnimation {
 			notifyListeners();
 		}
 		
+		public void removeTransformation(int transfoId){
+			m_transformations.remove(transfoId);
+			notifyListeners();
+		}
+		
 		public void setTransformation(int id, Animation<FlameTransformation> transformation){
 			m_transformations.set(id, transformation);
 			notifyListeners();

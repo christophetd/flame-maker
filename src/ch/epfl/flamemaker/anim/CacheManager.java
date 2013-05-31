@@ -3,9 +3,9 @@ package ch.epfl.flamemaker.anim;
 import java.awt.image.BufferedImage;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import ch.epfl.flamemaker.anim.FlameAnimation.Builder;
 
@@ -15,7 +15,7 @@ public class CacheManager {
 	
 	private Map<Integer, SoftReference<BufferedImage>> m_cache;
 	
-	private Set<Listener> m_listeners = new TreeSet<Listener>();
+	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
 	public CacheManager(FlameAnimation.Builder builder){
 		m_flameBuilder = builder;

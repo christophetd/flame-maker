@@ -5,6 +5,8 @@ import ch.epfl.flamemaker.geometry2d.AffineTransformation;
 
 public class AnimableTransformation implements Animable<FlameTransformation> {
 	
+	public static final AnimableTransformation IDENTITY = new AnimableTransformation(FlameTransformation.IDENTITY);
+	
 	private final FlameTransformation m_transform;
 	
 	public AnimableTransformation(FlameTransformation transform){

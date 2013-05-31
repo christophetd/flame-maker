@@ -9,8 +9,10 @@ public class Animation<E>
 {
 	private final List<KeyFrame<E>> m_keyFrames;
 	
-	public Animation(){
+	
+	public Animation(Animable<E> elem){
 		m_keyFrames = new ArrayList<KeyFrame<E>>();
+		m_keyFrames.add(new KeyFrame<E>(0, elem));
 	}
 	
 	public Animation(Animation<E> source){
@@ -18,6 +20,7 @@ public class Animation<E>
 	}
 	
 	public Animation(List<KeyFrame<E>> keyFrames){
+		if(keyFrames.size() == 0) throw new IllegalStateException("An animation must have at least one keyframe");
 		m_keyFrames = new ArrayList<KeyFrame<E>>(keyFrames);
 	}
 	

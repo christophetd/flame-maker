@@ -13,6 +13,9 @@ import ch.epfl.flamemaker.geometry2d.*;
  * Classe modélisant une transformation de type Flame
  */
 public class FlameTransformation implements Transformation, Serializable {
+	
+	public final static FlameTransformation IDENTITY 
+			= new FlameTransformation(AffineTransformation.IDENTITY, new double[]{1, 0, 0, 0, 0, 0});
 
 	private static final long serialVersionUID = 1738675212265279839L;
 

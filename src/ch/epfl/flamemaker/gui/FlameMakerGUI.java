@@ -25,8 +25,11 @@ import javax.swing.JSeparator;
 import javax.swing.Timer;
 
 import ch.epfl.flamemaker.FlameSet;
+import ch.epfl.flamemaker.anim.AnimableTransformation;
+import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
+import ch.epfl.flamemaker.flame.FlameTransformation;
 
 public class FlameMakerGUI implements FlameSet.Listener {
 
@@ -249,11 +252,17 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		JPanel topControls = new JPanel();
 		topControls.setLayout(new BoxLayout(topControls, BoxLayout.LINE_AXIS));
 		
-		final JButton prevFrameButton = new JButton("<");
-		final JButton nextFrameButton = new JButton(">");
-		final JButton delKeyframe = new JButton("-");
+		final JButton prevFrameButton 	= new JButton("<");
+		final JButton nextFrameButton 	= new JButton(">");
+		final JButton delKeyframe 		= new JButton("-");
+		final JButton addKeyframe		= new JButton("+");
+		final JButton addTransfo 		= new JButton("Add");
+		final JButton rmTransfo  		= new JButton("Remove");
 		
-		topControls.add(new JButton("add transfo."));
+		topControls.add(addTransfo);
+		topControls.add(rmTransfo);
+		topControls.add(Box.createRigidArea(new Dimension(30, 0)));
+		topControls.add(addKeyframe);
 		topControls.add(delKeyframe);
 		topControls.add(Box.createRigidArea(new Dimension(50, 0)));
 		topControls.add(prevFrameButton);
@@ -274,11 +283,43 @@ public class FlameMakerGUI implements FlameSet.Listener {
 			
 		});
 		
+		addKeyframe.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(m_selectedTransformationId != -1){
+					Animation.Builder<FlameTransformation> tr = 
+							new Animation.Builder<FlameTransformation>(m_set.getBuilder().getTransformation(m_selectedTransformationId));
+					
+					tr.set(new AnimableTransformation(tr.get(m_time)), m_time);
+					m_set.getBuilder().setTransformation(m_selectedTransformationId, tr.build());
+				}
+			}
+		});
+		
 		delKeyframe.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				m_timelineComponent.deleteKeyframe();
+			}
+		});
+		
+		addTransfo.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				m_set.getBuilder().addTransformation(new Animation<FlameTransformation>(AnimableTransformation.IDENTITY));
+			}
+		});
+		
+		rmTransfo.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(m_selectedTransformationId != -1) {
+					m_set.getBuilder().removeTransformation(m_selectedTransformationId);
+					m_selectedTransformationId --;
+				}
 			}
 		});
 		

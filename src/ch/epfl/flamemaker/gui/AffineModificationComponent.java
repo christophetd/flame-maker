@@ -37,7 +37,7 @@ public class AffineModificationComponent extends JComponent {
 		
 		this.setLayout(affineGroup);
 		
-		// Mise en page de l'édition de la partie affine
+		// Mise en page de l'Ã©dition de la partie affine
 		SequentialGroup H = affineGroup.createSequentialGroup();
 		affineGroup.setHorizontalGroup(H);
 		SequentialGroup V = affineGroup.createSequentialGroup();
@@ -71,7 +71,7 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(translationLabel);
 		V1.addComponent(translationLabel);
 		
-		final JFormattedTextField translationFactor = buildFormattedTextField();
+		final JFormattedTextField translationFactor = buildFormattedTextField(0.1);
 		H2.addComponent(translationFactor);
 		V1.addComponent(translationFactor);
 		
@@ -141,7 +141,7 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(rotationLabel);
 		V2.addComponent(rotationLabel);
 		
-		final JFormattedTextField rotationFactor = buildFormattedTextField();
+		final JFormattedTextField rotationFactor = buildFormattedTextField(15);
 		H2.addComponent(rotationFactor);
 		V2.addComponent(rotationFactor);
 		
@@ -183,7 +183,7 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(dilatationLabel);
 		V3.addComponent(dilatationLabel);
 		
-		final JFormattedTextField dilatationFactor = buildFormattedTextField();
+		final JFormattedTextField dilatationFactor = buildFormattedTextField(1.05);
 		dilatationFactor.setInputVerifier(new DilatationInputVerifier());
 		
 		H2.addComponent(dilatationFactor);
@@ -261,7 +261,7 @@ public class AffineModificationComponent extends JComponent {
 		H1.addComponent(transvectionLabel);
 		V4.addComponent(transvectionLabel);
 		
-		final JFormattedTextField transvectionFactor = buildFormattedTextField();
+		final JFormattedTextField transvectionFactor = buildFormattedTextField(0.1);
 		H2.addComponent(transvectionFactor);
 		V4.addComponent(transvectionFactor);
 		
@@ -330,36 +330,35 @@ public class AffineModificationComponent extends JComponent {
 		V4.addComponent(transvectionDownButton);
 		
 
-		// ← → ↑ ↓ ⟲ ⟳ ↔ ↕
 	}
 	
 	/**
-	 * Construit un textField servant à entrer le poids de la modification
-	 * ( Evite la duplication de code sur cette tache répétitive)
+	 * Construit un textField servant Ã  entrer le poids de la modification
+	 * ( Evite la duplication de code sur cette tache rÃ©pÃ©titive)
 	 * @return
 	 */
-	/* TODO : faire une classe utils ? (méthode dupliquée) */
-	private JFormattedTextField buildFormattedTextField(){
-		final JFormattedTextField field = new JFormattedTextField(new DecimalFormat("#0.##"));
-		field.setValue(1);
+	private JFormattedTextField buildFormattedTextField(double defaultValue) {
+		final JFormattedTextField field = new JFormattedTextField(
+				new DecimalFormat("#0.##"));
+		field.setValue(defaultValue);
 		field.setColumns(3);
-		
-		/* 
-		 * On fait en sorte que les valeurs des champs se sélectionnent au focus 
-		 * Note : On doit emballer le selectAll() dans un invokeLater, sinon le formattage 
-		 * du champ enlève la sélection
+
+		/*
+		 * On fait en sorte que les valeurs des champs se sélectionnent au focus
+		 * Note : On doit emballer le selectAll() dans un invokeLater, sinon le
+		 * formattage du champ enlève la sélection
 		 */
 		field.addFocusListener(new FocusAdapter() {
-		    public void focusGained(java.awt.event.FocusEvent evt) {
-	   	    	SwingUtilities.invokeLater( new Runnable() {
-    				@Override
-    				public void run() {
-    					field.selectAll();		
-    				}
-    			});
-		    }
+			public void focusGained(java.awt.event.FocusEvent evt) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						field.selectAll();
+					}
+				});
+			}
 		});
-		
+
 		return field;
 	}
 	
@@ -377,13 +376,13 @@ public class AffineModificationComponent extends JComponent {
 				
 				AbstractFormatter formatter = tf.getFormatter();
 				
-				// Récupère la valeur dans un double dans tous les cas
+				// RÃ©cupÃ¨re la valeur dans un double dans tous les cas
 				
 				Number value = (Number) formatter.stringToValue(text);
 				
 				/* 
-				 * On n'utilise pas setText, mais setValue à la place car setText pose des problèmes
-				 * puisque swing a la riche idée de traduire les nombres (remplacer les "." par des ",")...
+				 * On n'utilise pas setText, mais setValue Ã  la place car setText pose des problÃ¨mes
+				 * puisque swing a la riche idÃ©e de traduire les nombres (remplacer les "." par des ",")...
 				 */
 				if(value.doubleValue() == 0){
 					tf.setValue(tf.getValue());
@@ -393,8 +392,8 @@ public class AffineModificationComponent extends JComponent {
 				
 			} catch (ParseException e) {
 				/* 
-				 * On n'a rien à gérer ici car le texte est automatiquement remplacé par 
-				 * la valeur précédente.
+				 * On n'a rien Ã  gÃ©rer ici car le texte est automatiquement remplacÃ© par 
+				 * la valeur prÃ©cÃ©dente.
 				 */
 			}
 			return true;
