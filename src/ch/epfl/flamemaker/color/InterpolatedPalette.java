@@ -76,5 +76,4 @@ public class InterpolatedPalette implements Palette {
 		return m_colors.get((int) highColor).mixWith(
 				m_colors.get((int) lowColor), highColorWeight);
 	}
-
 }

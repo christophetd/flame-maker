@@ -6,6 +6,7 @@
 package ch.epfl.flamemaker.gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -76,6 +77,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	private final AffineModificationComponent m_affineModificationComponent;
 
 	private final TimelineComponent m_timelineComponent;
+	private final PaletteEditComponent m_paletteComponent;
 
 	/**
 	 * Le composant de modification des poids des variations. Final et
@@ -88,6 +90,8 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	private final Timer m_playTimer;
 	
 	private final JButton m_playButton;
+	
+	private final JPanel m_lowerPanel;
 	
 	/**
 	 * Le constructeur de la classe modélisant le GUI. Appelé pour lancer ce
@@ -113,6 +117,9 @@ public class FlameMakerGUI implements FlameSet.Listener {
 		m_timelineComponent = new TimelineComponent(m_set.getBuilder(), m_cache);
 		m_weightsModificationComponent = new WeightsModificationComponent(m_set.getBuilder());
 		m_previewComponent = new FlamePreviewComponent(m_set, m_cache);
+		m_paletteComponent = new PaletteEditComponent();
+		
+		m_lowerPanel = new JPanel();
 	}
 	
 	
@@ -216,8 +223,7 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	 * @return Le panneau inférieur
 	 */
 	private JPanel buildLowerPanel() {
-		JPanel lowerPanel = new JPanel();
-		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.LINE_AXIS));
+		m_lowerPanel.setLayout(new BoxLayout(m_lowerPanel, BoxLayout.LINE_AXIS));
 		
 		
 	
@@ -232,14 +238,19 @@ public class FlameMakerGUI implements FlameSet.Listener {
 			public void onTimeChange(int time) {
 				setTime(time);
 			}
+
+			@Override
+			public void onPaletteSelected() {
+				((CardLayout) m_lowerPanel.getLayout()).show(m_lowerPanel, "palette");
+			}
 		});
 		
-		JPanel selectedTransformationEditPanel = buildSelectedTransformationEditPanel();
+		JPanel selectedAnimationEditPanel = buildSelectedAnimationEditPanel();
 		
-		lowerPanel.add(buildAnimPanel());
-		lowerPanel.add(selectedTransformationEditPanel);
+		m_lowerPanel.add(buildAnimPanel());
+		m_lowerPanel.add(selectedAnimationEditPanel);
 		
-		return lowerPanel;
+		return m_lowerPanel;
 	}
 	
 	/**
@@ -372,21 +383,21 @@ public class FlameMakerGUI implements FlameSet.Listener {
 	 * 
 	 * @return Le panneau de modification des transformations affines
 	 */
-	private JPanel buildSelectedTransformationEditPanel() {
-		JPanel selectedTransformationEditPanel = new JPanel();
+	private JPanel buildSelectedAnimationEditPanel() {
+		JPanel selectedAnimationEditPanel = new JPanel(new CardLayout());
 		
-		selectedTransformationEditPanel.setLayout(new BoxLayout(selectedTransformationEditPanel, BoxLayout.PAGE_AXIS));
-		selectedTransformationEditPanel.setBorder(BorderFactory.createTitledBorder("Transformation courante"));
-		
+		JPanel transformationEditPanel = new JPanel();
+		transformationEditPanel.setLayout(new BoxLayout(transformationEditPanel, BoxLayout.PAGE_AXIS));
+		transformationEditPanel.setBorder(BorderFactory.createTitledBorder("Transformation courante"));
+		transformationEditPanel.add(m_affineModificationComponent);
+		transformationEditPanel.add(new JSeparator());
+		transformationEditPanel.add(m_weightsModificationComponent);
 		m_affineModificationComponent.setSelectedTransformationIndex(0);
 		
-		selectedTransformationEditPanel.add(m_affineModificationComponent);
+		selectedAnimationEditPanel.add(transformationEditPanel, "transformation");
+		selectedAnimationEditPanel.add(m_paletteComponent, "palette");
 		
-		selectedTransformationEditPanel.add(new JSeparator());
-		
-		selectedTransformationEditPanel.add(m_weightsModificationComponent);
-		
-		return selectedTransformationEditPanel;
+		return selectedAnimationEditPanel;
 	}
 
 

@@ -19,6 +19,7 @@ import ch.epfl.flamemaker.anim.AnimableTransformation;
 import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
+import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 
 public class TimelineComponent extends JComponent{
@@ -34,7 +35,7 @@ public class TimelineComponent extends JComponent{
 	private int m_selectedTransformationId;
 	
 	private int m_selectedKeyframeTime = -1;
-	private int m_selectedKeyframeTID  = -1; // Transfo id of selected key frame
+	private int m_selectedKeyframeTID  = -1; // Row id of selected key frame
 	
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
@@ -149,34 +150,39 @@ public class TimelineComponent extends JComponent{
 		}
 	}
 	
+	private <E> void drawAnimation(final Graphics2D g0, Animation<E> anim, int row, String label, boolean selected){
+		// Fills the strip background
+				if(selected){
+					g0.setColor(TRANSFO_SEL_COLOR);
+				} else {
+					g0.setColor((row % 2 == 0 ) ? TRANSFO_COLOR_EVEN : TRANSFO_COLOR_ODD);
+				}
+				g0.fillRect(LABELS_PANEL_WIDTH, HEADER_HEIGHT + TRANSFORM_HEIGHT*row, getWidth() - LABELS_PANEL_WIDTH, TRANSFORM_HEIGHT);
+				
+				// Draws keyframes
+				for(Animation.KeyFrame<E> k : anim.keyFrames()){
+					drawKeyFrame(g0, k.time(), row, KEYFRAME_FILL_COLOR);
+				}
+				// Draws the dragged keyframe last so that it is on top
+				if(m_selectedKeyframeTID == row && m_selectedKeyframeTime != -1){
+					drawKeyFrame(g0, m_selectedKeyframeTime, row, KEYFRAME_DRAG_COLOR);
+				}
+				
+				if(selected){
+					g0.setColor(PANEL_SEL_COLOR);
+				} else {
+					g0.setColor((row % 2 == 0 ) ? PANEL_COLOR_EVEN : PANEL_COLOR_ODD);
+				}
+				g0.fillRect(0, HEADER_HEIGHT + TRANSFORM_HEIGHT*row, LABELS_PANEL_WIDTH, TRANSFORM_HEIGHT);
+				
+				g0.setColor(TEXT_COLOR);
+				g0.drawString(label, 5, HEADER_HEIGHT + TRANSFORM_HEIGHT*row + TRANSFORM_HEIGHT - 5);
+	}
+	
 	private void drawTransform(final Graphics2D g0, int id, Animation<FlameTransformation> transfo){
 		
-		// Fills the strip background
-		if(m_selectedTransformationId == id){
-			g0.setColor(TRANSFO_SEL_COLOR);
-		} else {
-			g0.setColor((id % 2 == 0 ) ? TRANSFO_COLOR_EVEN : TRANSFO_COLOR_ODD);
-		}
-		g0.fillRect(LABELS_PANEL_WIDTH, HEADER_HEIGHT + TRANSFORM_HEIGHT*id, getWidth() - LABELS_PANEL_WIDTH, TRANSFORM_HEIGHT);
-		
-		// Draws keyframes
-		for(Animation.KeyFrame<FlameTransformation> k : transfo.keyFrames()){
-			drawKeyFrame(g0, k.time(), id, KEYFRAME_FILL_COLOR);
-		}
-		// Draws the dragged keyframe last so that it is on top
-		if(m_selectedKeyframeTID == id && m_selectedKeyframeTime != -1){
-			drawKeyFrame(g0, m_selectedKeyframeTime, id, KEYFRAME_DRAG_COLOR);
-		}
-		
-		if(m_selectedTransformationId == id){
-			g0.setColor(PANEL_SEL_COLOR);
-		} else {
-			g0.setColor((id % 2 == 0 ) ? PANEL_COLOR_EVEN : PANEL_COLOR_ODD);
-		}
-		g0.fillRect(0, HEADER_HEIGHT + TRANSFORM_HEIGHT*id, LABELS_PANEL_WIDTH, TRANSFORM_HEIGHT);
-		
-		g0.setColor(TEXT_COLOR);
-		g0.drawString("Transfo. "+(id+1), 5, HEADER_HEIGHT + TRANSFORM_HEIGHT*id + TRANSFORM_HEIGHT - 5);
+		this.<FlameTransformation>drawAnimation(g0, transfo, id, "Transfo. "+(id+1), m_selectedTransformationId == id);
+
 	}
 	
 	public void setTime(int time){
@@ -220,7 +226,7 @@ public class TimelineComponent extends JComponent{
 					Animation.KeyFrame<FlameTransformation> curKey = getKeyframeForTime(tr, newTime);
 					
 					if(key != null && curKey == null){
-						tr.remove(m_selectedKeyframeTime);
+						tr.removeKeyAtTime(m_selectedKeyframeTime);
 						tr.set(key.get(), newTime);
 						m_selectedKeyframeTime = newTime;
 						m_selectedKeyframeTID  = m_selectedTransformationId;
@@ -366,7 +372,7 @@ public class TimelineComponent extends JComponent{
 			
 			if(transfoBuilder.getKeyframesCount() <= 1) return;
 			
-			transfoBuilder.remove(m_selectedKeyframeTime);
+			transfoBuilder.removeKeyAtTime(m_selectedKeyframeTime);
 			
 			m_animBuilder.setTransformation(m_selectedKeyframeTID, transfoBuilder.build());
 			
@@ -386,5 +392,6 @@ public class TimelineComponent extends JComponent{
 	public interface Listener{
 		public void onTimeChange(int time);
 		public void onTransformationSelected(int id);
+		public void onPaletteSelected();
 	}
 }

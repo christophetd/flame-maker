@@ -11,16 +11,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import ch.epfl.flamemaker.color.InterpolatedPalette;
-import ch.epfl.flamemaker.color.Palette;
-
 public class PaletteTest {
 
 	public static void main(String[] args){
 		
 		List<Color> c = new ArrayList<Color>();
 		c.add(Color.RED); c.add(Color.GREEN); c.add(Color.BLUE);
-		Palette palette = new InterpolatedPalette(c);
+		Palette palette = new CustomPalette(c);
 		
 		int[] byteArray = new int[100*10];
 		
@@ -31,7 +28,6 @@ public class PaletteTest {
 			
 			for(int j = 0 ; j < 10 ; j ++){
 				byteArray[100*j+i] = color;
-				
 			}
 		}
 		

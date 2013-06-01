@@ -78,7 +78,7 @@ public class Color implements Serializable{
 	public Color(Color from) {
 		m_r = from.red();
 		m_g = from.green();
-		m_b = from.green();
+		m_b = from.blue();
 	}
 
 	/**

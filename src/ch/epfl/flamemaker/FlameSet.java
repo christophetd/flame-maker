@@ -14,7 +14,7 @@ import ch.epfl.flamemaker.anim.AnimableTransformation;
 import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.FlameAnimation;
 import ch.epfl.flamemaker.color.Color;
-import ch.epfl.flamemaker.color.InterpolatedPalette;
+import ch.epfl.flamemaker.color.CustomPalette;
 import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 import ch.epfl.flamemaker.flame.Presets;
@@ -45,7 +45,7 @@ public class FlameSet {
 	/** Couleur de fond */
 	private Color m_backgroundColor;
 	/** Palette de couleur pour le dessin */
-	private Palette m_palette;
+	private CustomPalette.Builder m_paletteBuilder;
 	/** Rectangle source pour le calcul */
 	private ObservableRectangle m_frame;
 	/** densité de calcul */
@@ -94,7 +94,11 @@ public class FlameSet {
 		m_flameBuilder.addTransformation(t1);
 		m_flameBuilder.addTransformation(t2);
 		
-		m_palette = new InterpolatedPalette(Color.RED, Color.GREEN, Color.BLUE);
+		m_paletteBuilder = new CustomPalette.Builder();
+		m_paletteBuilder.setColor(Color.RED, 0);
+		m_paletteBuilder.setColor(Color.GREEN, 0.5);
+		m_paletteBuilder.setColor(Color.BLUE, 1);
+		
 	}
 	
 	/** Construit un set selon le preset fourni en argument */
@@ -117,8 +121,8 @@ public class FlameSet {
 	}
 	
 	/** @return la palette de couleur */
-	public Palette getPalette(){
-		return m_palette;
+	public CustomPalette.Builder getPalette(){
+		return m_paletteBuilder;
 	}
 	
 	/** @return le cadre de capture */

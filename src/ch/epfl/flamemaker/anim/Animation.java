@@ -47,6 +47,10 @@ public class Animation<E>
 		return new ArrayList<KeyFrame<E>>(m_keyFrames);
 	}
 	
+	public KeyFrame<E> getKeyFrame(int id){
+		return m_keyFrames.get(id);
+	}
+	
 	public int getKeyframesCount(){
 		return m_keyFrames.size();
 	}
@@ -106,7 +110,7 @@ public class Animation<E>
 			it.add(new KeyFrame<E>(time, elem));
 		}
 		
-		public final void remove(int time){
+		public final void removeKeyAtTime(int time){
 			ListIterator<KeyFrame<E>> it = m_keyFrames.listIterator();
 			while(it.hasNext()){
 				KeyFrame<E> k = it.next();
@@ -117,8 +121,16 @@ public class Animation<E>
 			}
 		}
 		
+		public final void removeKey(int id){
+			m_keyFrames.remove(id);
+		}
+		
 		public List<KeyFrame<E>> keyFrames(){
 			return new ArrayList<KeyFrame<E>>(m_keyFrames);
+		}
+		
+		public KeyFrame<E> getKeyFrame(int id){
+			return m_keyFrames.get(id);
 		}
 		
 		public int getKeyframesCount(){

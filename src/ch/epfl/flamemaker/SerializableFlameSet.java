@@ -27,7 +27,7 @@ public class SerializableFlameSet implements Serializable {
 	
 	public SerializableFlameSet(FlameSet set) {
 		m_backgroundColor = set.getBackgroundColor();
-		m_palette = set.getPalette();
+		m_palette = set.getPalette().build();
 		m_frame = set.getFrame().toRectangle();
 		m_density = set.getDensity();
 		buildTransformationsList(set.getBuilder());
