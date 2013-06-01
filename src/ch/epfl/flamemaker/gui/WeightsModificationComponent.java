@@ -85,7 +85,6 @@ public class WeightsModificationComponent extends JComponent {
 			// On crée le champ de texte et l'étiquette associées
 			final JLabel label = new JLabel(variation.printableName());
 			final JFormattedTextField formattedTextField = buildFormattedTextField();
-			formattedTextField.setInputVerifier(new WeightInputVerifier());
 			
 			fields.add(formattedTextField);
 			
@@ -163,7 +162,7 @@ public class WeightsModificationComponent extends JComponent {
 	 */
 	private JFormattedTextField buildFormattedTextField() {
 		final JFormattedTextField field = new JFormattedTextField(
-				new DecimalFormat("#0.##"));
+				new DecimalFormat("###"));
 		field.setValue(0);
 		field.setColumns(3);
 
@@ -185,44 +184,4 @@ public class WeightsModificationComponent extends JComponent {
 
 		return field;
 	}
-
-	/**
-	 * Verificateur pour les inputs des poids
-	 */
-	private class WeightInputVerifier extends InputVerifier {
-
-		@Override
-		public boolean verify(JComponent input) {
-			JFormattedTextField tf = (JFormattedTextField) input;
-
-			try {
-				String text = tf.getText();
-
-				AbstractFormatter formatter = tf.getFormatter();
-
-				Number value = (Number) formatter.stringToValue(text);
-
-				/*
-				 * On n'utilise pas setText, mais setValue à la place car
-				 * setText pose des problèmes puisque swing a la riche idée de
-				 * traduire les nombres (remplacer les "." par des ",")... Le
-				 * champ est valide si le poids est compris entre 0 et 1
-				 */
-				if ((value.doubleValue() < 0 || value.doubleValue() > 1)) {
-					tf.setValue(tf.getValue());
-				} else {
-					tf.setValue(value);
-				}
-
-			} catch (ParseException e) {
-				/*
-				 * On n'a rien à gérer ici car le texte est automatiquement
-				 * remplacé par la valeur précédente.
-				 */
-			}
-			return true;
-		}
-
-	}
-
 }
