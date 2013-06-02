@@ -51,6 +51,8 @@ public class FlameSet {
 	/** densité de calcul */
 	private int m_density;
 	
+	private double m_qualityFactor;
+	
 	// Ensemble des observateurs
 	private Set<Listener> m_listeners = new HashSet<Listener>();
 	
@@ -59,6 +61,7 @@ public class FlameSet {
 		m_frame = new ObservableRectangle(new Rectangle(new Point(0,0), 5,5));
 		m_backgroundColor = Color.BLACK;
 		m_density = DEFAULT_DENSITY;
+		m_qualityFactor = 1;
 		
 		//Constructs sharkfin preset
 		m_flameBuilder = new FlameAnimation.Builder(new FlameAnimation(new ArrayList<Animation<FlameTransformation>>(), null, 240));
@@ -133,6 +136,15 @@ public class FlameSet {
 	/** @return la densité de calcul */
 	public int getDensity(){
 		return m_density;
+	}
+	
+	public double getQualityFactor(){
+		return m_qualityFactor;
+	}
+	
+	public void setQualityFactor(double factor){
+		m_qualityFactor = factor;
+		notifyListeners();
 	}
 	
 	/**

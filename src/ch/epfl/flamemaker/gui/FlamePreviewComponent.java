@@ -102,6 +102,15 @@ public class FlamePreviewComponent extends JComponent {
 			}
 		});
 		
+		set.addListener(new FlameSet.Listener(){
+
+			@Override
+			public void onSetChanged(FlameSet set) {
+				m_cache.clear();
+				recompute();
+			}
+		});
+		
 		// Observateur pour les movements de la souris 
 		addMouseMotionListener(new MouseMotionListener(){
 
@@ -344,7 +353,7 @@ public class FlamePreviewComponent extends JComponent {
 		m_lastHeight = this.getHeight();
 		m_lastWidth = this.getWidth();
 		
-		m_flame.compute(m_realFrame, this.getWidth(), this.getHeight(), m_set.getDensity());
+		m_flame.compute(m_realFrame, (int)(this.getWidth()*m_set.getQualityFactor()), (int)(this.getHeight()*m_set.getQualityFactor()), m_set.getDensity());
 	}
 	
 	/**

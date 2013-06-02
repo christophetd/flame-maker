@@ -87,6 +87,30 @@ public class MenuBar {
 		fileMenu.add(exportMenuItem);
 		fileMenu.addSeparator();
 		fileMenu.add(closeMenuItem);
+		
+		/* menu qualité */
+		JMenu previewQualityMenu = new JMenu("Qualité");
+		ButtonGroup previewQualityBG = new ButtonGroup();
+		
+		for(double q = 2 ; q >= 0.25 ; q /= 2){
+			JRadioButtonMenuItem item = new JRadioButtonMenuItem(""+q);
+			
+			if(q == 1){
+				item.setSelected(true);
+			}
+			previewQualityBG.add(item);
+			previewQualityMenu.add(item);
+			
+			final double quality = q;
+			// Lorsque cette technique de rendu est sélectionnée, on l'active
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					set.setQualityFactor(quality);
+				}
+
+			});
+		}
 
 		/* Menu 'Aide' */
 		JMenu helpMenu = new JMenu("Aide");
@@ -133,6 +157,7 @@ public class MenuBar {
 		// On ajoute finalement tous les menus définis dans la barre de menus
 		menuBar.add(fileMenu);
 		menuBar.add(computeMenu);
+		menuBar.add(previewQualityMenu);
 		menuBar.add(helpMenu);
 
 		/* Raccourcis clavier */
