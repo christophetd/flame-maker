@@ -9,16 +9,13 @@ import java.awt.event.FocusAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
-import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
@@ -162,7 +159,8 @@ public class WeightsModificationComponent extends JComponent {
 	 */
 	private JFormattedTextField buildFormattedTextField() {
 		final JFormattedTextField field = new JFormattedTextField(
-				new DecimalFormat("###"));
+				new DecimalFormat("####.###")
+				);
 		field.setValue(0);
 		field.setColumns(3);
 
