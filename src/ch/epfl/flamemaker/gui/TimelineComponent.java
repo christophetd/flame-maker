@@ -19,6 +19,7 @@ import ch.epfl.flamemaker.anim.AnimableTransformation;
 import ch.epfl.flamemaker.anim.Animation;
 import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
+import ch.epfl.flamemaker.color.CustomPalette;
 import ch.epfl.flamemaker.color.Palette;
 import ch.epfl.flamemaker.flame.FlameTransformation;
 

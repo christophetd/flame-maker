@@ -21,6 +21,8 @@ import javax.swing.JOptionPane;
 import ch.epfl.flamemaker.FlameSet;
 import ch.epfl.flamemaker.anim.CacheManager;
 import ch.epfl.flamemaker.anim.FlameAnimation;
+import ch.epfl.flamemaker.color.CustomPalette;
+import ch.epfl.flamemaker.color.CustomPalette.Builder;
 import ch.epfl.flamemaker.flame.Flame;
 import ch.epfl.flamemaker.flame.FlameAccumulator;
 import ch.epfl.flamemaker.flame.FlameUtils;
@@ -90,6 +92,14 @@ public class FlamePreviewComponent extends JComponent {
 				recompute();
 			}
 			
+		});
+		
+		set.getPalette().addListener(new CustomPalette.Builder.Listener(){
+			@Override
+			public void onPaletteChange(Builder p) {
+				m_cache.clear();
+				recompute();
+			}
 		});
 		
 		// Observateur pour les movements de la souris 
