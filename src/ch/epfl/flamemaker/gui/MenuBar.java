@@ -31,7 +31,7 @@ import ch.epfl.flamemaker.flame.FlameFactory;
 import ch.epfl.flamemaker.flame.Presets;
 
 /**
- * Classe modÃ©lisant la barre de menus de la fenÃªtre principale du programme.
+ * Classe modélisant la barre de menus de la fenêtre principale du programme.
  */
 public class MenuBar {
 
@@ -41,11 +41,11 @@ public class MenuBar {
 	private static String currentFilePath = null;
 
 	/**
-	 * GÃ©nÃ¨re statiquement la barre de menus dans la JFrame passÃ©e en paramÃ¨tre
+	 * Génère statiquement la barre de menus dans la JFrame passée en paramètre
 	 * 
 	 * @param window
 	 *            La JFrame dans laquelle construire la barre de menus (en
-	 *            l'occurrence, la fenÃªtre principale du GUI)
+	 *            l'occurrence, la fenêtre principale du GUI)
 	 * @param set
 	 *            Le FlameSet contenant les informations de la fractale
 	 */
@@ -57,14 +57,14 @@ public class MenuBar {
 		final JMenu fileMenu = new JMenu("Fichier");
 		final JMenuItem openMenuItem = new JMenuItem("Ouvrir");
 		final JMenuItem newMenuItem = new JMenuItem("Nouveau");
-		final JMenu newFromMenuItem = new JMenu("Nouveau Ã  partir d'un modÃ¨le");
+		final JMenu newFromMenuItem = new JMenu("Nouveau à partir d'un modèle");
 		final JMenuItem saveMenuItem = new JMenuItem("Enregistrer");
 		final JMenuItem saveAsMenuItem = new JMenuItem("Enregistrer sous");
 		final JMenuItem exportMenuItem = new JMenuItem("Exporter");
 		final JMenuItem closeMenuItem = new JMenuItem("Quitter");
 
-		// On remplit le sous-menu de "Nouveau Ã  partir d'un modÃ¨le" avec les
-		// fractales prÃ©-dÃ©finies existantes
+		// On remplit le sous-menu de "Nouveau à partir d'un modèle" avec les
+		// fractales pré-définies existantes
 		// TODO : reenable this
 		/*for (final Presets p : Presets.values()) {
 			JMenuItem item = new JMenuItem(p.displayableName());
@@ -88,8 +88,8 @@ public class MenuBar {
 		fileMenu.addSeparator();
 		fileMenu.add(closeMenuItem);
 		
-		/* menu qualitÃ© */
-		JMenu previewQualityMenu = new JMenu("QualitÃ©");
+		/* menu qualité */
+		JMenu previewQualityMenu = new JMenu("Qualité");
 		ButtonGroup previewQualityBG = new ButtonGroup();
 		
 		for(double q = 2 ; q >= 0.25 ; q /= 2){
@@ -102,7 +102,7 @@ public class MenuBar {
 			previewQualityMenu.add(item);
 			
 			final double quality = q;
-			// Lorsque cette technique de rendu est sÃ©lectionnÃ©e, on l'active
+			// Lorsque cette technique de rendu est sélectionnée, on l'active
 			item.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -117,17 +117,17 @@ public class MenuBar {
 		JMenuItem documentationMenuItem = new JMenuItem("Documentation");
 		documentationMenuItem.setEnabled(false); // Pas de documentation disponible actuellement
 
-		JMenuItem aboutMenuItem = new JMenuItem("Ã€ propos");
+		JMenuItem aboutMenuItem = new JMenuItem("à propos");
 
 		helpMenu.add(documentationMenuItem);
 		helpMenu.add(aboutMenuItem);
 
-		/* Menu 'calcul'. Permet de choisir la technique utilisÃ©e pour rendre la fractale */
+		/* Menu 'calcul'. Permet de choisir la technique utilisée pour rendre la fractale */
 		JMenu computeMenu = new JMenu("Calcul");
 		ButtonGroup computeBG = new ButtonGroup();
 
-		// On parcourt toutes les stratÃ©gies existantes, dÃ©sactive celle(s) non
-		// supportÃ©e(s) et active par dÃ©faut la premiÃ¨re supportÃ©e que l'on
+		// On parcourt toutes les stratégies existantes, désactive celle(s) non
+		// supportée(s) et active par défaut la première supportée que l'on
 		// trouve
 		boolean hasSelectedStrategy = false;
 		for (FlameFactory fs : FlameFactory.ALL_FACTORIES) {
@@ -142,7 +142,7 @@ public class MenuBar {
 			computeMenu.add(item);
 
 			final FlameFactory strategy = fs;
-			// Lorsque cette technique de rendu est sÃ©lectionnÃ©e, on l'active
+			// Lorsque cette technique de rendu est sélectionnée, on l'active
 			item.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -154,8 +154,8 @@ public class MenuBar {
 			});
 		}
 
-		// On ajoute finalement tous les menus dÃ©finis dans la barre de menus
-		menuBar.add(fileMenu);
+		// On ajoute finalement tous les menus définis dans la barre de menus
+		//menuBar.add(fileMenu);
 		menuBar.add(computeMenu);
 		menuBar.add(previewQualityMenu);
 		menuBar.add(helpMenu);
@@ -174,7 +174,7 @@ public class MenuBar {
 
 		/* Comportements */
 
-		// Lorsque l'utilisateur sÃ©lectionne le menu "Fichir > Nouveau", on remplace la
+		// Lorsque l'utilisateur sélectionne le menu "Fichir > Nouveau", on remplace la
 		// fractale existante par une nouvelle, vide
 		// TODO : re-enable this
 		/*newMenuItem.addActionListener(new ActionListener() {
@@ -185,20 +185,20 @@ public class MenuBar {
 
 		});*/
 		
-		// Affiche quelques informations Ã  propos du programme
+		// Affiche quelques informations à propos du programme
 		aboutMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane
 						.showMessageDialog(
 								window,
-								"Ce programme a Ã©tÃ© dÃ©veloppÃ© par Hadrien Milano <hadrien.milano@epfl.ch> et Christophe Tafani-Dereeper <christophe.tafani-dereeper@epfl.ch> dans le cadre d'un projet de semestre");
+								"Ce programme a été développé par Hadrien Milano <hadrien.milano@epfl.ch> et Christophe Tafani-Dereeper <christophe.tafani-dereeper@epfl.ch> dans le cadre d'un projet de semestre");
 			}
 		});
 		
-		// FonctionnalitÃ© d'ouverture d'un fichier de fractale flame
+		// Fonctionnalité d'ouverture d'un fichier de fractale flame
 		openMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// On tente de rÃ©cupÃ©rer le rÃ©pertoire utilisateur par dÃ©faut
+				// On tente de récupérer le répertoire utilisateur par défaut
 				String userHome = System.getProperty("user.home");
 				if (userHome == null) {
 					userHome = "";
@@ -208,7 +208,7 @@ public class MenuBar {
 				fileChooser.addChoosableFileFilter(new FlameFileFilter(
 						FlameFile.FLAME_FILE_EXTENSION, "Fichier de fractale Flame"));
 
-				// Lorsque l'utilisateur a choisi un fichier Ã  ouvrir
+				// Lorsque l'utilisateur a choisi un fichier à ouvrir
 				if (fileChooser.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
 					String filePath = fileChooser.getSelectedFile()
 							.getAbsolutePath();
@@ -219,7 +219,7 @@ public class MenuBar {
 						// set.importDataFrom(newSet);
 
 //						set.setAll(newSet);
-//						// Une fois la liste des transformations rÃ©cupÃ©rÃ©e, on supprime
+//						// Une fois la liste des transformations récupérée, on supprime
 //						// celle de la fractale actuelle et la remplace par la nouvelle
 //						int size = transformationsListModel.getSize();
 //						
@@ -242,7 +242,7 @@ public class MenuBar {
 						JOptionPane
 								.showMessageDialog(
 										window,
-										"Le fichier n'a pas pu Ãªtre ouvert dans FlameMaker, sÃ»rement parce qu'il est corrompu.",
+										"Le fichier n'a pas pu être ouvert dans FlameMaker, sÃ»rement parce qu'il est corrompu.",
 										"Erreur lors de l'ouverture",
 										JOptionPane.ERROR_MESSAGE);
 					} catch (ClassNotFoundException e1) {
@@ -255,10 +255,10 @@ public class MenuBar {
 		});
 
 		/*
-		 * FonctionnalitÃ© de sauvegarde dans un fichier .flame
-		 * Si le ficher actuel est dÃ©fini (par ouverture ou un prÃ©cÃ©dent appel
-		 * Ã  "enregistrer"/"enregistrer sous", la fractale est enregistrÃ©e dedans
-		 * Sinon, le mÃªme comportement que la fonction "Enregistrer sous" est effectuÃ©, 
+		 * Fonctionnalité de sauvegarde dans un fichier .flame
+		 * Si le ficher actuel est défini (par ouverture ou un précédent appel
+		 * à "enregistrer"/"enregistrer sous", la fractale est enregistrée dedans
+		 * Sinon, le même comportement que la fonction "Enregistrer sous" est effectué, 
 		 * pour que l'utilisateur puisse choisir dans quel fichier enregistrer sa fractale 
 		*/
 		saveMenuItem.addActionListener(new ActionListener() {
@@ -268,7 +268,7 @@ public class MenuBar {
 						FlameFile.saveToFile(new SerializableFlameSet(set), currentFilePath);
 					}
 					catch(FileNotFoundException ex) {
-						// Exception lancÃ©e si le fichier ne peut Ãªtre crÃ©Ã©, par exemple
+						// Exception lancée si le fichier ne peut être créé, par exemple
 						showSaveErrorDialog(window);
 					}
 					catch(IOException ioex) {
@@ -280,10 +280,10 @@ public class MenuBar {
 			}
 		});
 
-		// FonctionnalitÃ© "Enregistrer sous"
+		// Fonctionnalité "Enregistrer sous"
 		saveAsMenuItem.addActionListener(new MenuBar.SaveAsActionListener(window, set));
 
-		// FonctionnalitÃ© "exporter"
+		// Fonctionnalité "exporter"
 		exportMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -310,29 +310,29 @@ public class MenuBar {
 	}
 
 	/**
-	 * La classe implÃ©mentant la fonctionnalitÃ© "Enregistrer sous".
-	 * Notons que cela n'a pas Ã©tÃ© fait dans une classe anonyme comme
-	 * pour les autres fonctionnalitÃ©s afin que cette classe puisse Ãªtre
-	 * utilisÃ©e depuis deux endroits diffÃ©rents du code
+	 * La classe implémentant la fonctionnalité "Enregistrer sous".
+	 * Notons que cela n'a pas été fait dans une classe anonyme comme
+	 * pour les autres fonctionnalités afin que cette classe puisse être
+	 * utilisée depuis deux endroits différents du code
 	 */
 	private static class SaveAsActionListener implements ActionListener {
 
 		/**
-		 * La fenÃªtre principale du GUI
-		 * (utilisÃ©e pour spÃ©cifier le parent du FileChooser et
-		 * pouvoir modifier le titre de la fenÃªtre lorsque le fichier
-		 * a Ã©tÃ© enregistrÃ©)
+		 * La fenêtre principale du GUI
+		 * (utilisée pour spécifier le parent du FileChooser et
+		 * pouvoir modifier le titre de la fenêtre lorsque le fichier
+		 * a été enregistré)
 		 */
 		final private JFrame window;
 		
 		/**
-		 *	Le set contenant les informations relatives Ã  la fractale 
+		 *	Le set contenant les informations relatives à la fractale 
 		 */
 		final private FlameSet set;
 
 		/**
 		 * Le constructeur de la classe
-		 * @param window		La fenÃªtre principale du GUI
+		 * @param window		La fenêtre principale du GUI
 		 * @param flameBuilder	Le constructeur de la fractale
 		 */
 		public SaveAsActionListener(JFrame window,
@@ -342,7 +342,7 @@ public class MenuBar {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			// On tente de rÃ©cupÃ©rer le rÃ©pertoire utilisateur par dÃ©faut
+			// On tente de récupérer le répertoire utilisateur par défaut
 			String userHome = System.getProperty("user.home");
 			if (userHome == null) {
 				userHome = "";
@@ -358,16 +358,16 @@ public class MenuBar {
 				String filePath = fileChooser.getSelectedFile()
 						.getAbsolutePath();
 
-				// S'il n'a pas indiquÃ© l'extension dans le nom, on la rajoute
+				// S'il n'a pas indiqué l'extension dans le nom, on la rajoute
 				if (!filePath.endsWith(FlameFile.FLAME_FILE_EXTENSION)) {
 					filePath = filePath.concat(FlameFile.FLAME_FILE_EXTENSION);
 				}
 
-				// Si le fichier existe dÃ©jÃ , on demande une confirmation
+				// Si le fichier existe déjà, on demande une confirmation
 				if ((new File(filePath).exists())) {
 					int confirmValue = JOptionPane.showConfirmDialog(window,
-							"Ce fichier existe dÃ©jÃ . Voulez-vous l'Ã©craser ?",
-							"Le fichier existe dÃ©jÃ ",
+							"Ce fichier existe déjà. Voulez-vous l'écraser ?",
+							"Le fichier existe déjà",
 							JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE);
 					if (confirmValue != JOptionPane.OK_OPTION) {
@@ -381,7 +381,7 @@ public class MenuBar {
 					FlameFile.saveToFile(new SerializableFlameSet(set), filePath);
 				}
 				catch (FileNotFoundException e1) {
-					// Cette exception est lancÃ©e si le fichier ne peut pas Ãªtre crÃ©Ã©, par exemple
+					// Cette exception est lancée si le fichier ne peut pas être créé, par exemple
 					showSaveErrorDialog(window);
 				} 
 				catch(IOException e1) {
@@ -395,7 +395,7 @@ public class MenuBar {
 		JOptionPane
 		.showMessageDialog(
 				window,
-				"La fractale n'a pas pu Ãªtre enregistrÃ©e. VÃ©rifiez que vous disposez des droits nÃ©cessaires Ã  la crÃ©ation du fichier",
+				"La fractale n'a pas pu être enregistrée. Vérifiez que vous disposez des droits nécessaires à la création du fichier",
 				"Erreur lors de l'enregistrement",
 				JOptionPane.ERROR_MESSAGE);
 	}
